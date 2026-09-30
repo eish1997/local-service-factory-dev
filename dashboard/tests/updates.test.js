@@ -1,6 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('fs'),path=require('path'),crypto=require('crypto'),{EventEmitter}=require('events');
 const {createService,canonical}=require('../update-service');
 function fixture(){
+ fs.mkdirSync(path.resolve(__dirname,'../../.runtime'),{recursive:true});
  const home=fs.mkdtempSync(path.resolve(__dirname,'../../.runtime/update-node-'));const root=path.join(home,'data'),installed=path.join(home,'installed');fs.mkdirSync(root);fs.mkdirSync(installed);fs.writeFileSync(path.join(installed,'app.exe'),'old-version');
  const binary=path.join(home,'new.exe');fs.writeFileSync(binary,'new-installer');
  const keys=crypto.generateKeyPairSync('ed25519'),raw=keys.publicKey.export({format:'der',type:'spki'}).subarray(-32).toString('base64');

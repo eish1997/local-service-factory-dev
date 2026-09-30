@@ -44,7 +44,11 @@ def main():
             return
         out = target/rel
         out.parent.mkdir(parents=True, exist_ok=True)
-        if file.suffix == '.py':
+        if rel.as_posix() in {'dashboard/package-lock.json', 'distribution/requirements-runtime.lock', 'distribution/python-runtime.json'}:
+            # Dependency integrity hashes may contain phone-like digit runs.
+            # These public metadata files must remain byte-identical.
+            out.write_bytes(file.read_bytes())
+        elif file.suffix == '.py':
             # Tests have synthetic input variations; don't collapse their phone fixtures.
             text = file.read_text(encoding='utf-8-sig') if rel.parts[0] == 'tests' else stage_distribution.source_text(file)
             out.write_text(SECRET.sub('[credential omitted]', text), encoding='utf-8')
@@ -138,6 +142,13 @@ dashboard/backups/
 dashboard/release*/
 *.zip
 *.exe
+''', encoding='utf-8')
+    (target/'README.md').write_text('''# 本地生活服务图片工厂｜开发源码
+
+本仓库用于跨电脑开发；软件安装包、规则数据分别在各自分发仓库。
+先读 [Agent入口](AGENTS.md)、[当前帮助](HELP.md)、[新电脑开发指南](development/README.md)。
+三个项目skill位于 `.agents/skills/`，源码推送不自动触发生图或分发发布。
+凭证、客户资料、生成图片、任务历史与发布私钥不进入此仓库。
 ''', encoding='utf-8')
     # Never export current customer phones/keys/history; final credential scan is fail-closed.
     files = [p for p in target.rglob('*') if p.is_file()]
