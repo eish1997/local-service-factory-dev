@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "version": "realistic_mobile_documentary_v2",
+  "description": "Common visual-only style preset for realistic Chinese local-service images. It must not define business content, service names, tools, vehicles, phone numbers, or customer problems.",
+  "shared_positive_rules": [
+    "像普通人或服务同事用手机临时拍下的真实工作记录，不像广告公司拍摄",
+    "构图允许轻微偏斜、边缘遮挡和不完美取景，但主体动作必须清楚",
+    "使用普通手机主摄观感，轻微广角透视，自然自动曝光和自动白平衡",
+    "保留轻微手机噪点、玻璃反光、墙面旧痕、路面痕迹、工具使用痕迹和真实环境杂物",
+    "人物专注操作，不直视镜头，不摆造型，不竖大拇指，不双手叉腰",
+    "人物衣服有自然褶皱和工作痕迹，手部必须真实接触工具、设备、车辆或服务对象",
+    "画面不追求绝对居中、绝对对称、所有主体无遮挡或展厅般整洁"
+  ],
+  "shared_negative_rules": [
+    "不要电影海报式灯光、橙青色电影调色、强HDR、过度锐化、夸张景深或大片金色逆光",
+    "不要商业广告摄影、影棚布光、豪华样板间、科技展厅、3D渲染感、塑料质感或AI概念图",
+    "不要让所有工具、车辆、设备和环境都像新品展示；允许轻微灰尘、雨水、泥点、磨损和使用痕迹",
+    "不要让人物像网红、明星脸、广告模特或假人；避免抽象人形、蜡像脸、畸形手和不自然站姿"
+  ],
+  "target_mode": {
+    "enabled": true,
+    "version": "realism_dehomogenization_target_v1",
+    "positive_rules": [
+      "一张图只表现一个可解释的真实业务瞬间：问题、人物动作、工具和服务对象必须构成因果闭环",
+      "按当前类目的合法场景选择地点、工具、天气和时间；室内、室外、车辆和设备不跨类目硬拼",
+      "保留一到两个与当前场景一致的自然非理想细节，例如使用痕迹、局部遮挡、轻微曝光不均、普通杂物或不完全对称的取景",
+      "批量图优先轮换主视觉轴：场景位置、拍摄站位、主体动作、设备位置、人物数量或可见度；变化必须服从真实业务"
+    ],
+    "negative_rules": [
+      "不要把门店、车辆、人物和工具均匀摆成展示清单，不要复用正面居中门头加站立人物的广告构图",
+      "不要为了增加变化而加入不属于当前类目的天气、车辆、工具、室内外环境或服务动作",
+      "不要使用过度干净、过度对称、材质过于均匀、光线过于完美的AI样板图效果",
+      "不要让相邻批次反复复制同一机位、同一背景色、同一人物站姿、同一车辆占比或同一地面状态"
+    ]
+  },
+  "section_rules": {
+    "storefront_cover": [
+      "门店封面应像路过街边小店时的手机照片，可见台阶、玻璃门、墙面、邻店边缘、路面或门口杂物",
+      "门头、室内或作业区应与建筑和街道同处一个真实空间，不要做成平面海报或空白门脸",
+      "电话条和底部服务区预留空间可以规整，但底图本身仍应有真实街边环境和生活痕迹"
+    ],
+    "service_detail": [
+      "详情图优先表现服务动作发生中的中近景或局部近景，不要只让人员站在旁边展示",
+      "工具、手部、设备和动作关系要可信，背景保留适量真实环境信息"
+    ],
+    "road_rescue_detail": [
+      "道路救援现场必须有客户故障、车辆状态、师傅动作、正确工具、连接关系和道路环境痕迹的闭环",
+      "车辆、路面、师傅衣服和工具的干湿、泥点、灰尘和光线状态必须一致",
+      "不要生成拖车、故障车、师傅三者平行排列的标准宣传照"
+    ]
+  },
+  "lens_presets": {
+    "road_rescue_detail": [
+      {
+        "id": "fault_car_rear_side_operation",
+        "prompt": "从故障车侧后方拍摄师傅弯腰操作，故障车占前景一侧，师傅在中景，救援车或工具只露出必要部分",
+        "location_groups": [
+          "urban",
+          "highway",
+          "rural",
+          "mountain",
+          "logistics"
+        ],
+        "jobs": [
+          "搭电救援",
+          "换胎救援",
+          "送油救援"
+        ]
+      },
+      {
+        "id": "front_side_three_quarter",
+        "prompt": "从车头侧前方斜拍，保持普通手机站立高度，能看到故障点、师傅手部和部分道路环境",
+        "location_groups": [
+          "urban",
+          "highway",
+          "rural",
+          "logistics"
+        ],
+        "jobs": [
+          "搭电救援",
+          "换胎救援",
+          "送油救援",
+          "事故拖车"
+        ]
+      },
+      {
+        "id": "through_roadside_obstruction",
+        "prompt": "从道路边缘隔着少量护栏、树叶、车窗边缘或路锥拍摄，形成自然前景遮挡但不挡住关键操作",
+        "location_groups": [
+          "urban",
+          "highway",
+          "mountain"
+        ],
+        "jobs": []
+      },
+      {
+        "id": "rescue_truck_rear_tools",
+        "prompt": "从救援车后方或侧后方拍师傅搬工具，打开的工具箱、拖车带或搭电设备在前景，故障车在中后景",
+        "location_groups": [
+          "urban",
+          "highway",
+          "rural",
+          "logistics"
+        ],
+        "jobs": [
+          "搭电救援",
+          "换胎救援",
+          "拖车救援",
+          "事故拖车"
+        ]
+      },
+      {
+        "id": "open_trunk_outward",
+        "prompt": "从打开的后备箱或工具舱附近向外拍摄，工具形成近景层次，师傅和车辆操作在外侧自然发生",
+        "location_groups": [
+          "urban",
+          "garage",
+          "rural",
+          "logistics"
+        ],
+        "jobs": [
+          "搭电救援",
+          "换胎救援",
+          "送油救援",
+          "地下车库救援"
+        ]
+      },
+      {
+        "id": "cab_nearby_observer",
+        "prompt": "从驾驶室附近或车门边向救援现场拍摄，车门、后视镜或窗框作为自然边缘，现场像乘客随手记录",
+        "location_groups": [
+          "urban",
+          "highway",
+          "rural",
+          "garage"
+        ],
+        "jobs": []
+      },
+      {
+        "id": "worker_bending_mid_close",
+        "prompt": "师傅弯腰或半蹲操作的中近景，身体重心与手部动作一致，工具和车辆接触点清楚",
+        "location_groups": [],
+        "jobs": [
+          "搭电救援",
+          "换胎救援",
+          "送油救援",
+          "泥巴脱困",
+          "地下车库救援"
+        ]
+      },
+      {
+        "id": "hands_and_equipment_close",
+        "prompt": "手部与设备局部近景，保留少量车辆和路面背景，重点呈现夹子、扳手、绞盘、油桶或固定带的真实接触关系",
+        "location_groups": [],
+        "jobs": [
+          "搭电救援",
+          "换胎救援",
+          "送油救援",
+          "拖车救援",
+          "泥巴脱困"
+        ]
+      },
+      {
+        "id": "vehicle_foreground_worker_midground",
+        "prompt": "车辆作为前景压住画面一侧，师傅在中景专注操作，背景只保留必要道路或停车场信息",
+        "location_groups": [
+          "urban",
+          "garage",
+          "highway",
+          "rural"
+        ],
+        "jobs": []
+      },
+      {
+        "id": "worker_foreground_fault_car_background",
+        "prompt": "师傅和工具在前景，故障车作为背景，画面像同事靠近记录操作步骤，不像展示车辆广告",
+        "location_groups": [
+          "urban",
+          "garage",
+          "rural",
+          "logistics"
+        ],
+        "jobs": []
+      },
+      {
+        "id": "roadside_side_documentary",
+        "prompt": "路边停靠的侧面纪实视角，保留路肩、标线、井盖、护栏或落叶等真实道路细节",
+        "location_groups": [
+          "urban",
+          "highway",
+          "mountain"
+        ],
+        "jobs": []
+      },
+      {
+        "id": "ordinary_night_light",
+        "prompt": "夜间由普通路灯、车灯或作业灯照明，局部亮度不均匀，手机低照度轻微噪点，不使用电影蓝橙光",
+        "location_groups": [
+          "urban",
+          "highway",
+          "garage",
+          "logistics"
+        ],
+        "jobs": []
+      },
+      {
+        "id": "rain_window_or_drops",
+        "prompt": "雨天隔着少量雨滴、车窗边缘或湿润空气拍摄，路面、车身、衣服和工具的湿润程度一致",
+        "location_groups": [
+          "urban",
+          "highway",
+          "rural",
+          "mountain",
+          "logistics"
+        ],
+        "jobs": []
+      },
+      {
+        "id": "rural_distance_snapshot",
+        "prompt": "乡村或郊区道路稍远距离抓拍，保留电线杆、农田、碎石路或路肩，主体不摆拍",
+        "location_groups": [
+          "rural",
+          "mountain"
+        ],
+        "jobs": [
+          "拖车救援",
+          "泥巴脱困",
+          "换胎救援",
+          "搭电救援"
+        ]
+      },
+      {
+        "id": "community_parking_side",
+        "prompt": "小区停车场或内部道路自然侧拍，背景有普通停放车辆、墙面、车位线或生活杂物",
+        "location_groups": [
+          "urban",
+          "garage"
+        ],
+        "jobs": [
+          "搭电救援",
+          "换胎救援",
+          "地下车库救援"
+        ]
+      },
+      {
+        "id": "garage_plain_phone",
+        "prompt": "地下车库普通顶灯下的手机记录感，允许轻微监控感和偏暗角落，混凝土地面与柱子真实",
+        "location_groups": [
+          "garage"
+        ],
+        "jobs": [
+          "地下车库救援",
+          "搭电救援",
+          "换胎救援"
+        ]
+      }
+    ]
+  }
+}

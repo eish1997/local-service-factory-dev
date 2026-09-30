@@ -1,0 +1,24 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('roadRescue', {
+  updates: operation => ipcRenderer.invoke('updates:request',operation),
+  tasks: (operation, request) => ipcRenderer.invoke('tasks:request', operation, request),
+  chooseAssets: () => ipcRenderer.invoke('assets:choose'),
+  openTaskFolder: request => ipcRenderer.invoke('assets:open',request),
+  packageGroups: request => ipcRenderer.invoke('assets:package',request),
+  read: () => ipcRenderer.invoke('dashboard:read'),
+  variables: (request) => ipcRenderer.invoke('variables:request', request),
+  chooseProject: () => ipcRenderer.invoke('project:choose'),
+  reveal: (target) => ipcRenderer.invoke('path:open', target),
+  toggleCompact: () => ipcRenderer.invoke('window:compact'),
+  isCompact: () => ipcRenderer.invoke('window:is-compact'),
+  onCompactChanged: (callback) => ipcRenderer.on('window:compact-changed', (_, value) => callback(value)),
+  minimize: () => ipcRenderer.invoke('window:minimize'),
+  maximize: () => ipcRenderer.invoke('window:maximize'),
+  close: () => ipcRenderer.invoke('window:close'),
+  openViewer: (index) => ipcRenderer.invoke('viewer:open', index),
+  viewerCurrent: () => ipcRenderer.invoke('viewer:current'),
+  viewerNavigate: (delta) => ipcRenderer.invoke('viewer:navigate', delta),
+  closeViewer: () => ipcRenderer.invoke('viewer:close'),
+  onViewerUpdated: (callback) => ipcRenderer.on('viewer:updated', (_, payload) => callback(payload)),
+});

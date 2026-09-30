@@ -1,0 +1,257 @@
+"""Versioned, signed, data-only rule distribution. Publishing is explicit."""
+import base64
+import copy
+import io
+import json
+import os
+from pathlib import Path, PurePosixPath
+import re
+import secrets
+import shutil
+import time
+import zipfile
+from tools import runtime_paths as paths, update_protocol as protocol
+
+PROJECTS=('road_rescue','lock_service','home_appliance_repair','pipe_unclogging','pet_transport','truck_rescue','ktv','business_ktv')
+CATALOG_FIELDS=('schema_version','category_id','revision','dimensions','readonly')
+PRIVATE_FIELDS={'phone','phones','contact_phones','confirmed_phone','confirmed_phones','phone_source','api_key','api_keys','token','secret','source_thread_id','source_user_turn_id','source_thread_title','import_authorization','reference_files','reference_images','source_images','reference_evidence','source_image','source_file','latest_api_job','latest_groups_review','latest_local_text_review'}
+PHONE=re.compile(r'(?<!\d)(?:1[3-9](?:[ -]?\d){9}|400[ -]?\d{3}[ -]?\d{4}|0\d{2,3}[- ]\d{7,8})(?!\d)')
+PRIVATE_TEXT=re.compile(r'(?i)(?:\bsk-[a-z0-9_-]{10,}|\bgh[pousr]_[a-z0-9_]{15,}|[a-z]:[\\/]|file://|/Users/|/home/)')
+
+def write(file,value):
+    from tools.task_library import write as atomic
+    atomic(file,value)
+
+def local():return paths.data_root()/'.runtime/updates'
+
+def scrub(value):
+    if isinstance(value,dict):return {k:scrub(v) for k,v in value.items() if k.lower() not in PRIVATE_FIELDS and not any(t in k.lower() for t in ('api_key','credential','access_token'))}
+    if isinstance(value,list):return [scrub(v) for v in value]
+    if isinstance(value,str):
+        if PRIVATE_TEXT.search(value):return '[本地信息不发布]'
+        return PHONE.sub('{已确认电话}',value)
+    return value
+
+def field_map():return json.loads((paths.CODE_ROOT/'distribution/rules-fields.json').read_text(encoding='utf-8'))
+
+def allowed_files():
+    return set(field_map())|{'projects/registry.json','prompt_template_storefront.md'}|{f'projects/{c}/variable_catalog.json' for c in PROJECTS}
+
+def export_documents():
+    from tools import variable_catalog as vc
+    docs={}
+    for name,fields in field_map().items():
+        value=json.loads((paths.CODE_ROOT/name).read_text(encoding='utf-8-sig'))
+        docs[name]=protocol.canonical(scrub({k:value[k] for k in fields if k in value}))
+    registry=json.loads((paths.CODE_ROOT/'projects/registry.json').read_text(encoding='utf-8-sig'))
+    docs['projects/registry.json']=protocol.canonical({'schema_version':1,'active_project':PROJECTS[0],'projects':[
+        {k:r[k] for k in ('id','name','status','definition')} for r in registry['projects'] if r['id'] in PROJECTS]})
+    if len(json.loads(docs['projects/registry.json'])['projects'])!=8:raise ValueError('首版规则包须包含八个已支持业务')
+    for category in PROJECTS:
+        catalog=copy.deepcopy(vc.load(category));vc.validate(catalog)
+        # Readonly sections are regenerated from sanitized definitions, never publish confirmed input history.
+        catalog['readonly']=[]
+        docs[f'projects/{category}/variable_catalog.json']=protocol.canonical(scrub({k:catalog[k] for k in CATALOG_FIELDS if k in catalog}))
+    docs['prompt_template_storefront.md']=scrub((paths.CODE_ROOT/'prompt_template_storefront.md').read_text(encoding='utf-8')).encode('utf-8')
+    for name,data in docs.items():
+        text=data.decode('utf-8')
+        if PHONE.search(text) or PRIVATE_TEXT.search(text):raise ValueError('公开规则隐私检查失败：'+name)
+    return docs
+
+def valid_version(value):
+    if not isinstance(value,str) or not re.fullmatch(r'[1-9][0-9]{0,19}',value):raise ValueError('规则版本必须为正整数字符串')
+    return value
+
+def app_tuple(value):
+    if not isinstance(value,str) or not re.fullmatch(r'\d+\.\d+\.\d+',value):raise ValueError('软件版本格式无效')
+    return tuple(map(int,value.split('.')))
+
+def validate_payload(payload,cfg):
+    valid_version(payload.get('version'))
+    if payload.get('kind')!='rules' or payload.get('schema')!=cfg['rules_schema']:raise ValueError('规则包格式不兼容')
+    if app_tuple(payload['min_app'])>app_tuple(cfg['app_version']):raise ValueError('此规则版本需要先更新软件')
+    if payload.get('engine_major')!=app_tuple(cfg['app_version'])[0]:raise ValueError('规则包与生成引擎不兼容')
+    files=payload.get('files')
+    if not isinstance(files,dict) or set(files)!=allowed_files():raise ValueError('规则包文件范围与八个业务白名单不一致')
+    if any(not re.fullmatch(r'[0-9a-f]{64}',v) for v in files.values()):raise ValueError('规则摘要格式无效')
+
+def unpack(payload,archive,folder,cfg):
+    validate_payload(payload,cfg)
+    if len(archive)>cfg['max_rules_bytes'] or protocol.sha(archive)!=payload.get('sha256'):raise ValueError('规则压缩包摘要或大小不正确')
+    with zipfile.ZipFile(io.BytesIO(archive)) as z:
+        members=z.infolist()
+        if len(members)!=len(payload['files']) or {m.filename for m in members}!=set(payload['files']):raise ValueError('规则包成员不正确或重复')
+        if sum(m.file_size for m in members)>cfg['max_rules_bytes']:raise ValueError('规则解压后超过大小上限')
+        for member in members:
+            name=member.filename
+            if member.is_dir() or (member.external_attr>>16)&0o170000==0o120000 or '\\' in name or '..' in PurePosixPath(name).parts:raise ValueError('规则包不能包含链接或越界路径')
+            data=z.read(member)
+            if protocol.sha(data)!=payload['files'][name]:raise ValueError('规则文件摘要不匹配：'+name)
+            text=data.decode('utf-8')
+            if PHONE.search(text) or PRIVATE_TEXT.search(text):raise ValueError('规则包含本地私密信息：'+name)
+            if name.endswith('.json'):
+                document=json.loads(text)
+                if scrub(document)!=document:raise ValueError('规则包含私密字段：'+name)
+                if name in field_map() and not set(document)<=set(field_map()[name]):raise ValueError('规则出现未经允许的字段：'+name)
+            target=folder/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
+    write(folder/'manifest.json',payload)
+
+def validate_business(folder):
+    from tools import variable_catalog as vc
+    from tools.task_groups import build_group
+    with paths.use_rules(folder):
+        for category in PROJECTS:
+            catalog=vc.load(category);vc.validate(catalog)
+            config_path=paths.CODE_ROOT/('configs/business_ktv/scene_library.json' if category=='business_ktv' else f'configs/categories/{category}.json')
+            config=paths.read_json(config_path) if paths.rule_file(config_path).exists() else {}
+            # Local assembly validates each business, never invokes an image API.
+            rows=build_group(category,1401,'00000000000',catalog,config)
+            definition=paths.read_json(paths.CODE_ROOT/f'projects/{category}/project.json')
+            structure=definition['content_group'];expected=structure.get('generation_unit_count') or structure['cover_count']+structure['detail_count']
+            if len(rows)!=expected or any(not r['prompt'].strip() for r in rows):raise ValueError('业务组装验证失败：'+category)
+
+def release_plan(request):
+    cfg=paths.config();version=valid_version(request.get('version') or str(time.time_ns()))
+    docs=export_documents()
+    folder=local()/'release_plans'/version
+    if folder.exists():raise ValueError('此规则版本计划已存在')
+    folder.mkdir(parents=True)
+    archive=io.BytesIO()
+    with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED) as z:
+        for name,data in sorted(docs.items()):z.writestr(name,data)
+    data=archive.getvalue()
+    payload={'kind':'rules','schema':cfg['rules_schema'],'version':version,'min_app':cfg['app_version'],
+             'engine_major':app_tuple(cfg['app_version'])[0],'sha256':protocol.sha(data),
+             'url':f'https://github.com/{cfg["owner"]}/{cfg["rules_repo"]}/releases/download/rules-{version}/rules.zip',
+             'files':{n:protocol.sha(v) for n,v in docs.items()}}
+    unpack(payload,data,folder/'validated',cfg);validate_business(folder/'validated')
+    (folder/'rules.zip').write_bytes(data);write(folder/'payload.json',payload)
+    tracked=local()/'remote_head.json'
+    head=json.loads(tracked.read_text(encoding='utf-8')) if tracked.exists() else {'sha':None,'files':{}}
+    plan={'version':version,'base_sha':head['sha'],'changed_files':[n for n,h in payload['files'].items() if head.get('files',{}).get(n)!=h],
+          'sha256':payload['sha256'],'files':len(docs),'businesses':8,'validated':True,'api_called':False,'uploaded':False}
+    write(folder/'plan.json',plan)
+    return plan
+
+def public_index(cfg):
+    return f'https://api.github.com/repos/{cfg["owner"]}/{cfg["rules_repo"]}/contents/release-index.json'
+
+def remote_index(cfg):
+    from urllib.error import HTTPError
+    try:response=json.loads(protocol.download(public_index(cfg),1024*1024,'application/vnd.github+json'))
+    except HTTPError as error:
+        if error.code==404:raise ValueError('远程仓库尚未发布规则，继续使用本地版本') from None
+        raise ValueError(f'GitHub 规则检查失败（HTTP {error.code}），继续使用本地版本') from None
+    # Contents API default JSON is requested for the compare-and-swap SHA.
+    envelope=json.loads(base64.b64decode(response['content']))
+    payload=protocol.verify(envelope,cfg['public_keys']);validate_payload(payload,cfg)
+    return response['sha'],envelope,payload
+
+def status():
+    result={'software_version':paths.config()['app_version'],'rules_version':'bundled','mode':'consumer' if os.environ.get('FACTORY_DATA_HOME') else 'maintainer',
+            'configured':bool(paths.config()['public_keys']),'owner':paths.config()['owner']}
+    for name in ('active_rules','rules_status','software_status'):
+        file=local()/(name+'.json')
+        if file.exists():result[name]=json.loads(file.read_text(encoding='utf-8'))
+    result['rules_version']=result.get('active_rules',{}).get('version','bundled') if os.environ.get('FACTORY_DATA_HOME') else 'workspace'
+    return result
+
+def sync(request=None):
+    from tools.task_library import lock
+    cfg=paths.config()
+    with lock(local()/'sync.lock'):
+        try:
+            if not cfg['public_keys']:raise ValueError('尚未配置发布验证公钥，继续使用本地规则')
+            revision,envelope,payload=remote_index(cfg)
+            write(local()/'remote_head.json',{'sha':revision,'files':payload['files'],'version':payload['version']})
+            if not os.environ.get('FACTORY_DATA_HOME'):
+                result={'state':'available','remote_version':payload['version'],'message':'维护端只检查远程版本，不覆盖本地编辑'}
+            else:
+                active=status().get('active_rules',{})
+                if int(active.get('version','0'))>=int(payload['version']):result={'state':'current','version':active['version']}
+                else:
+                    data=protocol.download(payload['url'],cfg['max_rules_bytes'])
+                    root=paths.data_root()/'.runtime/rules';root.mkdir(parents=True,exist_ok=True)
+                    temp=root/('staging-'+secrets.token_hex(8));temp.mkdir()
+                    try:
+                        unpack(payload,data,temp,cfg);validate_business(temp)
+                        final=root/payload['version']
+                        if final.exists():
+                            if json.loads((final/'manifest.json').read_text(encoding='utf-8'))!=payload:raise ValueError('规则版本号冲突')
+                        else:os.rename(temp,final)
+                        write(local()/'active_rules.json',{'version':payload['version'],'previous':active.get('version'),'sha256':payload['sha256']})
+                    finally:
+                        if temp.exists():shutil.rmtree(temp)
+                    result={'state':'updated','version':payload['version']}
+            write(local()/'rules_status.json',{**result,'checked_at':time.time()});return result
+        except Exception as error:
+            write(local()/'rules_status.json',{'state':'error','message':str(error),'checked_at':time.time()})
+            raise
+
+def publish(request):
+    if request.get('authorization')!='publish_project_update':raise ValueError('需要明确发布项目更新指令')
+    if os.environ.get('FACTORY_DATA_HOME'):raise ValueError('使用端没有项目发布权限')
+    cfg=paths.config();version=valid_version(request['version']);folder=local()/'release_plans'/version
+    payload=json.loads((folder/'payload.json').read_text(encoding='utf-8'));plan=json.loads((folder/'plan.json').read_text(encoding='utf-8'))
+    data=(folder/'rules.zip').read_bytes()
+    if not plan['validated'] or protocol.sha(data)!=payload['sha256']:raise ValueError('发布计划内容已变化')
+    validate_payload(payload,cfg)
+    keyfile=os.environ.get('FACTORY_RELEASE_KEY_FILE') or str(paths.data_root()/'.runtime/private/release-signing.pem');key_id=os.environ.get('FACTORY_RELEASE_KEY_ID') or 'release-2026-09'
+    if not keyfile or not key_id:raise ValueError('请先在维护端配置发布签名私钥文件和标识')
+    envelope=protocol.sign(payload,key_id,keyfile,cfg['public_keys'])
+    repo=f'/repos/{cfg["owner"]}/{cfg["rules_repo"]}'
+    current=protocol.github('GET',repo+'/contents/release-index.json')
+    current_sha=current['sha'] if current else None
+    if current_sha!=plan['base_sha']:raise ValueError('远端版本已变化，请同步检查并重新生成发布计划')
+    if current:
+        old=protocol.verify(json.loads(base64.b64decode(current['content'])),cfg['public_keys'])
+        if int(version)<=int(old['version']):raise ValueError('发布版本必须高于远端版本；回退内容也需要新版本号')
+    release=protocol.github('POST',repo+'/releases',{'tag_name':'rules-'+version,'name':'项目规则 '+version,'draft':True})
+    upload=release['upload_url'].split('{')[0]
+    protocol.github('POST',upload+'?name=rules.zip',raw=data)
+    protocol.github('POST',upload+'?name=manifest.json',raw=protocol.canonical(envelope))
+    protocol.github('PATCH',repo+'/releases/'+str(release['id']),{'draft':False,'make_latest':'false'})
+    if protocol.sha(protocol.download(payload['url'],cfg['max_rules_bytes']))!=payload['sha256']:raise ValueError('公开下载验证失败，最新版本指向未改变')
+    body={'message':'Publish rules '+version,'content':base64.b64encode(protocol.canonical(envelope)).decode()}
+    if current_sha:body['sha']=current_sha
+    changed=protocol.github('PUT',repo+'/contents/release-index.json',body)
+    write(local()/'remote_head.json',{'sha':changed['content']['sha'],'files':payload['files'],'version':version})
+    return {'published':True,'version':version,'url':release['html_url']}
+
+def rollback(request):
+    # Repackage a previously verified local release under a new increasing version.
+    if request.get('authorization')!='publish_project_update':raise ValueError('回退发布需要明确指令')
+    old=local()/'release_plans'/valid_version(request['from_version'])
+    new_version=valid_version(request.get('version') or str(time.time_ns()))
+    cfg=paths.config();new=local()/'release_plans'/new_version
+    if new.exists():raise ValueError('回退版本已存在')
+    original=json.loads((old/'payload.json').read_text(encoding='utf-8'));data=(old/'rules.zip').read_bytes()
+    original.update(version=new_version,url=f'https://github.com/{cfg["owner"]}/{cfg["rules_repo"]}/releases/download/rules-{new_version}/rules.zip')
+    new.mkdir(parents=True);unpack(original,data,new/'validated',cfg);validate_business(new/'validated')
+    (new/'rules.zip').write_bytes(data);write(new/'payload.json',original)
+    head=local()/'remote_head.json';base=json.loads(head.read_text())['sha'] if head.exists() else None
+    write(new/'plan.json',{'base_sha':base,'validated':True})
+    return publish({**request,'version':new_version})
+
+def cli(args):
+    import sys
+    try:
+        request=json.load(sys.stdin) if not sys.stdin.isatty() else {}
+        if args.family=='updates':
+            if args.operation in {'release-plan','publish','setup'}:
+                from tools import software_release
+                result=getattr(software_release,args.operation.replace('-','_'))(request)
+            elif args.operation=='status':result=status()
+            else:
+                write(local()/'check_request.json',{'id':secrets.token_hex(16),'requested_at':time.time()})
+                try:rules=sync(request)
+                except Exception as error:rules={'state':'error','message':str(error)}
+                result={'rules':rules,'software':'已请求桌面更新服务检查；若看板未打开，将在下次启动检查'}
+        else:result={'sync':sync,'release-plan':release_plan,'publish':publish,'rollback':rollback}[args.operation](request)
+        print(json.dumps({'ok':True,'data':result},ensure_ascii=False));return 0
+    except Exception as error:
+        print(json.dumps({'ok':False,'error':str(error)},ensure_ascii=False));return 1
+
+def add_arguments(subparsers):
+    for family,operations in [('rules',['sync','release-plan','publish','rollback']),('updates',['status','check','release-plan','publish','setup'])]:
+        parser=subparsers.add_parser(family);parser.add_argument('operation',choices=operations);parser.set_defaults(handler=cli,family=family)

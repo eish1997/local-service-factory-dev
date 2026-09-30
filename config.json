@@ -1,0 +1,22 @@
+{
+  "project_name": "road_rescue_image_factory",
+  "prompt_count": 1000,
+  "batch_size": 1000,
+  "batch_registry": "prompts/batch_registry.json",
+  "batch_dir": "prompts/batches",
+  "random_seed": 20260703,
+  "prompt_file": "prompts/road_rescue_prompts.jsonl",
+  "output_dir": "output",
+  "filename_pattern": "road_rescue_{index:04d}.png",
+  "model": "gpt-image-2.5-flare",
+  "api_size": "1024x1536",
+  "quality": "medium",
+  "output_format": "png",
+  "portrait_composition": "9:16 vertical social-media cover composition with safe space around the main subject",
+  "request_interval_seconds": 1.5,
+  "max_retries": 5,
+  "retry_base_seconds": 4,
+  "start_index": 1,
+  "end_index": null,
+  "overwrite": false
+}

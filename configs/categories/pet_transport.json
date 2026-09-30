@@ -1,0 +1,71 @@
+{
+  "category_id": "pet_transport",
+  "category_name": "宠物托运",
+  "scene_types": [
+    "storefront_pickup",
+    "carrier_check",
+    "vehicle_loading",
+    "care_check",
+    "arrival_handover"
+  ],
+  "negative_prompt": "不要卡通、动漫、漫画、插画、二维绘画、CG、3D动画、游戏画面、儿童绘本、拟人宠物、萌宠海报、宠物头像海报、吉祥物、玩偶质感、塑料毛发、夸张大眼睛、品牌VI、广告设计稿、门店效果图、豪华宠物酒店、机场航空宣传、铁路物流、欧美场景、科技展厅、黑金高端门头、真实品牌logo、二维码、水印、价格、可读车牌、危险装载、宠物惊恐或受伤。",
+  "cover_style_source": "road_rescue_storefront_mobile_v2",
+  "cover_style_rule": "完整复用汽车救援的真实中国门店外景全景、普通手机纪实、自然光线、真实环境瑕疵和镜头变化逻辑，只替换为宠物托运行业关键词、笼具、工作人员动作、普通服务车辆和已确认电话。门头底色不固定为白色，可在暖棕、深灰蓝、暖灰、克制砖红、米白等协调色系及平面字/立体发光字材质之间变化，但不得复制参考店名、logo或完整设计。",
+  "service_buttons": [
+    "猫咪托运",
+    "狗狗托运",
+    "宠物托运",
+    "上门接送",
+    "照护交接",
+    "笼具检查",
+    "安全装车",
+    "到达交接"
+  ],
+  "detail_service_keyword_pool": [
+    "猫咪托运",
+    "狗狗托运",
+    "宠物接送",
+    "上门接宠",
+    "笼具检查",
+    "安全装车",
+    "途中照护",
+    "车辆通风",
+    "笼具固定",
+    "送达核对",
+    "饮水检查",
+    "状态观察",
+    "牵引检查",
+    "运输箱检查",
+    "吸水垫检查",
+    "交接确认",
+    "物品清点",
+    "到达交接"
+  ],
+  "detail_local_overlay_rule": "复用道路救援详情图的顶部角色标签、中部电话和底部两行十宫格布局；每张从宠物托运专用词池轮换10个互不重复的词，并排除与顶部角色完全同名的词，不得混入道路救援关键词。",
+  "image_group_structure": {
+    "structure_version": "pet_transport_v1_1cover_5details",
+    "generation_mode": "independent_delivery_images",
+    "generation_unit_count": 6,
+    "delivery_unit_count": 6,
+    "delivery_roles": [
+      "cover",
+      "detail",
+      "detail",
+      "detail",
+      "detail",
+      "detail"
+    ],
+    "service_role_pool": [
+      "接宠交接",
+      "笼具检查",
+      "安全装车",
+      "途中照护",
+      "到达交接",
+      "车辆通风检查",
+      "笼具固定",
+      "送达核对",
+      "饮水状态检查",
+      "牵引装备检查"
+    ]
+  }
+}

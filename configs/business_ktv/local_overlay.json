@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "category_id": "business_ktv",
+  "enabled": true,
+  "profile": "interior_phone_eight_services",
+  "phone_format": "电话：{phone}",
+  "phone_position": "center",
+  "service_words": [
+    "商K预定",
+    "豪华包厢",
+    "欢聚时光",
+    "商务聚会",
+    "本地商务",
+    "公司团建",
+    "缤纷果盘",
+    "丰富酒水"
+  ],
+  "service_layout": "four_by_two",
+  "preserve_raw_dimensions": true,
+  "signboard_required": false,
+  "require_actual_overlay_vision": true,
+  "never_promote_rejected_raw": true
+}

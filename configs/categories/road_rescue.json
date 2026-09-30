@@ -1,0 +1,233 @@
+{
+  "schema_version": 1,
+  "category_id": "road_rescue",
+  "category_name": "汽车救援",
+  "business_logic_summary": "道路救援继续使用项目现有 road_rescue 业务提示词池；本配置只登记 1 首图 + 1 三拼图 + 3 详情图的交付结构、本地叠字服务词和库存防同质化结构规则。",
+  "scene_types": {},
+  "service_items": [
+    "汽车救援",
+    "搭电救援",
+    "拖车服务",
+    "补胎换胎",
+    "送油救援",
+    "困境救援",
+    "地库救援",
+    "车辆救援",
+    "高速救援",
+    "城市路救援"
+  ],
+  "service_buttons": [
+    "汽车救援",
+    "搭电救援",
+    "拖车服务",
+    "补胎换胎",
+    "送油救援",
+    "困境救援",
+    "地库救援",
+    "车辆救援",
+    "高速救援",
+    "城市路救援"
+  ],
+  "image_group_structure": {
+    "group_schema": "road_rescue_v3_1cover_1triptych_3details",
+    "structure_version": "road_rescue_v3_1cover_1triptych_3details",
+    "generation_mode": "independent_triptych_panels",
+    "cover_count": 1,
+    "triptych_count": 1,
+    "triptych_panel_count": 3,
+    "detail_count": 3,
+    "total_per_group": 5,
+    "generation_unit_count": 7,
+    "service_roles_per_group": 6,
+    "delivery_roles": [
+      "cover",
+      "triptych",
+      "detail",
+      "detail",
+      "detail"
+    ],
+    "generation_roles": [
+      "cover",
+      "triptych_panel",
+      "triptych_panel",
+      "triptych_panel",
+      "detail",
+      "detail",
+      "detail"
+    ],
+    "detail_roles": [
+      "泥巴脱困",
+      "拖车救援",
+      "地下车库救援",
+      "搭电救援",
+      "雪地救援",
+      "送油救援",
+      "事故拖车",
+      "换胎救援"
+    ],
+    "service_role_pool": [
+      "泥巴脱困",
+      "拖车救援",
+      "地下车库救援",
+      "搭电救援",
+      "雪地救援",
+      "送油救援",
+      "事故拖车",
+      "换胎救援"
+    ],
+    "raw_generation_size": "1024x1536",
+    "height_profiles": [
+      {
+        "id": "height_1408",
+        "width": 1024,
+        "height": 1408
+      },
+      {
+        "id": "height_1472",
+        "width": 1024,
+        "height": 1472
+      },
+      {
+        "id": "height_1536",
+        "width": 1024,
+        "height": 1536
+      }
+    ],
+    "height_assignment": "按 group_index 轮换；同组 5 个交付文件宽高一致。",
+    "triptych_layouts": [
+      {
+        "id": "stacked_equal",
+        "name": "上中下等高三格",
+        "panels": [
+          {
+            "panel_index": 1,
+            "x": 0.0,
+            "y": 0.0,
+            "width": 1.0,
+            "height": 0.333333
+          },
+          {
+            "panel_index": 2,
+            "x": 0.0,
+            "y": 0.333333,
+            "width": 1.0,
+            "height": 0.333334
+          },
+          {
+            "panel_index": 3,
+            "x": 0.0,
+            "y": 0.666667,
+            "width": 1.0,
+            "height": 0.333333
+          }
+        ]
+      },
+      {
+        "id": "top_feature_bottom_pair",
+        "name": "上方大图下方双格",
+        "panels": [
+          {
+            "panel_index": 1,
+            "x": 0.0,
+            "y": 0.0,
+            "width": 1.0,
+            "height": 0.56
+          },
+          {
+            "panel_index": 2,
+            "x": 0.0,
+            "y": 0.56,
+            "width": 0.5,
+            "height": 0.44
+          },
+          {
+            "panel_index": 3,
+            "x": 0.5,
+            "y": 0.56,
+            "width": 0.5,
+            "height": 0.44
+          }
+        ]
+      },
+      {
+        "id": "top_pair_bottom_feature",
+        "name": "上方双格下方大图",
+        "panels": [
+          {
+            "panel_index": 1,
+            "x": 0.0,
+            "y": 0.0,
+            "width": 0.5,
+            "height": 0.44
+          },
+          {
+            "panel_index": 2,
+            "x": 0.5,
+            "y": 0.0,
+            "width": 0.5,
+            "height": 0.44
+          },
+          {
+            "panel_index": 3,
+            "x": 0.0,
+            "y": 0.44,
+            "width": 1.0,
+            "height": 0.56
+          }
+        ]
+      }
+    ],
+    "triptych_layout_assignment": "每种布局连续使用三组；三种布局形成九组循环，每个九组循环覆盖三种高度乘三种布局的九种组合。",
+    "triptych_gutter_px": 8
+  },
+  "negative_prompt": [
+    "家电维修",
+    "管道疏通",
+    "开锁换锁",
+    "室内家电设备",
+    "欧美道路",
+    "3D渲染",
+    "插画",
+    "可读车牌",
+    "二维码",
+    "水印",
+    "乱码文字"
+  ],
+  "anti_homogenization": {
+    "target_mode": {
+      "enabled": true,
+      "version": "road_rescue_realism_target_v1",
+      "future_only": true,
+      "required_major_axes": [
+        "storefront_cluster",
+        "camera_position",
+        "vehicle_visibility",
+        "worker_action_or_presence",
+        "reality_anchor"
+      ],
+      "adjacent_repeat_forbidden": [
+        "same_camera_plus_vehicle_visibility_plus_reality_anchor"
+      ],
+      "note": "天气只在道路救援合法场景中轮换，不得作为所有本地服务类目的通用核心变量。"
+    },
+    "source": "pipe_unclogging_v2_inventory_fingerprint_rules",
+    "target_available_groups": 30,
+    "deduplicate_within_project_history": true,
+    "fingerprints": [
+      "file_sha256",
+      "rgb_sha256",
+      "scene_phash64",
+      "scene_dhash256"
+    ],
+    "variation_axes": [
+      "final_height",
+      "triptych_layout",
+      "six_distinct_rescue_roles",
+      "storefront_variant",
+      "road_location",
+      "weather",
+      "camera_view",
+      "vehicle_policy"
+    ]
+  }
+}

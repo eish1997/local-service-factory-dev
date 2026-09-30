@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "shared": {
+    "cover": [],
+    "detail": []
+  },
+  "projects": {
+    "road_rescue": {
+      "cover": [],
+      "detail": []
+    },
+    "lock_service": {
+      "cover": [],
+      "detail": []
+    },
+    "home_appliance_repair": {
+      "cover": [],
+      "detail": []
+    },
+    "pipe_unclogging": {
+      "cover": [],
+      "detail": []
+    },
+    "pet_transport": {
+      "cover": [],
+      "detail": []
+    },
+    "truck_rescue": {
+      "cover": [],
+      "detail": []
+    },
+    "ktv": {
+      "cover": [],
+      "detail": []
+    },
+    "business_ktv": {
+      "cover": [],
+      "detail": []
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-27",
+  "status_definitions": {
+    "verified": "已完成文档核对和本项目实际接口测试",
+    "config_compatible": "配置形式兼容，但尚未完成本项目实际出图测试",
+    "partial": "仅部分要求已确认，使用前仍需适配或验证",
+    "unavailable": "已确认不满足本项目要求",
+    "retired": "曾支持但已停止维护或使用"
+  },
+  "providers": [
+    {
+      "id": "openai-official",
+      "name": "OpenAI 官方",
+      "type": "official",
+      "status": "verified",
+      "website": "[本地信息不发布]",
+      "docs_url": "[本地信息不发布]",
+      "base_url": "[本地信息不发布]",
+      "authentication": "Bearer API Key",
+      "image_models": [
+        "gpt-image-2"
+      ],
+      "verified_features": [
+        "OpenAI Python SDK",
+        "图片生成接口",
+        "base64图片返回",
+        "断点续跑"
+      ],
+      "known_limitations": [
+        "实际可用模型、尺寸和费用以账号与官方最新文档为准"
+      ],
+      "verification_method": "官方文档与项目适配验证",
+      "last_verified": "2026-07-04",
+      "details_file": "providers/openai-official.md"
+    },
+    {
+      "id": "tinysnow",
+      "name": "TinySnow",
+      "type": "relay",
+      "status": "partial",
+      "website": "[本地信息不发布]",
+      "docs_url": "[本地信息不发布]",
+      "base_url": "[本地信息不发布]",
+      "authentication": "Bearer API Key",
+      "image_models": [
+        "gpt-image-2",
+        "gpt-image-2.5-flare",
+        "gpt-image-2-4k"
+      ],
+      "verified_features": [
+        "文档声明OpenAI Python SDK兼容",
+        "/v1/images/generations",
+        "b64_json或URL返回",
+        "单次n为1至10",
+        "实测gpt-image-2.5-flare文生图，medium、1024x1536、n=1，返回可解码图片",
+        "2026-09-27新Key只读模型列表包含gpt-image-2-4k",
+        "2026-09-27 gpt-image-2-4k/medium/2560x3840返回2352x3520及2336x3520 PNG，原响应保全"
+      ],
+      "known_limitations": [
+        "完整模型/尺寸/费用表未独立核实",
+        "gpt-image-2.5-flare仅验证medium、1024x1536、n=1；实际后端模型身份无法独立验证",
+        "gpt-image-2-4k的medium/2560x3840实测未按请求尺寸返回；槽1观察2352x3520，槽2—10观察2336x3520，不保证固定像素/3840长边4K，差异原因未确认；用户已接受两种尺寸，工厂仅通过任务绑定的显式双尺寸契约处理"
+      ],
+      "verification_method": "2026-09-17 gpt-image-2.5-flare/medium/1024x1536单图实测：槽1、2、3、6、7、8、9、10成功；槽4、5返回403。每槽1次且无重试；实际后端身份未独立验证。另有历史gpt-image-2 KTV出图记录。",
+      "last_verified": "2026-09-17",
+      "details_file": "providers/tinysnow.md"
+    }
+  ]
+}

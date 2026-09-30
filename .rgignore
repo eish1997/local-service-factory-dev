@@ -1,0 +1,7 @@
+# Large generated/runtime artifacts. Inspect these only through exact, bounded paths.
+.runtime/
+output/
+prompts/category_batches/**/production/
+prompts/category_batches/**/*.jsonl
+projects/*/groups/*.jsonl
+projects/*/groups/**/*.jsonl

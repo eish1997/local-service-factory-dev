@@ -1,0 +1,78 @@
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+body.compact {
+  width: 100vw;
+  height: 38px;
+  background: #0c0d0e;
+}
+
+body.compact main,
+body.compact #window-minimize,
+body.compact #window-maximize,
+body.compact #window-close {
+  display: none;
+}
+
+body.compact .titlebar {
+  height: 38px;
+  border: 0;
+  box-shadow: none;
+}
+
+body.compact .title-status {
+  width: auto;
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding-left: 10px;
+  gap: 8px;
+}
+
+body.compact .title-status strong {
+  color: #f2f4ef;
+  font-size: 11px;
+  flex: 0 0 auto;
+}
+
+body.compact .title-status span {
+  color: #d6d9d2;
+  font-size: 8px;
+  font-weight: 650;
+  padding: 3px 6px;
+  border: 0;
+  border-radius: 5px;
+  background: #20231f;
+}
+
+body.compact #title-progress {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.compact #title-images { display: none; }
+
+body.compact .window-actions {
+  display: flex;
+}
+
+body.compact .titlebar button {
+  width: 31px;
+  height: 38px;
+  font-size: 12px;
+}
+
+body.compact #compact-toggle,
+body.compact #open-folder {
+  font-size: 14px;
+}

@@ -1,0 +1,8 @@
+interface:
+
+  display_name: "发布项目规则"
+
+  short_description: "检查并发布项目规则和提示词数据，让使用端自动同步最新内容"
+
+  default_prompt: "使用 $factory-release-rules 检查并发布当前图片工厂的项目规则和提示词数据更新。"
+

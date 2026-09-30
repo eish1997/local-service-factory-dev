@@ -1,0 +1,88 @@
+/* End-to-end shared workflow, isolated disk and simulated image responses only. */
+const {app,BrowserWindow,ipcMain,dialog,shell}=require('electron');
+const fs=require('fs'),path=require('path'),assert=require('node:assert/strict'),{spawnSync}=require('child_process');
+const root=path.resolve(__dirname,'../..'),fixture=fs.mkdtempSync(path.join(root,'.runtime/shared-ui-'));
+const base=process.argv.includes('--packaged')?'../dist-shared-tasks/win-unpacked/resources/app.asar':'..';
+const {runTasks}=require(`${base}/tasks`);
+fs.writeFileSync(path.join(fixture,'factory.py'),`import sys,io,json\nfrom pathlib import Path\nsys.path.insert(0,${JSON.stringify(root)})\nfrom tools import task_library as lib,variable_catalog as vc\nconfigs={p['id']:lib.business_config(p['id']) for p in vc.projects()}\nlib.ROOT=Path(__file__).parent\nlib.business_config=lambda c:configs[c]\nlib.confirmed_phone=lambda c:'{已确认电话}'\nlib.api_config=lambda:{'model':'offline-test','api_size':'1024x1536','quality':'medium','output_format':'png'}\nlib.readiness=lambda *a:([],[1,2,3,4])\nimport factory\nif len(sys.argv)>2 and sys.argv[2]=='worker':\n from tools import task_worker\n from PIL import Image,ImageDraw\n import random\n def generate(client,config,prompt):\n  rng=random.Random(prompt);im=Image.new('RGB',(1024,1536),tuple(rng.randrange(255) for _ in range(3)));draw=ImageDraw.Draw(im);draw.text((20,20),'OFFLINE UI TEST',fill='white');out=io.BytesIO();im.save(out,format='PNG');return out.getvalue()\n args=factory.build_parser().parse_args();raise SystemExit(task_worker.run(args.category,args.batch,args.task,generate=generate,clients=[(1,object()),(2,object())]))\nfactory.main()\n`);
+function command(op,request){const result=spawnSync('python',['-X','utf8',path.join(fixture,'factory.py'),'tasks',op],{input:JSON.stringify(request),encoding:'utf8',windowsHide:true,cwd:root});assert.equal(result.status,0,result.stdout+result.stderr);return JSON.parse(result.stdout).data;}
+// Agent entry creates the same disk batch the dashboard will execute.
+const external=fixture+'-assets';fs.mkdirSync(external);command('assets-save',{path:external});
+const batch=command('assemble',{category:'pet_transport',count:100,seed:1401,phone:'{已确认电话}',source:'agent'});
+fs.mkdirSync(path.join(fixture,'projects'),{recursive:true});fs.mkdirSync(path.join(fixture,'output'),{recursive:true});fs.copyFileSync(path.join(root,'projects/registry.json'),path.join(fixture,'projects/registry.json'));
+process.env.ROAD_RESCUE_FACTORY_HOME=fixture;process.env.ROAD_RESCUE_DASHBOARD_TEST='1';
+require(`${base}/main`);
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+async function run(){await app.whenReady();const win=BrowserWindow.getAllWindows()[0];win.show();win.focus();
+ const js=s=>win.webContents.executeJavaScript(s).catch(e=>{throw Error(s+' : '+e.message);});
+ async function until(code){for(let n=0;n<400;n++){if(await js(code))return;await pause(100);}throw Error('timeout '+code+' '+await js('document.getElementById("task-message")?.textContent'));}
+ await until('document.querySelectorAll("#project-tabs button").length===8');
+ await js(`document.querySelector('#project-tabs [data-project="pet_transport"]').click()`);
+ await until(`document.querySelectorAll('#task-batch option').length>1`);
+ await js(`document.getElementById('task-batch').value=${JSON.stringify(batch.id)};document.getElementById('task-batch').dispatchEvent(new Event('change'))`);
+ await until('document.querySelectorAll(".task-card").length===100');
+ assert.equal(await js('getComputedStyle(document.getElementById("gallery-panel")).display'), 'grid');
+ assert.equal(await js('document.querySelector(".project-column").getBoundingClientRect().right <= document.querySelector(".batch-column").getBoundingClientRect().left'),true);
+ assert.equal(await js('document.querySelector(".batch-column").getBoundingClientRect().right <= document.querySelector(".content-column").getBoundingClientRect().left'),true);
+ assert.equal(await js('document.getElementById("task-start").disabled'),true);
+ await js(`document.querySelector('.task-card details').open=true;for(const g of [1,3])document.querySelector('.task-card[data-group="'+g+'"] input').click();document.getElementById('task-plan').click()`);
+ await until('!document.getElementById("task-start").disabled');
+ assert.ok(await js('document.getElementById("task-plan-info").textContent.includes("待请求 12 张")'));
+ await until('document.querySelectorAll(".task-prompts pre").length===6');
+ const shown=await js('document.querySelector(".task-prompts pre").textContent');
+ assert.equal(shown,command('view',{category:'pet_transport',batch:batch.id,offset:0,limit:1}).groups[0].units[0].prompt);
+ await js('document.getElementById("task-start").click()');
+ await until('document.querySelectorAll(".task-image img").length===12');
+ assert.equal(await js(`document.querySelectorAll('.task-card[data-group="2"] img').length`),0);
+ assert.equal(await js('document.querySelector(".task-card details").open'),true);
+ const data=command('view',{category:'pet_transport',batch:batch.id,limit:3});
+ await until('document.getElementById("title-progress").textContent.startsWith("12/12")');
+ assert.equal(data.tasks[0].requests_used,12);assert.deepEqual(data.tasks[0].groups,[1,3]);
+ assert.equal(command('resume',{category:'pet_transport',batch:batch.id,task:data.tasks[0].id,source:'agent'}).requests_used,12);
+ await js('document.getElementById("task-filter").value="review";document.getElementById("task-filter").dispatchEvent(new Event("change"))');
+ assert.equal(await js('document.querySelectorAll(".task-card").length'),2);
+ await js('document.getElementById("task-filter").value="";document.getElementById("task-filter").dispatchEvent(new Event("change"))');
+ // Exercise native directory chooser boundaries with isolated destinations.
+ const exports=path.join(fixture,'exports');fs.mkdirSync(exports);let opened='';
+ shell.openPath=async p=>{opened=p;return '';};
+ dialog.showOpenDialog=async()=>({canceled:false,filePaths:[exports]});
+ await js('document.getElementById("task-package").click()');
+ await until('document.getElementById("task-message").textContent.includes("已打包 2 组")');
+ assert.equal(fs.readdirSync(exports).filter(n=>n.endsWith('.zip')).length,1);
+ await js(`document.querySelector('.task-card[data-group="1"]').dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,clientX:500,clientY:300}));[...document.querySelectorAll('.context-menu button')].find(b=>b.textContent==='打开对应文件夹').click()`);
+ for(let i=0;i<100&&!opened;i++)await pause(100);
+ assert.ok(opened.startsWith(external));assert.ok(opened.endsWith('group_0001'));
+ const nextAssets=fixture+'-next-assets';fs.mkdirSync(nextAssets);
+ dialog.showOpenDialog=async()=>({canceled:false,filePaths:[nextAssets]});
+ await js('document.getElementById("open-folder").click()');
+ await until('document.getElementById("open-folder").title.includes("-next-assets")');
+ assert.equal(command('assets-view',{}).path,nextAssets);
+ assert.equal(await js('window.roadRescue.tasks("assets-save",{path:"forbidden"}).then(()=>false,()=>true)'),true);
+ // Dashboard assembly is immediately readable through the Agent command.
+ assert.equal(await js('document.getElementById("task-phone").value'),'');
+ await js('document.getElementById("task-new").click();document.getElementById("task-assemble").click()');
+ assert.equal(await js('document.getElementById("task-create-dialog").open'),true);
+ assert.equal(await js('document.getElementById("task-phone").validity.valueMissing'),true);
+ assert.equal(command('batches',{category:'pet_transport'}).length,1);
+ await js(`document.getElementById('task-count').value='1';document.getElementById('task-phone').value='{已确认电话}';document.getElementById('task-assemble').click()`);
+ await until('document.querySelectorAll(".task-card").length===1');
+ const newBatch=await js('document.getElementById("task-batch").value');
+ assert.equal(command('view',{category:'pet_transport',batch:newBatch,limit:1}).groups.length,1);
+ await js('document.getElementById("variables-page").click()');await until('!document.getElementById("variables-panel").hidden');
+ await until('document.querySelectorAll("#variable-types button").length>0');
+ assert.equal(await js('document.getElementById("variable-project").value'),'pet_transport');
+ assert.equal(await js('document.getElementById("job-monitor").parentElement.tagName'),'MAIN');
+ assert.equal(await js('document.getElementById("variable-types").parentElement.className'),'batch-column');
+ assert.equal(await js('document.getElementById("variables-panel").parentElement.className'),'content-column');
+ assert.equal(await js('document.querySelector(".project-column").getBoundingClientRect().width>0'),true);
+ fs.writeFileSync(path.join(root,'.runtime/shared-variables-ui.png'),(await win.webContents.capturePage()).toPNG());
+ assert.equal(await js('Boolean(document.getElementById("variable-save"))'),false);
+ await js('document.getElementById("gallery-page").click();document.getElementById("compact-toggle").click()');await until('document.body.classList.contains("compact")');
+ await js('document.getElementById("compact-toggle").click()');await until('!document.body.classList.contains("compact")');
+ await js(`document.getElementById('task-batch').value=${JSON.stringify(batch.id)};document.getElementById('task-batch').dispatchEvent(new Event('change'))`);
+ await until('document.querySelectorAll(".task-card").length===100');
+ await js("document.querySelector('.content-scroll').scrollTop=0");
+ fs.writeFileSync(path.join(root,'.runtime/shared-tasks-ui.png'),(await win.webContents.capturePage()).toPNG());
+ fs.writeFileSync(path.join(root,'.runtime/shared-tasks-ui-result.json'),JSON.stringify({ok:true,packaged:process.argv.includes('--packaged'),groups:100,selectedGroups:[1,3],simulatedRequests:12,agentToDashboard:true,dashboardToAgent:true,actualPaidRequests:0,fixture}));app.exit(0);
+}
+run().catch(e=>{fs.writeFileSync(path.join(root,'.runtime/shared-tasks-ui-result.json'),JSON.stringify({ok:false,error:e.stack,fixture}));app.exit(1);});

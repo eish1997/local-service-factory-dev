@@ -1,0 +1,27 @@
+[hidden] { display:none!important; }
+.page-tabs { display:flex; gap:8px; padding:10px 0; position:sticky; top:0; z-index:5; background:#0c0d0e; margin:0; }
+.page-tabs button,#variables-panel button { cursor:pointer; border:1px solid #cbd5e1; border-radius:6px; padding:7px 11px; background:#fff; color:#243447; }
+.page-tabs button.selected { background:#2563eb; color:white; }
+.compact .page-tabs,.compact #variables-panel { display:none!important; }
+#variables-panel { background:#f8fafc; border-radius:10px; padding:12px; color:#243447; font-size:14px; }
+.variable-toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; padding:12px; background:#f1f5f9; border-radius:8px; position:sticky; top:52px; z-index:3; }
+#variables-panel input,#variables-panel select { color:#172b4d; background:white; border:1px solid #cbd5e1; border-radius:5px; padding:7px; font:inherit; max-width:100%; box-sizing:border-box; }
+#variable-search { flex:1; min-width:160px; }
+.variable-guidance { padding:10px 12px; background:#e8f0ff; border-radius:6px; }
+#variable-status { padding:8px 12px; margin:4px 0; color:#475569; }
+#variable-status.error { color:#b91c1c; background:#fef2f2; }
+.variable-layout { display:grid; grid-template-columns:220px minmax(0,1fr); gap:14px; min-height:420px; }
+#variable-types { max-height:70vh; overflow:auto; background:#f1f5f9; padding:8px; border-radius:8px; }
+#variable-types button { display:block; width:100%; text-align:left; margin:0 0 5px; }
+#variable-types button.active { border-color:#2563eb; background:#dbeafe; }
+#variable-content { padding:8px; min-width:0; }
+.variable-card { border:1px solid #dbe3ee; border-radius:8px; padding:12px; margin:10px 0; background:white; overflow-wrap:anywhere; }
+.variable-card h4 { margin:0 0 6px; }
+.variable-muted { color:#64748b; font-size:12px; white-space:pre-wrap; overflow-wrap:anywhere; }
+#variables-panel summary { cursor:pointer; color:#2563eb; line-height:1.6; }
+.variable-values { display:grid; grid-template-columns:minmax(80px,140px) minmax(0,1fr); gap:8px 12px; line-height:1.7; }
+.variable-values dt { color:#64748b; overflow-wrap:anywhere; }
+.variable-values dd { margin:0; white-space:pre-wrap; }
+.variable-values .variable-values { display:block; }
+.variable-values ul { margin:0; padding-left:20px; }
+@media(max-width:700px) { .variable-layout { grid-template-columns:150px minmax(0,1fr); } .variable-values { grid-template-columns:1fr; } }

@@ -1,0 +1,8 @@
+interface:
+
+  display_name: "发布新版安装包"
+
+  short_description: "构建独立运行的看板安装包，验证更新并发布到 GitHub"
+
+  default_prompt: "使用 $factory-release-installer 为当前图片工厂构建、验证并发布新版 Windows 安装包。"
+

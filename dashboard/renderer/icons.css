@@ -1,0 +1,35 @@
+/* Original Lucide 0.468.0 SVG assets; see vendor/lucide/LICENSE. */
+.ui-icon { display:inline-block; width:18px; height:18px; flex:0 0 18px; background:currentColor; mask:var(--icon) center/contain no-repeat; -webkit-mask:var(--icon) center/contain no-repeat; pointer-events:none; }
+.icon-square-check { --icon:url("vendor/lucide/square-check.svg"); }
+.icon-square { --icon:url("vendor/lucide/square.svg"); }
+.icon-info { --icon:url("vendor/lucide/info.svg"); }
+.icon-play { --icon:url("vendor/lucide/play.svg"); }
+.icon-pause { --icon:url("vendor/lucide/pause.svg"); }
+.icon-rotate-ccw { --icon:url("vendor/lucide/rotate-ccw.svg"); }
+.icon-refresh-cw { --icon:url("vendor/lucide/refresh-cw.svg"); }
+.icon-plus { --icon:url("vendor/lucide/plus.svg"); }
+.icon-x { --icon:url("vendor/lucide/x.svg"); }
+.icon-folder-open { --icon:url("vendor/lucide/folder-open.svg"); }
+.icon-minimize-2 { --icon:url("vendor/lucide/minimize-2.svg"); }
+.icon-maximize-2 { --icon:url("vendor/lucide/maximize-2.svg"); }
+.icon-minus { --icon:url("vendor/lucide/minus.svg"); }
+.icon-step-forward { --icon:url("vendor/lucide/step-forward.svg"); }
+.icon-chevron-down { --icon:url("vendor/lucide/chevron-down.svg"); }
+.icon-chevron-right { --icon:url("vendor/lucide/chevron-right.svg"); }
+
+.content-toolbar button,.icon-button,.window-actions button,#task-create-close,#variable-reload { display:inline-flex; align-items:center; justify-content:center; padding:0; width:32px; height:32px; flex-shrink:0; }
+.window-actions .ui-icon { width:16px; height:16px; flex-basis:16px; }
+.window-actions button { color:#a3abb0; }
+.content-toolbar button:disabled { opacity:.38; }
+.select-wrap { position:relative; display:inline-flex; align-items:center; min-width:0; }
+.select-wrap select { appearance:none; padding-right:24px!important; width:100%; }
+.select-wrap>.ui-icon { position:absolute; right:4px; width:14px; height:14px; pointer-events:none; color:#91969c; }
+.task-card summary,#variables-panel summary { list-style:none; }
+.task-card summary::-webkit-details-marker,#variables-panel summary::-webkit-details-marker { display:none; }
+.task-card summary::before,#variables-panel summary::before { content:""; display:inline-block; width:14px; height:14px; margin-right:7px; vertical-align:-2px; background:currentColor; mask:url("vendor/lucide/chevron-right.svg") center/contain no-repeat; }
+.task-card details[open]>summary::before,#variables-panel details[open]>summary::before { transform:rotate(90deg); }
+.task-job button { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; }
+
+.icon-key-round { --icon:url("vendor/lucide/key-round.svg"); }
+
+.icon-archive { --icon:url("vendor/lucide/archive.svg"); }

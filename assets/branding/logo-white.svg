@@ -1,0 +1,9 @@
+<svg xmlns="htt<local-path>" width="512" height="512" viewBox="0 0 512 512" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">方正 · 图片工厂</title>
+  <desc id="desc">三层错位排列的方形图像，代表批量生图。深色背景使用的纯白版本。</desc>
+  <g fill="#FFFFFF">
+    <path d="M250 70 410 121V354L372 342V150L250 111Z"/>
+    <path d="M176 112 336 163V396L298 384V192L176 153Z"/>
+    <path d="M102 154 262 205V438L102 387Z"/>
+  </g>
+</svg>

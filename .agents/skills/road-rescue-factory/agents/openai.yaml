@@ -1,0 +1,5 @@
+interface:
+  display_name: "道路救援图片工厂"
+  short_description: "生成、审计并安全批量生产真实中国道路救援纪实图片和提示词"
+  default_prompt: "使用 $road-rescue-factory 检查当前状态并推荐下一步。"
+
