@@ -35,7 +35,7 @@
 | 恢复入口 | 原 ASAR 备份字节一致；backup-recovery-identity.json 证明 previous-app 中真实 1.4.17 可启动并初始化；已验证安装器保留 |
 | 失败保留 | consumer-offline-evidence.json：实际 CLI 断网失败、指针不变；既有精确签名/损坏下载/兼容回退测试通过 |
 | 下一版本 | updates.test.js 共 8 项通过，含合成 1.4.19 发现；没有为了验收发布空版本 |
-| Git 索引 | 规则发布后受保护同步实际快进至 50d12f50；后续维护提交保持 release-index.json 原字节 |
+| Git 索引 | 规则发布后受保护同步实际快进至 50d12f50；维护提交 2b0d10f 再次推送后，API 验证 release-index.json 原字节保持（blob 662edf3cd502acc9c690069fbcdad7c85fe274ab） |
 | 旧入口说明 | 旧软件/规则 README 增加统一入口，保留全文和历史附件；旧仓未归档、未删除 |
 
 ## 验证隔离偏差与修复
