@@ -1,6 +1,6 @@
-# 统一仓库开发候选（2026-11-14）
+# 统一仓库上线（2026-11-14）
 
-当前改动与验证以 development/UNIFIED_REPOSITORY_EXECUTION_PLAN.md 为唯一台账；验收矩阵见 development/MIGRATION_VALIDATION.md，上线清单见 development/REPOSITORY_MIGRATION.md。尚未构建、公开、推送或发布；旧分发入口保持。
+软件 1.4.18、新仓规则 1794662868654979100 已发布，旧仓同版本过渡包保留。构建来源 207df626，原签名信任链保持。实际用户级旧版升级、新源匿名同步及恢复入口已验证；安装隔离偏差与恢复事实、验证范围见 development/M5_M6_RELEASE_VALIDATION.md。唯一台账为 development/UNIFIED_REPOSITORY_EXECUTION_PLAN.md。旧仓未归档/删除，不声称所有用户已升级。
 
 # 开发仓库当前入口
 

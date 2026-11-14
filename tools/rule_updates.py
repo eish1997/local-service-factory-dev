@@ -364,7 +364,7 @@ def publish(request):
     if current_sha:body['sha']=current_sha
     changed=protocol.github('PUT',repo+'/contents/release-index.json',body)
     write(local()/'remote_head.json',{'repository':repository_identity(cfg),'sha':changed['content']['sha'],'files':payload['files'],'version':version})
-    return {'published':True,'version':version,'url':release['html_url']}
+    return {'published':True,'version':version,'url':f'https://github.com/{cfg["owner"]}/{cfg["rules_repo"]}/releases/tag/rules-{version}'}
 
 def rollback(request):
     # Repackage a previously verified local release under a new increasing version.

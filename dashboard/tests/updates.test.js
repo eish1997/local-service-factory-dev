@@ -40,3 +40,12 @@ test('signed rules manifest at Latest never starts software download',async()=>{
 test('updater version must match the signed manifest',async()=>{
  const f=fixture();f.updater.checkForUpdates=async()=>({isUpdateAvailable:true,updateInfo:{version:'8.0.0'}});await f.service.check();assert.equal(f.downloads(),0);assert.equal(f.service.getState().state,'error');
 });
+
+test('migrated software accepts a signed future software version without publishing one',async()=>{
+ const f=fixture();f.app.getVersion=()=> '1.4.18';
+ f.envelope.payload.version='1.4.19';f.sign();
+ f.updater.checkForUpdates=async()=>({isUpdateAvailable:true,updateInfo:{version:'1.4.19'}});
+ f.updater.downloadUpdate=async()=>{await Promise.all(f.updater.listeners('update-downloaded').map(fn=>fn({version:'1.4.19',downloadedFile:f.binary})));};
+ await f.service.check();assert.equal(f.service.getState().state,'ready');
+ assert.equal(f.service.getState().target_version,'1.4.19');assert.equal(f.installs(),0);
+});

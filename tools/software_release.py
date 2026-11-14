@@ -148,4 +148,4 @@ def publish(request):
     if target_repo!=cfg['software_repo']:verify_unified_channels(cfg,plan,payload,envelope)
     protocol.github('PATCH',repo+'/releases/'+str(release['id']),{'make_latest':'true'})
     protocol.github('DELETE',repo+'/git/refs/tags/software-publish-lock')
-    return {'published':True,'version':version,'url':release['html_url']}
+    return {'published':True,'version':version,'url':f'https://github.com/{cfg["owner"]}/{target_repo}/releases/tag/v{version}'}

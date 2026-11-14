@@ -96,6 +96,7 @@ def checked_payload(envelope, plan, config, protocol):
     name = f"LocalServiceFactory-{plan['version']}-setup.exe"
     if (payload.get('kind') != 'software' or payload.get('version') != plan['version']
             or payload.get('files') != plan['files']
+            or (plan.get('source_sha') and payload.get('source_sha') != plan['source_sha'])
             or payload.get('sha256') != plan['files'][name]):
         raise ValueError('Signed manifest differs from this saved release plan')
     return payload
@@ -135,7 +136,13 @@ def main():
     if destination == folder:
         raise ValueError('Public download evidence must be separate from local build artifacts')
     destination.mkdir(parents=True, exist_ok=True)
-    base = protocol.public_url(f"http<local-path>")
+    target = plan.get('target', 'unified')
+    repo = config['software_repo']
+    if target == 'legacy-software' and config['owner'] == 'eish1997' and repo == 'local-service-factory-dev':
+        repo = 'local-service-factory-releases'
+    elif target != 'unified':
+        raise ValueError('Unexpected publication target')
+    base = protocol.public_url(f"https://github.com/{config['owner']}/{repo}/releases/download/v{version}/")
     proxy = urllib.request.getproxies().get('https') or urllib.request.getproxies().get('http')
     manifest = destination / 'software-manifest.json'
     if not manifest.is_file():
