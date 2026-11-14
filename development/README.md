@@ -1,14 +1,13 @@
 # 在另一台电脑开发
 
-统一仓库为 `eish1997/local-service-factory-dev`，源码、软件和规则共仓但独立发布。当前仍私有，迁移上线待执行。提交源码不构建、不发布、不生图。流程与完整上线检查见 [迁移说明](REPOSITORY_MIGRATION.md)。
+统一仓库为 `eish1997/local-service-factory-dev`，源码、软件和规则共仓但独立发布。仓库已公开，软件与规则迁移已完成，旧仓保留兼容过渡入口。提交源码不构建、不发布、不生图。流程与完整上线检查见 [迁移说明](REPOSITORY_MIGRATION.md)。
 
 ## 首次克隆
 
-安装 Git、Python 3.11 或更新版本、Node.js 22 或更新版本，并在本机登录拥有私有仓库权限的 GitHub 账号。
+安装 Git、Python 3.11 或更新版本、Node.js 22 或更新版本，公开克隆不需要 GitHub 登录；推送或发布时才需要对应写权限。
 
 ```powershell
-gh auth login
-gh repo clone eish1997/local-service-factory-dev
+git clone https://github.com/eish1997/local-service-factory-dev.git
 cd local-service-factory-dev
 py -3.11 -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt

@@ -1,6 +1,6 @@
-## 统一仓库约定（开发候选）
+## 统一仓库约定
 
-源码、软件 v 标签 Release、规则 rules 标签 Release 统一使用 eish1997/local-service-factory-dev，软件与规则独立更新，规则不抢 Latest。当前尚未公开或迁移发布；旧仓链接保留为历史和过渡入口。开发不授权构建/发布。
+源码、软件 v 标签 Release、规则 rules 标签 Release 统一使用 eish1997/local-service-factory-dev，软件与规则独立更新，规则不抢 Latest。统一仓库已公开并完成迁移发布；旧仓链接保留为历史和过渡入口。开发不授权构建/发布。
 
 以 [迁移与上线清单](../development/REPOSITORY_MIGRATION.md) 和 [执行台账](../development/UNIFIED_REPOSITORY_EXECUTION_PLAN.md) 为准。release-index.json 是发布维护的签名索引，普通源码同步不得覆盖/删除；规则发布后 fetch 并保留远端索引提交，禁止自动 stash/reset/强推。
 
