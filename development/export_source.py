@@ -21,7 +21,7 @@ def clean_text(text):
     text = rule_updates.PHONE.sub('{已确认电话}', text)
     text = text.replace(str(ROOT).replace('\\', '/'), '<project-root>').replace(str(ROOT), '<project-root>')
     text = text.replace('C:/Users/15128/.codex/skills/', '.agents/skills/')
-    text = re.sub(r'(?i)[A-Z]:[\\/](?:[^\s`"<>\n\r]| [^\s`"<>\n\r])*', '<local-path>', text)
+    text = re.sub(r'(?i)(?<![A-Za-z0-9])[A-Z]:[\\/](?:[^\s`"<>\n\r]| [^\s`"<>\n\r])*', '<local-path>', text)
     return text
 
 
@@ -38,13 +38,17 @@ def main():
     cfg['maintainer_mode'] = True
     (target/'distribution/update-config.json').write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding='utf-8')
 
+    static_binary = {Path('dashboard/branding/logo.png'), Path('dashboard/branding/logo.ico')}
+
     def copy(file):
         rel = file.relative_to(ROOT)
         if any(part in EXCLUDED for part in rel.parts) or file.suffix in {'.log', '.exe', '.zip', '.jsonl', '.pyc'}:
             return
         out = target/rel
         out.parent.mkdir(parents=True, exist_ok=True)
-        if rel.as_posix() in {'dashboard/package-lock.json', 'distribution/requirements-runtime.lock', 'distribution/python-runtime.json'}:
+        if rel in static_binary:
+            out.write_bytes(file.read_bytes())
+        elif rel.as_posix() in {'dashboard/package-lock.json', 'distribution/requirements-runtime.lock', 'distribution/python-runtime.json'}:
             # Dependency integrity hashes may contain phone-like digit runs.
             # These public metadata files must remain byte-identical.
             out.write_bytes(file.read_bytes())
@@ -95,7 +99,7 @@ def main():
 
 这是可迁移的开发源码与 Agent 指引，不含原电脑生产状态、客户资料或私钥。
 先读 AGENTS.md、HELP.md、TASK_WORKFLOW.md、development/README.md。
-项目 skills 位于 .agents/skills/，包括主工厂、安装包发布和规则发布三个独立技能。
+项目 skills 位于 .agents/skills/，包含工厂操作、源码同步、安装包发布和规则发布等独立技能。
 本地规则/代码版本以配置为准，远端版本发布前核对；旧电脑运行记录不能作为新任务授权。
 新任务要求本批次的明确组数与手机号，密钥仅在本机配置。
 发布软件与规则分别使用对应 skill；开发源码 git push 不等于发布软件或规则。
@@ -145,14 +149,15 @@ dashboard/release*/
 ''', encoding='utf-8')
     (target/'README.md').write_text('''# 本地生活服务图片工厂｜开发源码
 
-本仓库用于跨电脑开发；软件安装包、规则数据分别在各自分发仓库。
+本仓库统一维护源码、软件 v 标签与规则 rules 标签发布；两条更新通道独立，源码推送不自动发布。
 先读 [Agent入口](AGENTS.md)、[当前帮助](HELP.md)、[新电脑开发指南](development/README.md)。
-三个项目skill位于 `.agents/skills/`，源码推送不自动触发生图或分发发布。
+项目 skills 位于 `.agents/skills/`，源码推送不自动触发生图或分发发布。
 凭证、客户资料、生成图片、任务历史与发布私钥不进入此仓库。
 ''', encoding='utf-8')
     # Never export current customer phones/keys/history; final credential scan is fail-closed.
     files = [p for p in target.rglob('*') if p.is_file()]
     for file in files:
+        if file.relative_to(target) in static_binary:continue
         if SECRET.search(file.read_text(encoding='utf-8')):
             raise ValueError('Credential-like text in export: '+str(file.relative_to(target)))
     print(json.dumps({'directory': str(target), 'files': len(files), 'private_state_excluded': True}))

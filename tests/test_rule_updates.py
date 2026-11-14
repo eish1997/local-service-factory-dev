@@ -100,18 +100,19 @@ class RuleUpdates(unittest.TestCase):
         self.assertFalse((rules.local()/'active_rules.json').exists())
 
     def test_publish_cas_and_rollback_are_explicit_and_assets_first(self):
+        self.cfg.update(owner='test',rules_repo='rules')
         keyfile=self.home/'test-key.pem';keyfile.write_bytes(self.key.private_bytes(Encoding.PEM,PrivateFormat.PKCS8,NoEncryption()))
         state={'head':None,'uploads':{},'order':[]}
         def github(method,url,body=None,raw=None):
             state['order'].append((method,url))
-            if method=='GET':return state['head']
+            if method=='GET':return {'sha':'a'*40} if '/commits/' in url else state['head'] if '/contents/' in url else None
             if method=='POST' and url.endswith('/releases'):return {'id':1,'upload_url':'https://uploads.github.com/repos/test/rules/releases/1/assets{?name}','html_url':'https://github.com/test/rules/releases/1'}
             if raw is not None:state['uploads'][url.split('name=')[1]]=raw;return {}
             if method=='PUT':state['head']={'sha':'new-head','content':body['content']};return {'content':{'sha':'new-head'}}
             return {}
-        with patch.dict(os.environ,{'FACTORY_RELEASE_KEY_FILE':str(keyfile),'FACTORY_RELEASE_KEY_ID':'test'},clear=True),patch.object(paths,'data_root',return_value=self.home):
+        with patch.dict(os.environ,{'FACTORY_RELEASE_KEY_FILE':str(keyfile),'FACTORY_RELEASE_KEY_ID':'test'},clear=True),patch.object(paths,'data_root',return_value=self.home),patch.object(rules,'release_source_sha',return_value='a'*40):
             paths.installed_rules.cache_clear();plan=rules.release_plan({'version':'200'})
-            with patch.object(protocol,'github',side_effect=github),patch.object(protocol,'download',side_effect=lambda *a:state['uploads']['rules.zip']):
+            with patch.object(protocol,'github',side_effect=github),patch.object(protocol,'download',side_effect=lambda url,*a:state['uploads'][url.rsplit('/',1)[-1]]):
                 result=rules.publish({'version':plan['version'],'authorization':'publish_project_update'})
                 self.assertTrue(result['published']);self.assertEqual(state['order'][-1][0],'PUT')
                 rollback=rules.rollback({'from_version':'200','version':'201','authorization':'publish_project_update'})

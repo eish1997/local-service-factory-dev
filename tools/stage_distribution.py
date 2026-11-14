@@ -48,6 +48,23 @@ def stage_engine(target):
     (provider/'registry.json').write_text(json.dumps(rule_updates.scrub(registry),ensure_ascii=False),encoding='utf-8')
     return target
 
+def source_identity():
+    def git(*args):
+        return subprocess.check_output(['git','-C',str(ROOT),*args],text=True).strip()
+    if git('status','--porcelain','--untracked-files=normal'):
+        raise ValueError('正式暂存需要干净且已提交的源码工作树')
+    sha=git('rev-parse','HEAD')
+    if not re.fullmatch(r'[a-f0-9]{40}',sha):raise ValueError('构建源码 SHA 无效')
+    return sha
+
+
+def record_stage(dest, source_sha):
+    engine=dest/'engine'
+    files={p.relative_to(engine).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
+           for p in sorted(engine.rglob('*')) if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc'}
+    (dest/'stage-provenance.json').write_text(json.dumps({'source_sha':source_sha,'engine_files':files},indent=2),encoding='utf-8')
+
+
 def main():
     if sys.version_info < (3,11):
         raise ValueError('构建需要 Python 3.11 或更新版本，请使用 py -3.11 -m tools.stage_distribution')
@@ -57,6 +74,7 @@ def main():
     args=parser.parse_args()
     if not args.confirm_build:raise ValueError('仅在用户明确要求构建安装包后执行')
     if not re.fullmatch(r'[0-9a-f]{64}',args.python_sha256) or hashlib.sha256(args.python_zip.read_bytes()).hexdigest()!=args.python_sha256:raise ValueError('Python 嵌入包摘要不匹配')
+    source_sha=source_identity()
     dest=args.destination.resolve()
     stage_engine(dest/'engine');runtime=dest/'python';runtime.mkdir()
     with zipfile.ZipFile(args.python_zip) as z:
@@ -76,6 +94,8 @@ def main():
     result=subprocess.run([str(runtime/'python.exe'),'-X','utf8',str(dest/'engine/factory.py'),'tasks','projects'],input='{}',text=True,encoding='utf-8',capture_output=True,
                           env={**os.environ,'FACTORY_DATA_HOME':str(check_home),'PATH':str(runtime),'PYTHONIOENCODING':'utf-8'},cwd=check_home)
     if result.returncode or len(json.loads(result.stdout)['data'])!=len(rule_updates.PROJECTS):raise ValueError('独立运行环境检查失败')
+    if source_identity()!=source_sha:raise ValueError('暂存期间源码提交已变化')
+    record_stage(dest,source_sha)
     print(json.dumps({'engine':str(dest/'engine'),'python':str(runtime),'verified':True}))
 
 if __name__=='__main__':main()

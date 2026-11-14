@@ -117,9 +117,52 @@ def validate_business(folder):
             structure=definition['content_group'];expected=structure.get('generation_unit_count') or structure['cover_count']+structure['detail_count']
             if len(rows)!=expected or any(not r['prompt'].strip() for r in rows):raise ValueError('业务组装验证失败：'+category)
 
+def repository_identity(cfg):
+    return {'owner': cfg['owner'], 'repo': cfg['rules_repo']}
+
+
+def require_repository(record, cfg):
+    if record.get('repository') != repository_identity(cfg):
+        raise ValueError('规则缓存或计划不属于当前仓库；请同步当前仓库并重新生成计划，旧记录保留')
+
+
+def tracked_head(cfg):
+    tracked = local()/'remote_head.json'
+    if not tracked.exists():
+        if cfg['owner']=='eish1997' and cfg['rules_repo']=='local-service-factory-dev':raise ValueError('统一仓库尚无同步基准；首次迁移必须显式 migration_from_legacy')
+        return {'sha': None, 'files': {}, 'repository': repository_identity(cfg)}
+    head = json.loads(tracked.read_text(encoding='utf-8'))
+    require_repository(head, cfg)
+    return head
+
+
+def migration_head(cfg):
+    if os.environ.get('FACTORY_DATA_HOME') or cfg['owner']!='eish1997' or cfg['rules_repo']!='local-service-factory-dev':
+        raise ValueError('规则迁移仅允许维护端使用已记录的统一仓库')
+    repo=f'/repos/{cfg["owner"]}/{cfg["rules_repo"]}'
+    metadata=protocol.github('GET',repo)
+    if not metadata or not metadata.get('default_branch'):raise ValueError('目标仓库不存在或不可访问')
+    if protocol.github('GET',repo+'/contents/release-index.json') is not None:
+        raise ValueError('目标索引已存在，请正常同步，不重复初始化')
+    old_cfg={**cfg,'rules_repo':'local-service-factory-rules'}
+    revision,envelope,payload=remote_index(old_cfg)
+    expected=f'https://github.com/{cfg["owner"]}/local-service-factory-rules/releases/download/rules-{payload["version"]}/rules.zip'
+    if payload.get('url')!=expected:raise ValueError('旧规则索引来源不匹配')
+    return {'sha':None,'files':{},'repository':repository_identity(cfg),
+            'migration':{'from_repository':repository_identity(old_cfg),'index_sha':revision,'version_floor':payload['version'],'envelope':envelope}}
+
+
+def release_source_sha():
+    from tools.stage_distribution import source_identity
+    return source_identity()
+
+
 def release_plan(request):
-    cfg=paths.config();version=valid_version(request.get('version') or str(time.time_ns()))
+    cfg=paths.config();head=migration_head(cfg) if request.get('migration_from_legacy') is True else tracked_head(cfg);version=valid_version(request.get('version') or str(time.time_ns()))
+    if head.get('migration') and int(version)<=int(head['migration']['version_floor']):raise ValueError('迁移规则版本必须严格高于旧仓版本')
+    source_sha=release_source_sha()
     docs=export_documents()
+    if release_source_sha()!=source_sha:raise ValueError('规则导出期间源码提交已变化')
     folder=local()/'release_plans'/version
     if folder.exists():raise ValueError('此规则版本计划已存在')
     folder.mkdir(parents=True)
@@ -127,16 +170,17 @@ def release_plan(request):
     with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED) as z:
         for name,data in sorted(docs.items()):z.writestr(name,data)
     data=archive.getvalue()
-    payload={'kind':'rules','schema':cfg['rules_schema'],'version':version,'min_app':max(cfg['app_version'],'1.4.0',key=app_tuple),
+    payload={'kind':'rules','source_sha':source_sha,'schema':cfg['rules_schema'],'version':version,'min_app':max(cfg['app_version'],'1.4.0',key=app_tuple),
              'engine_major':app_tuple(cfg['app_version'])[0],'sha256':protocol.sha(data),
              'url':f'https://github.com/{cfg["owner"]}/{cfg["rules_repo"]}/releases/download/rules-{version}/rules.zip',
              'files':{n:protocol.sha(v) for n,v in docs.items()}}
     unpack(payload,data,folder/'validated',cfg);validate_business(folder/'validated')
     (folder/'rules.zip').write_bytes(data);write(folder/'payload.json',payload)
-    tracked=local()/'remote_head.json'
-    head=json.loads(tracked.read_text(encoding='utf-8')) if tracked.exists() else {'sha':None,'files':{}}
-    plan={'version':version,'base_sha':head['sha'],'changed_files':[n for n,h in payload['files'].items() if head.get('files',{}).get(n)!=h],
+    plan={'source_sha':source_sha,'repository':repository_identity(cfg),'version':version,'base_sha':head['sha'],'changed_files':[n for n,h in payload['files'].items() if head.get('files',{}).get(n)!=h],
           'sha256':payload['sha256'],'files':len(docs),'businesses':len(PROJECTS),'validated':True,'api_called':False,'uploaded':False}
+    if head.get('migration'):
+        plan['migration']=head['migration']
+        plan['api_called']=True
     write(folder/'plan.json',plan)
     return plan
 
@@ -245,7 +289,7 @@ def sync(request=None):
         try:
             if not cfg['public_keys']:raise ValueError('尚未配置发布验证公钥，继续使用本地规则')
             revision,envelope,payload=remote_index(cfg)
-            write(local()/'remote_head.json',{'sha':revision,'files':payload['files'],'version':payload['version']})
+            write(local()/'remote_head.json',{'repository':repository_identity(cfg),'sha':revision,'files':payload['files'],'version':payload['version']})
             if not os.environ.get('FACTORY_DATA_HOME'):
                 result={'state':'available','remote_version':payload['version'],'message':'维护端只检查远程版本，不覆盖本地编辑'}
             else:
@@ -279,6 +323,11 @@ def publish(request):
     if os.environ.get('FACTORY_DATA_HOME'):raise ValueError('使用端没有项目发布权限')
     cfg=paths.config();version=valid_version(request['version']);folder=local()/'release_plans'/version
     payload=json.loads((folder/'payload.json').read_text(encoding='utf-8'));plan=json.loads((folder/'plan.json').read_text(encoding='utf-8'))
+    require_repository(plan,cfg)
+    source_sha=plan.get('source_sha','')
+    if not isinstance(source_sha,str) or not re.fullmatch(r'[a-f0-9]{40}',source_sha) or payload.get('source_sha')!=source_sha:raise ValueError('规则计划缺少匹配源码 SHA')
+    expected_url=f'https://github.com/{cfg["owner"]}/{cfg["rules_repo"]}/releases/download/rules-{version}/rules.zip'
+    if payload.get('url')!=expected_url:raise ValueError('签名规则 URL 与目标仓库不一致')
     data=(folder/'rules.zip').read_bytes()
     if not plan['validated'] or protocol.sha(data)!=payload['sha256']:raise ValueError('发布计划内容已变化')
     validate_payload(payload,cfg)
@@ -286,22 +335,35 @@ def publish(request):
     if not keyfile or not key_id:raise ValueError('请先在维护端配置发布签名私钥文件和标识')
     envelope=protocol.sign(payload,key_id,keyfile,cfg['public_keys'])
     repo=f'/repos/{cfg["owner"]}/{cfg["rules_repo"]}'
+    commit=protocol.github('GET',repo+'/commits/'+source_sha)
+    if not commit or commit.get('sha')!=source_sha:raise ValueError('规则源码提交尚未存在于目标仓库')
     current=protocol.github('GET',repo+'/contents/release-index.json')
     current_sha=current['sha'] if current else None
+    if current is None and cfg['owner']=='eish1997' and cfg['rules_repo']=='local-service-factory-dev' and not plan.get('migration'):
+        raise ValueError('新仓空索引只能通过显式迁移计划初始化')
+    if plan.get('migration'):
+        old_payload=protocol.verify(plan['migration']['envelope'],cfg['public_keys'])
+        if int(version)<=int(old_payload['version']):raise ValueError('迁移版本未超过旧仓版本')
+        fresh=migration_head(cfg)
+        if int(version)<=int(fresh['migration']['version_floor']):raise ValueError('旧仓版本已推进，请重新生成迁移计划')
     if current_sha!=plan['base_sha']:raise ValueError('远端版本已变化，请同步检查并重新生成发布计划')
     if current:
         old=protocol.verify(json.loads(base64.b64decode(current['content'])),cfg['public_keys'])
         if int(version)<=int(old['version']):raise ValueError('发布版本必须高于远端版本；回退内容也需要新版本号')
-    release=protocol.github('POST',repo+'/releases',{'tag_name':'rules-'+version,'name':'项目规则 '+version,'draft':True})
+    if protocol.github('GET',repo+'/git/ref/tags/rules-'+version) or protocol.github('GET',repo+'/releases/tags/rules-'+version):
+        raise ValueError('规则标签或发布已存在；核对附件和索引后恢复，不覆盖未知内容')
+    release=protocol.github('POST',repo+'/releases',{'tag_name':'rules-'+version,'name':'项目规则 '+version,'draft':True,'make_latest':'false','target_commitish':source_sha})
     upload=release['upload_url'].split('{')[0]
     protocol.github('POST',upload+'?name=rules.zip',raw=data)
     protocol.github('POST',upload+'?name=manifest.json',raw=protocol.canonical(envelope))
     protocol.github('PATCH',repo+'/releases/'+str(release['id']),{'draft':False,'make_latest':'false'})
     if protocol.sha(protocol.download(payload['url'],cfg['max_rules_bytes']))!=payload['sha256']:raise ValueError('公开下载验证失败，最新版本指向未改变')
+    remote_manifest=protocol.verify(json.loads(protocol.download(payload['url'].rsplit('/',1)[0]+'/manifest.json',1024*1024)),cfg['public_keys'])
+    if remote_manifest!=payload:raise ValueError('规则公开签名清单不一致，最新版本指向未改变')
     body={'message':'Publish rules '+version,'content':base64.b64encode(protocol.canonical(envelope)).decode()}
     if current_sha:body['sha']=current_sha
     changed=protocol.github('PUT',repo+'/contents/release-index.json',body)
-    write(local()/'remote_head.json',{'sha':changed['content']['sha'],'files':payload['files'],'version':version})
+    write(local()/'remote_head.json',{'repository':repository_identity(cfg),'sha':changed['content']['sha'],'files':payload['files'],'version':version})
     return {'published':True,'version':version,'url':release['html_url']}
 
 def rollback(request):
@@ -312,11 +374,13 @@ def rollback(request):
     cfg=paths.config();new=local()/'release_plans'/new_version
     if new.exists():raise ValueError('回退版本已存在')
     original=json.loads((old/'payload.json').read_text(encoding='utf-8'));data=(old/'rules.zip').read_bytes()
+    source_sha=original.get('source_sha')
+    if not isinstance(source_sha,str) or not re.fullmatch(r'[a-f0-9]{40}',source_sha):raise ValueError('历史规则缺少源码关联，需人工审阅后重新准备')
     original.update(version=new_version,url=f'https://github.com/{cfg["owner"]}/{cfg["rules_repo"]}/releases/download/rules-{new_version}/rules.zip')
     new.mkdir(parents=True);unpack(original,data,new/'validated',cfg);validate_business(new/'validated')
     (new/'rules.zip').write_bytes(data);write(new/'payload.json',original)
-    head=local()/'remote_head.json';base=json.loads(head.read_text())['sha'] if head.exists() else None
-    write(new/'plan.json',{'base_sha':base,'validated':True})
+    head=tracked_head(cfg)
+    write(new/'plan.json',{'source_sha':source_sha,'repository':repository_identity(cfg),'base_sha':head['sha'],'validated':True})
     return publish({**request,'version':new_version})
 
 def cli(args):
@@ -324,7 +388,7 @@ def cli(args):
     try:
         request=json.load(sys.stdin) if not sys.stdin.isatty() else {}
         if args.family=='updates':
-            if args.operation in {'release-plan','publish','setup'}:
+            if args.operation in {'release-plan','publish','setup','recover'}:
                 from tools import software_release
                 result=getattr(software_release,args.operation.replace('-','_'))(request)
             elif args.operation=='status':result=status()
@@ -339,5 +403,5 @@ def cli(args):
         print(json.dumps({'ok':False,'error':str(error)},ensure_ascii=False));return 1
 
 def add_arguments(subparsers):
-    for family,operations in [('rules',['bootstrap','sync','release-plan','publish','rollback']),('updates',['status','check','release-plan','publish','setup'])]:
+    for family,operations in [('rules',['bootstrap','sync','release-plan','publish','rollback']),('updates',['status','check','release-plan','publish','setup','recover'])]:
         parser=subparsers.add_parser(family);parser.add_argument('operation',choices=operations);parser.set_defaults(handler=cli,family=family)

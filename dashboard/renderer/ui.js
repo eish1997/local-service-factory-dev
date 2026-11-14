@@ -3,7 +3,7 @@
  const node=(tag,text)=>{const value=document.createElement(tag);if(text!==undefined)value.textContent=text;return value;};
  window.dashboardMessage=(element,text,error=false)=>{
   element._errorDetails?.remove();element._errorDetails=null;
-  const full=String(text||'').replace(/Error invoking remote method '[^']+':\s*(?:Erro<local-path>
+  const full=String(text||'').replace(/Error invoking remote method '[^']+':\s*(?:Error:\s*)?/g,''),reasons=[
    ['没有可在原预算内继续','当前没有可继续的图片，请打开任务详情查看原因。'],
    ['API配置已变化','生成设置已变化。请恢复任务原来的设置后继续。'],
    ['结果不确定','请求结果尚未确认，请先核对记录，避免重复扣费。']

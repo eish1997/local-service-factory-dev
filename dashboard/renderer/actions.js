@@ -31,7 +31,7 @@
   try{report('请选择压缩包保存位置…');const result=await window.roadRescue.packageGroups(request);if(!result){report('已取消打包');return;}
    const skipped=(result.incomplete_groups||[]).map(group=>`第 ${group} 组`).join('、');
    report(`已打包 ${result.groups.length} 组、${result.images} 张图片，${result.paths.length} 个压缩包：${result.paths.join("；")}。审核状态不变。`+(skipped?`未打包未齐组：${skipped}。`:''));}
-  catch(e){report('打包失败：'+String(e.message||e).replace(/Error invoking remote method '[^']+':\s*(?:Erro<local-path>
+  catch(e){report('打包失败：'+String(e.message||e).replace(/Error invoking remote method '[^']+':\s*(?:Error:\s*)?/g,''));}
   });
  }
  $('task-package').onclick=()=>packageGroups({...context(),groups:window.dashboardSelectedGroups()});

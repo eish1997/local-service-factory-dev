@@ -70,7 +70,7 @@ function createService({app,root,hasActiveTasks,updater,configuration,fetchRelea
  async function checkSoftware(){
   if(!app.isPackaged){save({state:'development',message:'源码模式不下载或安装软件更新'});return state;}
   if(!Object.keys(cfg.public_keys).length)throw Error('尚未配置发布验证公钥');
-  const signed=await fetchRelease(`http<local-path>`);
+  const signed=await fetchRelease(`https://github.com/${cfg.owner}/${cfg.software_repo}/releases/latest/download/software-manifest.json`);
   const payload=verify(signed,cfg.public_keys);
   if(payload.kind!=='software'||!/^\d+\.\d+\.\d+$/.test(payload.version)||!/^[0-9a-f]{64}$/.test(payload.sha256))throw Error('软件发布清单格式无效');
   expected=payload;ready=false;save({state:'checking'});

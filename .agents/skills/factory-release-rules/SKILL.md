@@ -5,6 +5,15 @@ description: "为本地生活服务图片工厂检查、脱敏、签名并发布
 
 # 发布项目规则
 
+
+## 单仓迁移与同步
+
+以根目录 development/REPOSITORY_MIGRATION.md 为最新约定：源码、软件与规则共仓但独立发布；不要求源码永久私有。普通开发不构建/发布/改可见性。旧仓记录及链接是历史，不是当前默认目标。
+
+保留 release-index.json 和规则发布生成的远端提交。发布后运行 development/sync_repository.py 核对并快进；脏工作树或分叉先保留、审阅、提交明确归属变化后合并，禁止自动 stash/reset/强推。源码导出缺文件不代表应删除。
+
+正式软件与规则发布计划绑定干净已提交源码 SHA；软件构建保存 stage-provenance/build-provenance，发布回传 source_sha。过渡 target=legacy-software 不改变包内新地址；首次规则迁移显式 migration_from_legacy=true，按执行台账的旧版本下界验证。updates recover 默认只读，明确恢复授权才完成已验证公开版本指针，不重传不明附件。
+
 ## 定位与范围
 
 定位含 `factory.py`、`distribution/rules-fields.json` 的维护项目，当前为 `<project-root>`。先读项目 `AGENTS.md`、`agent_memory/current_state.md`、`distribution/README.md`；使用当前配置中的仓库、公钥和兼容版本，不固定历史版本号。

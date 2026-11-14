@@ -8,12 +8,12 @@ function fixture(){
  const payload={kind:'software',version:'1.3.0',sha256:crypto.createHash('sha256').update('new-installer').digest('hex')};
  const envelope={payload,key_id:'test',signature:crypto.sign(null,Buffer.from(canonical(payload)),keys.privateKey).toString('base64')};
  const app=new EventEmitter();app.isPackaged=true;app.getVersion=()=> '1.2.0';app.getPath=()=>path.join(installed,'app.exe');
- const updater=new EventEmitter();let downloads=0,installs=0,active=false;
+ const updater=new EventEmitter();let downloads=0,installs=0,active=false,requestedUrl=null;
  updater.setFeedURL=()=>{};updater.checkForUpdates=async()=>({isUpdateAvailable:true,updateInfo:{version:'1.3.0'}});
  updater.downloadUpdate=async()=>{downloads++;await Promise.all(updater.listeners('update-downloaded').map(fn=>fn({version:'1.3.0',downloadedFile:binary})));};
  updater.quitAndInstall=()=>installs++;
- const service=createService({app,root,updater,hasActiveTasks:()=>active,configuration:{app_version:'1.2.0',owner:'test',software_repo:'releases',public_keys:{test:raw},check_interval_hours:6},fetchRelease:async()=>envelope,runCommand:async()=>({software_version:'1.2.0'})});
- return {home,root,app,updater,service,envelope,binary,downloads:()=>downloads,installs:()=>installs,active:value=>active=value};
+ const service=createService({app,root,updater,hasActiveTasks:()=>active,configuration:{app_version:'1.2.0',owner:'test',software_repo:'releases',public_keys:{test:raw},check_interval_hours:6},fetchRelease:async url=>{requestedUrl=url;return envelope;},runCommand:async()=>({software_version:'1.2.0'})});
+ return {home,root,app,updater,service,envelope,binary,sign:()=>{envelope.signature=crypto.sign(null,Buffer.from(canonical(envelope.payload)),keys.privateKey).toString('base64');},requestedUrl:()=>requestedUrl,downloads:()=>downloads,installs:()=>installs,active:value=>active=value};
 }
 test('verified update waits for exit and never interrupts workers; previous app is preserved',async()=>{
  const f=fixture();await f.service.check();assert.equal(f.service.getState().state,'ready');assert.equal(f.downloads(),1);assert.equal(f.updater.autoInstallOnAppQuit,false);
@@ -29,4 +29,14 @@ test('wrong installer digest cannot become ready',async()=>{
 });
 test('source mode never invokes the updater',async()=>{
  const f=fixture();f.app.isPackaged=false;await f.service.check();assert.equal(f.downloads(),0);assert.equal(f.service.getState().state,'development');
+});
+
+test('manifest uses the configured public repository URL',async()=>{
+ const f=fixture();await f.service.check();assert.equal(f.requestedUrl(),'https://github.com/test/releases/releases/latest/download/software-manifest.json');
+});
+test('signed rules manifest at Latest never starts software download',async()=>{
+ const f=fixture();f.envelope.payload.kind='rules';f.sign();await f.service.check();assert.equal(f.downloads(),0);assert.equal(f.service.getState().state,'error');assert.equal(f.installs(),0);
+});
+test('updater version must match the signed manifest',async()=>{
+ const f=fixture();f.updater.checkForUpdates=async()=>({isUpdateAvailable:true,updateInfo:{version:'8.0.0'}});await f.service.check();assert.equal(f.downloads(),0);assert.equal(f.service.getState().state,'error');
 });

@@ -6,7 +6,11 @@ if(!stage||!fs.existsSync(path.join(stage,'python/python.exe'))||!fs.existsSync(
 const cfg=JSON.parse(fs.readFileSync(path.join(stage,'engine/distribution/update-config.json'),'utf8'));
 if(!Object.keys(cfg.public_keys).length)throw Error('正式安装包必须绑定发布验证公钥');
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'dashboard/package.json'),'utf8'));
-if(cfg.app_version!==pkg.version)throw Error('界面与独立引擎版本不一致，请重新准备暂存目录');
+const lock=JSON.parse(fs.readFileSync(path.join(root,'dashboard/package-lock.json'),'utf8'));
+require('./build-config').validateBuildConfig(cfg,pkg,lock);
+const provenance=require('./build-provenance');
+const sourceSha=provenance.sourceIdentity(root);
+provenance.validateStage(stage,sourceSha);
 const build=pkg.build;
 // Use the installed, lockfile-selected Electron distribution instead of fetching it again.
 build.electronDist=path.join(root,'dashboard/node_modules/electron/dist');
@@ -14,4 +18,8 @@ if(process.env.FACTORY_DISTRIBUTION_OUTPUT)build.directories={...build.directori
 build.extraResources=[{from:path.join(stage,'engine'),to:'engine'},{from:path.join(stage,'python'),to:'python'}];
 const file=path.join(root,'.runtime','nsis-build-config.json');fs.writeFileSync(file,JSON.stringify(build));
 const result=spawnSync(process.execPath,[require.resolve('electron-builder/cli'), '--win','nsis','--x64','--publish','never','--config',file],{cwd:path.join(root,'dashboard'),stdio:'inherit',shell:false});
-process.exitCode=result.status||0;
+if(result.error)throw result.error;
+if(result.status!==0)throw Error('安装包构建失败或被中断');
+if(provenance.sourceIdentity(root)!==sourceSha)throw Error('构建期间源码提交已变化');
+provenance.validateStage(stage,sourceSha);
+provenance.recordBuild(path.resolve(root,'dashboard',build.directories.output),cfg,sourceSha);

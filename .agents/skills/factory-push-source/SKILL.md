@@ -1,15 +1,24 @@
 ---
 name: factory-push-source
-description: 整理本地生活服务图片工厂开发源码、Agent 指引和项目 skills，脱敏审阅后提交并推送到私有 GitHub 开发仓库，支持原生产目录重新导出及跨电脑 Git 同步。用于推送开发 Agent、备份开发源码或开发完成后同步；安装包发布和云端规则发布使用各自发布 skill。
+description: 整理本地生活服务图片工厂开发源码、Agent 指引和项目 skills，脱敏审阅后提交并推送到统一 GitHub 仓库，支持原生产目录重新导出及跨电脑 Git 同步。用于推送开发 Agent、备份开发源码或开发完成后同步；安装包发布和云端规则发布使用各自发布 skill。
 ---
 
 # 推送开发 Agent 到 GitHub
 
 同步可迁移的源码、配置模板、Agent 指引和项目 skills，让其他电脑能够克隆并继续开发。这里的 Agent 指项目内指引与技能；Codex 模型、对话历史、账号登录和个人运行环境不在同步范围。
 
+
+## 单仓迁移与同步
+
+以根目录 development/REPOSITORY_MIGRATION.md 为最新约定：源码、软件与规则共仓但独立发布；不要求源码永久私有。普通开发不构建/发布/改可见性。旧仓记录及链接是历史，不是当前默认目标。
+
+保留 release-index.json 和规则发布生成的远端提交。发布后运行 development/sync_repository.py 核对并快进；脏工作树或分叉先保留、审阅、提交明确归属变化后合并，禁止自动 stash/reset/强推。源码导出缺文件不代表应删除。
+
+正式软件与规则发布计划绑定干净已提交源码 SHA；软件构建保存 stage-provenance/build-provenance，发布回传 source_sha。过渡 target=legacy-software 不改变包内新地址；首次规则迁移显式 migration_from_legacy=true，按执行台账的旧版本下界验证。updates recover 默认只读，明确恢复授权才完成已验证公开版本指针，不重传不明附件。
+
 ## 入口与范围
 
-- 默认开发仓库：`eish1997/local-service-factory-dev`；核实仍为私有且 remote 身份正确。
+- 默认开发仓库：`eish1997/local-service-factory-dev`；核实实际可见性和 remote 身份，公开仅按迁移授权执行。
 - 当前原生产目录：`<local-path>`；Git 开发副本：`<local-path>`。换电脑以实际 Git 根目录、remote 和源码位置为准。
 - 先读工作区 `AGENTS.md`、`agent_memory/current_state.md` 和 `development/README.md`。
 - 用户要求推送/同步开发源码时，完成必要的导出、审阅、提交、推送及验证，无须重复询问已授权动作。仅创建 skill、检查状态或开发功能不授权推送；用户说等另一任务完成，就等完成后再执行。

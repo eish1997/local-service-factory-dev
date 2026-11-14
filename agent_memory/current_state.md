@@ -1,3 +1,7 @@
+# 统一仓库开发候选（2026-11-14）
+
+当前改动与验证以 development/UNIFIED_REPOSITORY_EXECUTION_PLAN.md 为唯一台账；验收矩阵见 development/MIGRATION_VALIDATION.md，上线清单见 development/REPOSITORY_MIGRATION.md。尚未构建、公开、推送或发布；旧分发入口保持。
+
 # 开发仓库当前入口
 
 这是可迁移的开发源码与 Agent 指引，不含原电脑生产状态、客户资料或私钥。

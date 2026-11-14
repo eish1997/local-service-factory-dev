@@ -8,7 +8,7 @@ function initialize(app,resources=process.resourcesPath){
  let result;try{result=JSON.parse(prepared.stdout);}catch{throw Error('无法准备兼容规则，请检查安装完整性后重试');}
  if(prepared.status!==0||!result.ok)throw Error('无法准备兼容规则：'+(result.error||'本地更新操作尚未结束，请重试'));
  const env=path.join(root,'.env');
- if(!fs.existsSync(env))fs.writeFileSync(env,'FACTORY_KEY_POOL_MANAGED=1\nOPENAI_PROVIDER=relay\nOPENAI_BASE_URL=http<local-path>
+ if(!fs.existsSync(env))fs.writeFileSync(env,'FACTORY_KEY_POOL_MANAGED=1\nOPENAI_PROVIDER=relay\nOPENAI_BASE_URL=https://tinysnow.one/v1\nOPENAI_IMAGE_MODEL=gpt-image-2.5-flare\nOPENAI_API_KEY=\n',{flag:'wx'});
  process.env.FACTORY_DATA_HOME=root;process.env.FACTORY_ENGINE_HOME=engine;process.env.ROAD_RESCUE_PYTHON=python;
  process.env.FACTORY_INSTALL_HOME=path.dirname(app.getPath('exe'));
  // Reaching a validated engine on a normal launch completes (or recovers) installation.
