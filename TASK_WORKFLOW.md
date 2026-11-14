@@ -169,3 +169,16 @@
 ## 潜水打捞共享任务（2026-10-31）
 
 `diving_salvage` 已接入源码版共享组装。所有任务统一1首图＋6详情；新建表单选择任务类型后自动匹配流程。`tasks overlay-text` 返回 `task_types`（id/name/selection）；`tasks assemble` 请求可传 `task_type`，省略为 `objects`，非法组合拒绝。任务类型参与请求幂等签名，具体配置及引用的管道规则随批次冻结。仍需明确 `count`、`phone`；`services` 使用共享编辑/保存规则。水下原图不含电话，陆地门店主招牌含本批次电话；统一本地排版叠加居中电话、服务词与详情角色。创建批次不调用API，生产仍使用原有plan/start与许可预算。
+
+
+## Codex 内置生成（1.4.22）
+
+新批次可显式指定 `generation_route=codex_native`，缺省仍为 API。两种方式共享 assemble 的业务、组数、本次号码、服务词及冻结提示词。不能转换旧 API 批次，也不能用 API start/resume/retry 处理内置批次。
+
+面板选「Codex 内置生成」创建后只保存待生成卡片。选组后「复制 Codex 指令」包含稳定批次、明确数据实例及冻结数量。粘贴到聊天并明确启动后才授权工具调用，创建和复制本身都不生成。工具不可用、配额不足或结果未知时不自动改 API。
+
+Agent 首先 native-discover 核对安装，再由所选安装自己的解释器/公共入口 native-instance 核对数据目录和真实版本。多实例询问用户，不默认开发目录；旧安装没有接口时停止，不能用开发引擎伪装正式安装已升级。开发测试只能显式绑定隔离数据根。使用本次输入创建，不沿用历史手机号。
+
+执行顺序：native-plan → native-authorize → native-claim → native-reserve → **真实内置工具（仅有明确生产授权时）** → native-register → native-ingest → native-materialize。reserve 的 new_reservation=false 表示必须核对旧调用，不能再发。恢复走 native-status/native-recover，不能重新组装、另建 scope 重置预算或超时退款。保留返回文件与单元映射；无明确文件则手动保存后选择对应待回填单元导入，记录降级来源。
+
+具体 JSON 与不变量见 [内置接口契约](development/CODEX_NATIVE_CONTRACT.md)。两次单元调用及范围总上限独立于 API 许可；completed 只是本地交付完成，不代表质量 approved。三拼三份原图分别计数；门头招牌号码仍需真实视觉检查。N6 真实生图和安装联调、N7 构建发布未包含在本次开发验证内。

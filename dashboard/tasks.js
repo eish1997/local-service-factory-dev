@@ -1,7 +1,7 @@
 const {spawn}=require('child_process');
 const path=require('path');
 const {pathToFileURL}=require('url');
-const allowed=new Set(['projects','overlay-text','assemble','batches','view','queue-view','queue-detail','raw-library-view','raw-library-folder','raw-library-qualify','raw-library-reindex','plan','start','resume','pause','retry','delete','replacement-prepare','repair-prepare','keys-view','keys-save','legacy-group','postprocess-view','postprocess-apply','postprocess-presets','postprocess-session','postprocess-preview','postprocess-preview-apply','postprocess-preview-sequence','postprocess-text','image-history','image-version-select','assets-view','assets-save','open-folder','package']);
+const allowed=new Set(['native-register','native-ingest','native-materialize','native-instance','native-plan','native-status','projects','overlay-text','assemble','batches','view','queue-view','queue-detail','raw-library-view','raw-library-folder','raw-library-qualify','raw-library-reindex','plan','start','resume','pause','retry','delete','replacement-prepare','repair-prepare','keys-view','keys-save','legacy-group','postprocess-view','postprocess-apply','postprocess-presets','postprocess-session','postprocess-preview','postprocess-preview-apply','postprocess-preview-sequence','postprocess-text','image-history','image-version-select','assets-view','assets-save','open-folder','package']);
 function enrich(root,operation,value){
  const fs=require('fs'),a=require('./assets');
  const add=(item,key='path',field='url')=>{if(!item)return;const file=item[key];if(!a.allowed(root,file)||!a.allowed(root,fs.realpathSync(file)))throw Error('素材路径越界');item[field]=pathToFileURL(file).href+(item.sha256?'?v='+encodeURIComponent(item.sha256):'');};
@@ -63,4 +63,32 @@ function readLibraryJobs(root){
  }
  return result;
 }
-module.exports={runTasks,readLibraryJobs};
+// Install admission is separate from API job presentation. The CLI holds the
+// admin lock for short writes and a live process lease for work outside it.
+function hasActiveNativeTasks(root){
+ const fs=require('fs'),{processIsAlive}=require('./monitor');
+ const dirs=dir=>{try{return fs.readdirSync(dir,{withFileTypes:true});}catch(e){if(e.code==='ENOENT')return [];throw e;}};
+ const read=file=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch(e){if(e.code==='ENOENT')return null;throw e;}};
+ try{
+  for(const file of dirs(path.join(root,'.runtime/native-writes'))){
+   if(file.isFile()&&file.name.endsWith('.lock')){
+    const lease=read(path.join(root,'.runtime/native-writes',file.name));
+    if(lease&&processIsAlive(lease.pid)!==false)return true;
+   }
+  }
+  const home=path.join(root,'prompts/library');
+  for(const category of dirs(home).filter(d=>d.isDirectory())){
+   for(const batch of dirs(path.join(home,category.name)).filter(d=>d.isDirectory()&&d.name.startsWith('batch_'))){
+    const dir=path.join(home,category.name,batch.name),state=read(path.join(dir,'native-execution.json'));
+    if(!state||state.cancelled)continue;
+    if(Object.values(state.units||{}).some(unit=>unit.status==='awaiting_result'))return true;
+    // Compatibility with an in-flight renderer started before writer leases.
+    // A leftover rendering status alone is recoverable, not a permanent blocker.
+    const render=read(path.join(dir,'native-render.lock'));
+    if(render&&processIsAlive(render.pid)!==false)return true;
+   }
+  }
+  return false;
+ }catch{return true;} // Unreadable activity cannot safely authorize installation.
+}
+module.exports={runTasks,readLibraryJobs,hasActiveNativeTasks};

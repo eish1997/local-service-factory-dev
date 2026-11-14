@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('roadRescue', {
   updates: operation => ipcRenderer.invoke('updates:request',operation),
+  importNative: request => ipcRenderer.invoke('tasks:native-import',request),
   importPostprocess: request => ipcRenderer.invoke('postprocess:import',request),
   exportPostprocess: request => ipcRenderer.invoke('postprocess:export',request),
   tasks: (operation, request) => ipcRenderer.invoke('tasks:request', operation, request),

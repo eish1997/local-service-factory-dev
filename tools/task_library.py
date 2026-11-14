@@ -18,6 +18,14 @@ ROOT=runtime_paths.data_root()
 ACTIVE={'queued','running','recovering'}
 _released_locks=set()
 
+def generation_route(data):
+    route=data.get('generation_route','api')
+    if route not in {'api','codex_native'}:raise ValueError('未知生成方式')
+    return route
+
+def require_api(data):
+    if generation_route(data)!='api':raise ValueError('Codex 内置批次不能使用 API 执行入口')
+
 def now(): return datetime.now(timezone.utc).isoformat()
 def digest(value): return hashlib.sha256(json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 def io_path(path,*,force=False):
@@ -235,6 +243,7 @@ def assemble(request):
 
 def _assemble(request):
     if (ROOT/'.runtime/updates/installing.json').exists():raise ValueError('软件正在安装更新，请重新打开看板后操作')
+    route=generation_route(request)
     category=request['category']; count=request.get('count');seed=request.get('seed')
     if type(count)!=int or not 1<=count<=100: raise ValueError('组数必须为 1–100 的整数')
     phone=request.get('phone')
@@ -255,7 +264,7 @@ def _assemble(request):
     home=category_dir(category)
     with lock(home/'assemble.lock'):
         previous=home/'requests'/f'{request_id}.json'
-        signature=digest({**{k:request.get(k) for k in ('category','count','seed','phone')},**({'task_type':request.get('task_type','objects')} if category=='diving_salvage' else {}),'reuse_rate':rate,**({'services':services} if services is not None else {})})
+        signature=digest({**({'generation_route':route} if route!='api' else {}),**{k:request.get(k) for k in ('category','count','seed','phone')},**({'task_type':request.get('task_type','objects')} if category=='diving_salvage' else {}),'reuse_rate':rate,**({'services':services} if services is not None else {})})
         if io_path(previous).exists():
             old=read(previous)
             if old['signature']!=signature: raise ValueError('同一请求标识不能用于不同组装内容')
@@ -274,7 +283,7 @@ def _assemble(request):
         path=home/batch;io_path(path).mkdir(parents=True)
         definition=runtime_paths.read_json(vc.project_dir(category)/'project.json');structure=definition['content_group']
         from tools.task_assets import settings
-        summary={'clean_output':True,'asset_root':settings()['path'],'schema_version':1,'id':batch,'name':f'{phone} · {count} 组','category':category,'source':source,'seed':seed,'count':count,
+        summary={'generation_route':route,'clean_output':True,'asset_root':settings()['path'],'schema_version':1,'id':batch,'name':f'{phone} · {count} 组','category':category,'source':source,'seed':seed,'count':count,
                  'created_at':now(),'status':'assembling','completed_groups':0,'phone':phone,'revision':catalog['revision'],
                  'structure':structure,'api_called':False,'request_id':request_id}
         write(previous,{'signature':signature,'batch':batch});write(path/'batch.json',summary)
@@ -417,6 +426,15 @@ def view(request):
         rows.append(row)
     from tools.task_auto_recovery import public_progress
     task_rows=[{**t,**public_progress(t)} for t in task_rows]
+    if generation_route(data)=='codex_native':
+        from tools.task_native import load_state as native_state,instance
+        state=native_state(path)
+        data={**data,'native_instance':instance(),'native_cancelled':state['cancelled']}
+        for row in rows:
+            for unit in row['units']:
+                record=state['units'].get(unit['id'],{})
+                unit['native_status']='cancelled' if state['cancelled'] and record.get('status')!='completed' else record.get('status','pending')
+            if not row['images']:row['status']='cancelled' if state['cancelled'] else 'awaiting_codex'
     return {'batch':data,'groups':rows,'tasks':task_rows,'total':data['count']}
 
 def choose_listed_model(ids):
@@ -573,6 +591,7 @@ def revision_conflicts(category,batch,groups,data,exclude_task=None,unit_ids=Non
 
 def plan(request,_parent=None):
     category=request['category'];batch=request['batch'];path,data=load_batch(category,batch)
+    require_api(data)
     if data.get('automatic_repair_parent') and _parent is None:
         raise ValueError('自动补缺子任务由原任务管理，请继续原任务，不能另建预算')
     rows=scoped_rows(path,data,request.get('groups'),request.get('unit_ids'));groups=[r['group'] for r in rows];snapshot=read(path/'snapshot.json')
@@ -672,6 +691,7 @@ def start(request):
 def _start(request,_parent=None,launch_task=True):
     if (ROOT/'.runtime/updates/installing.json').exists():raise ValueError('软件正在安装更新，请重新打开看板后执行任务')
     category=request['category'];batch=request['batch'];path,data=load_batch(category,batch)
+    require_api(data)
     token=identifier(request['request_id'])
     if request.get('authorization')!='execute_selected_groups': raise ValueError('缺少本次所选组的明确执行指令')
     with lock(path/'control.lock'):
@@ -768,6 +788,7 @@ def resume(request):
 def _resume(request):
     if (ROOT/'.runtime/updates/installing.json').exists():raise ValueError('软件正在安装更新，请重新打开看板后继续任务')
     category=request['category'];batch=request['batch'];path,data=load_batch(category,batch);task=identifier(request['task'])
+    require_api(data)
     if data.get('automatic_repair_parent'):
         raise ValueError('自动补缺子任务由原任务管理，请继续原任务')
     with lock(path/'control.lock'):
@@ -848,6 +869,9 @@ def legacy_group(request):
 
 
 def dispatch(operation,request):
+    if operation.startswith('native-'):
+        from tools.task_native import dispatch as native_dispatch
+        return native_dispatch(operation,request)
     if operation in {'raw-library-view','raw-library-folder','raw-library-qualify','raw-library-reindex'}:
         from tools import raw_library
         return {'raw-library-view':raw_library.view,'raw-library-folder':raw_library.folder,'raw-library-qualify':raw_library.qualify,'raw-library-reindex':raw_library.reindex}[operation](request)
@@ -904,5 +928,5 @@ def cli(args):
 
 def add_arguments(subparsers):
     p=subparsers.add_parser('tasks',help='Agent与看板共用的内容组及生成任务')
-    p.add_argument('operation',choices=['projects','overlay-text','assemble','batches','view','queue-view','queue-detail','raw-library-view','raw-library-folder','raw-library-qualify','raw-library-reindex','plan','start','resume','pause','retry','delete','replacement-prepare','repair-prepare','keys-view','keys-save','legacy-group','postprocess-view','postprocess-apply','postprocess-presets','postprocess-session','postprocess-preview','postprocess-preview-apply','postprocess-preview-sequence','postprocess-text','image-history','image-version-select','assets-view','assets-save','open-folder','package','worker'])
+    p.add_argument('operation',choices=['native-discover','native-materialize','native-recover','native-register','native-ingest','native-instance','native-authorize','native-claim','native-reserve','native-outcome','native-status','native-cancel','native-plan','projects','overlay-text','assemble','batches','view','queue-view','queue-detail','raw-library-view','raw-library-folder','raw-library-qualify','raw-library-reindex','plan','start','resume','pause','retry','delete','replacement-prepare','repair-prepare','keys-view','keys-save','legacy-group','postprocess-view','postprocess-apply','postprocess-presets','postprocess-session','postprocess-preview','postprocess-preview-apply','postprocess-preview-sequence','postprocess-text','image-history','image-version-select','assets-view','assets-save','open-folder','package','worker'])
     p.add_argument('--category');p.add_argument('--batch');p.add_argument('--task');p.set_defaults(handler=cli)

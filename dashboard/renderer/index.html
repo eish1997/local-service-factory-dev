@@ -98,6 +98,8 @@
     </div>
     <dialog id="task-create-dialog" aria-labelledby="task-create-title">
       <form id="task-create-form"><header><h2 id="task-create-title">新建批次</h2><button type="button" id="task-create-close" title="关闭" aria-label="关闭">×</button></header>
+        <label>生成方式 <select id="task-generation-route"><option value="api">API 生成</option><option value="codex_native">Codex 内置生成</option></select></label>
+        <p id="task-native-create-hint" class="form-hint" hidden>创建后等待 Codex。无需 API 密钥；复制指令到 Codex，明确开始后才会生成，不会自动转用 API。</p>
         <label>组数 <input id="task-count" type="number" min="1" max="100" required value="10"></label>
         <label>手机号 <input id="task-phone" type="tel" inputmode="numeric" maxlength="11" pattern="1[3-9][0-9]{9}" required autocomplete="off" placeholder="必填，本批次手机号"></label>
         <div id="task-watermark">
@@ -112,6 +114,15 @@
       </form>
     </dialog>
 
+    <dialog id="task-native-dialog" aria-labelledby="task-native-title">
+      <h2 id="task-native-title">交给 Codex 生成</h2>
+      <p id="task-native-summary"></p>
+      <p>复制到 Codex 后再明确开始。工具不可用或返回不明时保留任务，不切换 API。生成完成仍需审核。</p>
+      <textarea id="task-native-instruction" readonly rows="10" aria-label="Codex 生成指令"></textarea>
+      <label id="task-native-import-field" hidden>待回填单元 <select id="task-native-import-unit"></select><button type="button" id="task-native-import">选择已保存图片导入</button><small>仅用于已返回但不能自动取得本地文件的结果。手动导入不代表自动回填已验证。</small></label>
+      <p id="task-native-copy-status" role="status"></p>
+      <form method="dialog"><button type="button" id="task-native-copy">复制指令</button><button value="close">关闭</button></form>
+    </dialog>
   </main>
   <script src="icons.js"></script>
   <script src="ui.js"></script>

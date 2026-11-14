@@ -48,6 +48,9 @@ def raw_evidence_valid(raw,unit):
             from tools.raw_library import inheritance_valid
             return inheritance_valid(raw,unit)
         saved=lib.read(receipt)
+        if isinstance(saved,dict) and saved.get('provider')=='codex_native':
+            from tools.task_native import receipt_valid
+            if not receipt_valid(saved,unit):return False
         return isinstance(saved,dict) and saved.get('prompt_sha256')==unit['prompt_sha256'] and saved.get('raw_sha256')==hashlib.sha256(lib.io_path(raw).read_bytes()).hexdigest()
     except (OSError,ValueError,TypeError,KeyError):return False
 
@@ -195,6 +198,9 @@ def render_delivery(category,batch,data,row,position,units,snapshot,services,cou
         'inputs':[{'unit':u['id'],'sha256':hashlib.sha256(lib.io_path(r['raw_target']).read_bytes()).hexdigest()} for u,r in zip(units,records)]})
     with lib.lock(lib.ROOT/'.runtime/task-admin.lock',wait_seconds=10):
         live=lib.load_batch(category,batch)[1]
+        if lib.generation_route(live)=='codex_native':
+            from tools.task_native import load_state as native_state
+            if native_state(lib.batch_dir(category,batch))['cancelled']:raise ValueError('内置任务已取消，不发布迟到成品')
         if row['group'] in live.get('deleted_groups',[]) or position in live.get('deleted_images',{}).get(str(row['group']),[]):raise ValueError('图片目标已失效，保留原图，不发布迟到成品')
         if current_revision(target)!=before:raise ValueError('当前版本已改变，保留用户选择，不覆盖迟到成品')
         from tools.image_versions import publish
@@ -203,6 +209,7 @@ def render_delivery(category,batch,data,row,position,units,snapshot,services,cou
 
 def _run(category,batch,task,*,generate=None,clients=None,render=None):
     path,data=lib.load_batch(category,batch);task=lib.identifier(task);file=path/'tasks'/task/'task.json'
+    lib.require_api(data)
     # Parent publishes pid under control lock; waiting avoids overwriting reserved requests.
     for _ in range(100):
         if not lib.io_path(path/'control.lock').exists(): break
@@ -431,6 +438,8 @@ def _run(category,batch,task,*,generate=None,clients=None,render=None):
 
 
 def run(category,batch,task,**test_hooks):
+    _,data=lib.load_batch(category,batch)
+    lib.require_api(data)
     try:
         def cycle():
             from tools import task_controls as controls,task_auto_recovery as recovery

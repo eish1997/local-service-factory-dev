@@ -4,7 +4,7 @@ const path = require('path');
 const applicationIcon = path.join(__dirname,'branding','logo.png');
 const { inspectJob, summarizeJob } = require('./monitor');
 const { runVariables } = require('./variables');
-const { runTasks, readLibraryJobs } = require('./tasks');
+const { runTasks, readLibraryJobs, hasActiveNativeTasks } = require('./tasks');
 const {
   buildCompletionNotification,
   markNotificationSent,
@@ -301,7 +301,7 @@ app.whenReady().then(() => {
   if (process.platform === 'win32') app.setAppUserModelId('local.roadrescue.dashboard');
   projectRoot = app.isPackaged ? require('./installed-runtime').initialize(app) : findProjectRoot();
   if(projectRoot){
-    updateService=require('./update-service').createService({app,root:projectRoot,hasActiveTasks:()=>[...readDashboardJobs(),...readLibraryJobs(projectRoot)].some(j=>{const m=inspectJob(j,projectRoot);return m.claimedActive&&m.processAlive!==false;})});
+    updateService=require('./update-service').createService({app,root:projectRoot,hasActiveTasks:()=>hasActiveNativeTasks(projectRoot)||[...readDashboardJobs(),...readLibraryJobs(projectRoot)].some(j=>{const m=inspectJob(j,projectRoot);return m.claimedActive&&m.processAlive!==false;})});
     if(!testShellMode)updateService.start();
   }
   ipcMain.handle('updates:request',(_,operation)=>{
@@ -310,9 +310,23 @@ app.whenReady().then(() => {
   });
   ipcMain.handle('dashboard:read', () => readDashboardAndNotify());
   ipcMain.handle('tasks:request', (_, operation, request) => {
+    if(['native-register','native-ingest','native-materialize'].includes(operation))throw Error('请使用待回填单元的文件导入入口');
     if(request?.image_path||request?.destination)throw Error('请使用对应的文件选择操作');
     if(['assets-save','package','open-folder'].includes(operation))throw Error('请使用对应的目录选择操作');
     return runTasks(projectRoot, operation, request);
+  });
+  ipcMain.handle('tasks:native-import',async(event,request)=>{
+    const binding={category:request.category,batch:request.batch,instance_id:request.instance_id,scope:request.scope,unit:request.unit,claim:request.claim};
+    const state=await runTasks(projectRoot,'native-status',binding),unit=state.units[binding.unit];
+    if(state.cancelled||!unit||unit.scope!==binding.scope||unit.claim!==binding.claim||!['awaiting_result','uncertain'].includes(unit.status))throw Error('该单元没有待回填的内置调用，请先在 Codex 核对');
+    const selected=await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender),{title:'选择该单元已返回并手动保存的图片（不是自动回填）',properties:['openFile'],filters:[{name:'图片',extensions:['png','jpg','jpeg','webp']}]});
+    if(selected.canceled)return null;
+    const file=selected.filePaths[0];if(fs.statSync(file).size>64*1024*1024)throw Error('图片超过 64MB');
+    const payload=fs.readFileSync(file);if(payload.length>64*1024*1024)throw Error('图片超过 64MB');
+    const sha256=require('crypto').createHash('sha256').update(payload).digest('hex');
+    await runTasks(projectRoot,'native-register',{...binding,file,sha256,source_kind:unit.result?.source_kind||'manual_saved',tool_result_id:unit.result?.tool_result_id,synthetic:unit.result?.synthetic??testShellMode,handoff:'manual_saved'});
+    await runTasks(projectRoot,'native-ingest',binding);
+    return runTasks(projectRoot,'native-materialize',binding);
   });
   ipcMain.handle('postprocess:import',async(event,request)=>{
     const result=await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender),{title:'选择后处理原图',properties:['openFile'],filters:[{name:'图片',extensions:['png','jpg','jpeg','webp']}]});
@@ -349,7 +363,7 @@ app.whenReady().then(() => {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'], title: '选择 road_rescue_image_factory 文件夹' });
     if (!result.canceled && isProjectRoot(result.filePaths[0])) {
       projectRoot = result.filePaths[0];updateService?.stop();
-      updateService=require('./update-service').createService({app,root:projectRoot,hasActiveTasks:()=>[...readDashboardJobs(),...readLibraryJobs(projectRoot)].some(j=>{const m=inspectJob(j,projectRoot);return m.claimedActive&&m.processAlive!==false;})});
+      updateService=require('./update-service').createService({app,root:projectRoot,hasActiveTasks:()=>hasActiveNativeTasks(projectRoot)||[...readDashboardJobs(),...readLibraryJobs(projectRoot)].some(j=>{const m=inspectJob(j,projectRoot);return m.claimedActive&&m.processAlive!==false;})});
       if(!testShellMode)updateService.start();
     }
     return readDashboardAndNotify();

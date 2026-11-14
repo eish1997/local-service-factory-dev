@@ -409,7 +409,9 @@ def open_leftover_repairs(category,batch,task,state,render_rows,snapshot,ledger,
 
 def finish(category,batch,task,**hooks):
     from tools import task_worker as worker,task_actions as actions,task_recovery as recovery
-    path,data=lib.load_batch(category,batch);file=path/'tasks'/task/'task.json';state=lib.read(file)
+    path,data=lib.load_batch(category,batch)
+    lib.require_api(data)
+    file=path/'tasks'/task/'task.json';state=lib.read(file)
     if state['status']!='recovering':return 0 if state['status'] in {'completed','completed_with_errors'} else 1
     with lib.lock(file.parent/'worker.lock'):
         lib.synchronize_license(file,state)

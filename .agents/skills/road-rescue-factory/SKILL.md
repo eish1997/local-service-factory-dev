@@ -9,7 +9,11 @@ Treat the repository root containing `factory.py` as the project root. Use `pyth
 
 ## Shared Agent and dashboard task workflow (2026-09-30)
 
-For new independent groups and tasks, follow `TASK_WORKFLOW.md` in the project root. Use `python factory.py tasks assemble`, then `tasks plan` and `tasks start` under the user's scoped production instruction. Use `tasks resume` for the same saved task and remaining budget. Both entrances use the same frozen prompts and API runner. This takes priority over legacy new-batch routes below; preserve those routes for explicit legacy batch/job continuation only. Variables remain read-only in the dashboard. ChatGPT built-in image generation is a separately identified Agent-only mode and must never silently replace the shared API task. Missing confirmed business data blocks both entrances equally.
+For new independent API groups and tasks, follow `TASK_WORKFLOW.md` in the project root. Use `python factory.py tasks assemble`, then `tasks plan` and `tasks start` under the user's scoped production instruction. Use `tasks resume` for the same saved task and remaining budget. Both entrances use the same frozen prompts and API runner. This takes priority over legacy new-batch routes below; preserve those routes for explicit legacy batch/job continuation only. Variables remain read-only in the dashboard. Codex built-in generation uses its explicit native route below and must never silently replace the shared API task. Missing confirmed business data blocks both entrances equally.
+
+## Codex 内置生成
+
+用户明确选择 Codex 内置方式时，使用 TASK_WORKFLOW.md 的 native-* 流程和 development/CODEX_NATIVE_CONTRACT.md，不能走 API plan/start。先核对真实安装实例；多实例询问，旧版接口缺失明确不支持。新批次 route=codex_native，仍需本次组数、手机号、文案；组装和复制指令不授权生图。明确生产指令后才冻结范围、领取单元、落盘调用预留，并使用实际可用的内置工具。工具不可用不转 API；未知结果不重试、不退额度；有返回先恢复，不能按最新文件猜结果。合成测试不是真实生图验收，正式安装与发布另需授权。
 
 ## Current routing and boundaries
 

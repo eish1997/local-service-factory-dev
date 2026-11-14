@@ -1,6 +1,8 @@
 /* Same public task commands as Agent; disk is the source of truth. */
 (() => {
  const el=id=>document.getElementById(id), node=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
+ const nativeMode=()=>current?.batch?.generation_route==='codex_native';
+ const nativeStates={pending:'等待 Codex 生成',claimed:'Codex 已领取',awaiting_result:'等待工具返回',uncertain:'待回填或核对',raw_saved:'原图已保存，待排版',rendering:'排版中',completed:'已完成，待审核',failed:'需处理',cancelled:'已取消'};
  const titles={cover:'封面',triptych_panel:'三拼素材',triptych:'三拼图',detail:'详情'};
  const states={cancelled:'已取消',approved:'已审核',needs_fix:'待修复',prompt_ready:'待开始',queued:'排队中',running:'生成中',recovering:'自动补齐中',paused:'已暂停',interrupted:'待继续',failed:'待处理',failed_to_start:'无法启动',completed:'已完成',completed_with_errors:'待处理',generated:'待审核'};
  let category='road_rescue',batch='',current=null,chosen=new Set(),planned=null,busy=false,reading=false,stamp='',epoch=0,planVersion=0,initialized=false;
@@ -37,9 +39,9 @@
    box.indeterminate=selected>0&&!box.checked;
    el('task-selection').textContent=`${current?.batch?.visible_count??current?.batch?.count??0} ( ${selected} ) 组`;
    const start=el('task-start');
-   start.disabled=busy||running||!selected||completeSelection||needsResume;
-   if(!busy)start.lastChild.textContent=running?'生成中…':'开始生成';
-   start.title=running?'当前批次有生成任务':needsResume?'请继续原任务':completeSelection?'所选组已全部生成':'按待生成张数自动设置请求上限';
+   start.disabled=busy||running||!selected||completeSelection||needsResume||Boolean(current?.batch?.native_cancelled);
+   if(!busy)start.lastChild.textContent=nativeMode()?'复制 Codex 指令':running?'生成中…':'开始生成';
+   start.title=nativeMode()?'仅复制所选组的内置生成指令，不启动 API':running?'当前批次有生成任务':needsResume?'请继续原任务':completeSelection?'所选组已全部生成':'按待生成张数自动设置请求上限';
    el('task-package').disabled=busy||running||!completeSelection;
    for(const check of el('task-cards').querySelectorAll('input[type=checkbox]'))check.disabled=busy;
  }
@@ -167,7 +169,7 @@
      card.onclick=toggleGroup;
      card.onkeydown=e=>{if(e.target===card&&e.key===' '){e.preventDefault();toggleGroup();}};
      const images=node('div',undefined,'task-images'),slots=new Map();for(const u of g.units)slots.set(u.delivery_position,u.kind==='triptych_panel'?'triptych':u.kind);
-     for(const [position,kind]of slots){const item=node('button',undefined,'task-image'),existing=g.images.find(i=>i.position===position);item.dataset.position=position;if(existing){const img=node('img');img.src=existing.url;img.loading='lazy';item.append(img);const preview=()=>imageDialog(allImages,allImages.findIndex(i=>i.path===existing.path));item.ondblclick=preview;item.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();preview();}};}else{item.append(node('span','尚未生成'));item.setAttribute('aria-disabled','true');}item.setAttribute('aria-label',`第 ${g.group} 组，第 ${position} 张${titles[kind]}`);images.append(item);}
+     for(const [position,kind]of slots){const item=node('button',undefined,'task-image'),existing=g.images.find(i=>i.position===position);item.dataset.position=position;if(existing){const img=node('img');img.src=existing.url;img.loading='lazy';item.append(img);const preview=()=>imageDialog(allImages,allImages.findIndex(i=>i.path===existing.path));item.ondblclick=preview;item.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();preview();}};}else{const statuses=g.units.filter(u=>u.delivery_position===position).map(u=>u.native_status);const status=['uncertain','failed','cancelled','rendering','awaiting_result','claimed','raw_saved','pending'].find(v=>statuses.includes(v));const saved=statuses.filter(s=>['raw_saved','rendering','completed'].includes(s)).length;const nativeLabel=saved>0&&saved<statuses.length&&!['uncertain','failed','cancelled'].includes(status)?`已保存 ${saved}/${statuses.length} 份原图，等待其余素材`:nativeStates[status]||'等待 Codex 生成';item.append(node('span',nativeMode()?nativeLabel:'尚未生成'));item.setAttribute('aria-disabled','true');}item.setAttribute('aria-label',`第 ${g.group} 组，第 ${position} 张${titles[kind]}`);images.append(item);}
      enableRowDrag(images);card.append(images);
      root.append(card);images.scrollLeft=offsets.get(String(g.group))||0;
    }
@@ -198,14 +200,32 @@
    await watermarkLoad;
    const services=[...el('task-watermark-lines').querySelectorAll('input')].map(input=>input.value);
    const cat=category;if(window.dashboardFlushPostprocessText)await window.dashboardFlushPostprocessText();message('正在创建批次…');
-   const b=await call('assemble',{count,phone,services,...(category==='diving_salvage'?{task_type:el('task-type').value}:{}),request_id:crypto.randomUUID()});if(cat!==category)return;
-   el('task-create-dialog').close();autoChoose=false;setBatch(b.id);await refresh();message('批次已创建，选择组后准备生成。');
+   const b=await call('assemble',{count,phone,services,generation_route:el('task-generation-route').value,...(category==='diving_salvage'?{task_type:el('task-type').value}:{}),request_id:crypto.randomUUID()});if(cat!==category)return;
+   el('task-create-dialog').close();autoChoose=false;setBatch(b.id);await refresh();message(b.generation_route==='codex_native'?'等待 Codex 生成：选择组后复制指令。':'批次已创建，选择组后准备生成。');
  });};
+ el('task-generation-route').onchange=()=>{el('task-native-create-hint').hidden=el('task-generation-route').value!=='codex_native';};
+ let nativeImportBindings=[];
+ async function nativeInstruction(groups,ticket){
+   const identity=await call('native-instance');
+   const plan=await call('native-plan',{batch,groups,instance_id:identity.instance_id});
+   const state=await call('native-status',{batch,instance_id:identity.instance_id});
+   if(ticket!==epoch)return;
+   nativeImportBindings=Object.entries(state.units).filter(([id,u])=>groups.includes(u.group)&&plan.units.some(p=>p.id===id)&&['awaiting_result','uncertain'].includes(u.status)&&!state.cancelled).map(([unit,u])=>{const p=plan.units.find(p=>p.id===unit);return {category,batch,unit,scope:u.scope,claim:u.claim,instance_id:identity.instance_id,label:`第 ${u.group} 组 · ${titles[p.kind]||'原图'} ${p.position} · ${p.service_role||'封面'}`};});
+   el('task-native-import-field').hidden=!nativeImportBindings.length;
+   el('task-native-import-unit').replaceChildren(...nativeImportBindings.map((b,i)=>new Option(b.label,String(i))));
+   const locator={category,batch,groups,instance_id:identity.instance_id,data_root:identity.data_root,engine_root:identity.engine_root};
+   el('task-native-summary').textContent=`${groups.length} 组 · ${plan.delivery_count} 张成品 · ${plan.raw_count} 张原图 · ${plan.pending_units.length} 张待回填 · 剩余工具调用上限 ${plan.max_tool_calls} 次`;
+   el('task-native-instruction').value=`请先核对以下本机实例和批次，使用仓库公共 tasks native-* 接口处理本次所选范围：\n${JSON.stringify(locator,null,2)}\n读取冻结提示词与 native-plan，展示实际剩余原图和调用上限，并确认本次聊天已明确授权开始。仅使用 Codex 内置生图，不使用 API，不重新组装或扩大范围。逐单元领取并在调用前持久预留；返回图片必须明确绑定单元和文件摘要，先登记、回填，再本地排版。未知结果、额度不足或工具不可用时保留任务，不重试未知调用，不自动改用 API。没有本地输出时明确提示手动保存到该单元。不得把开发引擎冒充正式安装；完成后刷新同一实例面板并保留待审核状态。`;
+   el('task-native-copy-status').textContent='';el('task-native-dialog').showModal();el('task-native-copy').focus();el('task-native-instruction').scrollTop=0;
+ }
+ el('task-native-import').onclick=async()=>{const binding=nativeImportBindings[Number(el('task-native-import-unit').value)];if(!binding)return;const ticket=epoch,button=el('task-native-import');button.disabled=true;try{const result=await window.roadRescue.importNative(binding);if(result&&ticket===epoch){el('task-native-dialog').close();await refresh();message('已导入手动保存的原图；结果仍需审核。');}}catch(error){el('task-native-copy-status').textContent=error.message;}finally{button.disabled=false;}};
+ el('task-native-copy').onclick=async()=>{const text=el('task-native-instruction');try{await navigator.clipboard.writeText(text.value);el('task-native-copy-status').textContent='已复制，请粘贴到 Codex。';}catch{ text.focus();text.select();el('task-native-copy-status').textContent='请按 Ctrl+C 复制已选中的指令。';}};
  el('task-target').onchange=taskButtons;
  for(const op of ['pause','resume'])el('task-'+op).onclick=()=>action(async()=>{const options=eligibleTasks(op),select=el('task-target');if(!options.length)return;select.replaceChildren(...options.map(t=>new Option(`${states[t.status]||t.status} · ${t.groups.length} 组`,t.id)));if(options.length>1){const dialog=el('task-jobs-section');const closed=new Promise(resolve=>dialog.onclose=()=>resolve(dialog.returnValue));dialog.returnValue='cancel';dialog.showModal();if(await closed!=='confirm')return;}const task=el('task-target').value;if(!task)throw Error('请选择任务');const selected=current.tasks.find(t=>t.id===task);const key=batchKey();const saved=await call(op,{batch:selected?.batch||batch,task});if(op==='pause')pausing.add(task);else submitted.set(key,task);epoch++;await refresh();message(op==='pause'?'正在暂停，等待当前图片完成':continued(saved,op));});
  el('task-start').onclick=()=>{if(el('task-start').disabled)return;return action(async()=>{
    if(!chosen.size)throw Error('请先选择内容组');
    const keyBatch=batchKey(),ticket=epoch,version=planVersion,groups=[...chosen].sort((a,b)=>a-b);
+   if(nativeMode()){await nativeInstruction(groups,ticket);return;}
    const started=Date.now();
    const button=el('task-start');
    const label=button.lastChild;

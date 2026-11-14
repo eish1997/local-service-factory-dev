@@ -183,6 +183,7 @@ def prepare_replacement(request):
             original_snapshot={'business':lib.business_config(category),'project':definition,'batch_contact':{'phone':phone,'confirmation':'explicit_batch_input'}}
         else:
             path,data=lib.load_batch(category,batch)
+            lib.require_api(data)
             original=lib.selected(path,data,[group])[0]
             original_snapshot=lib.read(path/'snapshot.json')
         units=[u for u in original['units'] if u['delivery_position']==position]

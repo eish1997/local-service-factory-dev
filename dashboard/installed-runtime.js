@@ -18,7 +18,16 @@ function initialize(app,resources=process.resourcesPath){
   fs.writeFileSync(path.join(root,'.runtime/updates/install-result.json'),JSON.stringify({expected:prior.version,actual:app.getVersion(),recovered:prior.version!==app.getVersion(),at:Date.now()}));
   fs.unlinkSync(installing);
  }
+ recordInstance(root,engine,python,app.getVersion());
  return root;
+}
+function recordInstance(root,engine,python,version){
+ const normalized=process.platform==='win32'?path.resolve(root).toLowerCase():path.resolve(root);
+ const crypto=require('crypto'),identity=crypto.createHash('sha256').update(JSON.stringify({data_root:normalized})).digest('hex');
+ const descriptor={schema_version:1,instance_id:identity,data_root:path.resolve(root),engine_root:path.resolve(engine),python:path.resolve(python),app_version:version,native_protocol:fs.existsSync(path.join(engine,'tools/task_native.py'))?1:0};
+ const file=path.join(root,'.runtime/native-instance.json'),temp=file+'.'+crypto.randomBytes(6).toString('hex')+'.tmp';
+ fs.writeFileSync(temp,JSON.stringify(descriptor,null,2));fs.renameSync(temp,file);
+ return descriptor;
 }
 function registry(root){
  let base=process.env.FACTORY_ENGINE_HOME||root;
@@ -31,4 +40,4 @@ function registry(root){
  const hiddenPath=path.join(root,'.runtime/hidden_projects.json'),hidden=fs.existsSync(hiddenPath)?JSON.parse(fs.readFileSync(hiddenPath,'utf8')).projects:[];
  return {...value,projects:value.projects.filter(p=>!hidden.includes(p.id))};
 }
-module.exports={initialize,registry};
+module.exports={initialize,registry,recordInstance};
