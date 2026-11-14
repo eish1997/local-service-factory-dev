@@ -1,3 +1,7 @@
+## 当前发布：1.4.19（2026-11-15）
+
+统一仓库软件 1.4.19 已发布，构建来源 5dc6e7b；原规则 1794662868654979100 内容无变化，未重复发布。本版匿名下载/验签及新使用端规则 updated→current 通过。旧仓过渡包保留；本次未改变正式安装和客户数据。详细记录见 development/UNIFIED_REPOSITORY_EXECUTION_PLAN.md，证据在原工作区 .runtime/release-20261115。
+
 # 统一仓库上线（2026-11-14）
 
 软件 1.4.18、新仓规则 1794662868654979100 已发布，旧仓同版本过渡包保留。构建来源 207df626，原签名信任链保持。实际用户级旧版升级、新源匿名同步及恢复入口已验证；安装隔离偏差与恢复事实、验证范围见 development/M5_M6_RELEASE_VALIDATION.md。唯一台账为 development/UNIFIED_REPOSITORY_EXECUTION_PLAN.md。旧仓未归档/删除，不声称所有用户已升级。
