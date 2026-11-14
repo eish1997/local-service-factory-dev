@@ -1,5 +1,7 @@
 const image=document.getElementById('image'),counter=document.getElementById('counter');
-function render(item){if(!item)return;image.src=item.url;counter.textContent=`${item.index+1} / ${item.count}`;}
+let disposeHistory=null,historyTicket=0;
+async function render(item){if(!item)return;const ticket=++historyTicket;if(disposeHistory)disposeHistory();image.src=item.url;counter.textContent=`${item.index+1} / ${item.count}`;if(item.historyRequest)disposeHistory=await window.mountImageHistory(document.getElementById('viewer-history'),item.historyRequest,async version=>{if(ticket===historyTicket)image.src=version.url;});}
+
 document.getElementById('previous').addEventListener('click',()=>window.roadRescue.viewerNavigate(-1));
 document.getElementById('next').addEventListener('click',()=>window.roadRescue.viewerNavigate(1));
 document.getElementById('close').addEventListener('click',()=>window.roadRescue.closeViewer());

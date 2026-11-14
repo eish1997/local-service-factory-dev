@@ -1,0 +1,3665 @@
+{
+  "schema_version": 2,
+  "id": "diving_salvage",
+  "name": "潜水打捞",
+  "status": "content_ready_structure_pending",
+  "rule_version": "diving_salvage_v9_unified_seven",
+  "image_group_structure": {
+    "confirmed": true,
+    "cover_count": 1,
+    "detail_count": 6,
+    "total_images": 7,
+    "generation_unit_count": 7,
+    "generation_mode": "independent_delivery_images",
+    "structure_version": "diving_salvage_v9_unified_seven",
+    "rule": "所有任务类型统一1首图+6详情，按水下或陆地作业自动匹配流程"
+  },
+  "approval": {
+    "content_rules": true,
+    "cover_types": true,
+    "style": false,
+    "typography": true,
+    "production": false,
+    "documentary_logic": true,
+    "portrait_format": true
+  },
+  "objects": [
+    {
+      "id": "phone",
+      "name": "手机",
+      "size": "small",
+      "material": "玻璃与塑料保护壳",
+      "shape": "圆角长方形",
+      "feature": "壳角有一处浅划痕",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "keys",
+      "name": "钥匙串",
+      "size": "small",
+      "material": "金属",
+      "shape": "同一圆环上三把钥匙",
+      "feature": "一枚椭圆钥匙牌",
+      "colors": [
+        "银灰",
+        "深灰",
+        "金色"
+      ]
+    },
+    {
+      "id": "ring",
+      "name": "戒指",
+      "size": "small",
+      "material": "金属",
+      "shape": "细圆环",
+      "feature": "一道细刻纹",
+      "colors": [
+        "银灰",
+        "深灰",
+        "金色"
+      ]
+    },
+    {
+      "id": "watch",
+      "name": "手表",
+      "size": "small",
+      "material": "金属与硅胶",
+      "shape": "圆形表盘",
+      "feature": "表带两排孔",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "glasses",
+      "name": "眼镜",
+      "size": "small",
+      "material": "金属与树脂",
+      "shape": "椭圆镜框",
+      "feature": "细镜腿",
+      "colors": [
+        "银灰",
+        "深灰",
+        "金色"
+      ]
+    },
+    {
+      "id": "camera",
+      "name": "相机",
+      "size": "small",
+      "material": "金属与塑料",
+      "shape": "方形机身配圆镜头",
+      "feature": "短腕带",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "drone",
+      "name": "无人机",
+      "size": "small",
+      "material": "塑料与金属",
+      "shape": "四旋翼折叠机身",
+      "feature": "一处机臂浅划痕",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "toolbox",
+      "name": "工具箱",
+      "size": "small",
+      "material": "塑料与金属",
+      "shape": "带提手长方箱",
+      "feature": "两枚金属搭扣",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "bicycle",
+      "name": "自行车",
+      "size": "medium",
+      "material": "金属与橡胶",
+      "shape": "双轮菱形车架",
+      "feature": "弯曲车把",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "ebike",
+      "name": "电动自行车",
+      "size": "medium",
+      "material": "金属与塑料",
+      "shape": "双轮低跨车架",
+      "feature": "后置方形电池盒",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "motorcycle",
+      "name": "摩托车",
+      "size": "medium",
+      "material": "金属与塑料",
+      "shape": "双轮油箱车架",
+      "feature": "圆形前灯",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "small_machine",
+      "name": "小型机械设备",
+      "size": "medium",
+      "material": "金属",
+      "shape": "紧凑方形机架",
+      "feature": "两条平行加固筋",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "car",
+      "name": "汽车",
+      "size": "large",
+      "material": "金属与玻璃",
+      "shape": "四轮紧凑轿车",
+      "feature": "左侧车门浅凹痕",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "boat",
+      "name": "小型船只",
+      "size": "large",
+      "material": "玻璃钢",
+      "shape": "窄长船体",
+      "feature": "船艏一条浅划痕",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    },
+    {
+      "id": "large_machine",
+      "name": "大型设备",
+      "size": "large",
+      "material": "金属",
+      "shape": "大型矩形机架",
+      "feature": "四个底部支脚",
+      "colors": [
+        "深灰",
+        "蓝色",
+        "红色"
+      ]
+    }
+  ],
+  "sites": [
+    {
+      "id": "pier",
+      "name": "湖边木栈道",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "普通木栈道，岸边有小型作业平台",
+      "light_context": "天空自然光与岸边真实遮挡，不默认青山绿水背景"
+    },
+    {
+      "id": "ramp",
+      "name": "水库混凝土下水坡道",
+      "sizes": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "detail": "宽阔混凝土坡道，留有可承载回收设备的作业区",
+      "light_context": "天空自然光与岸边真实遮挡，不默认青山绿水背景"
+    },
+    {
+      "id": "river",
+      "name": "城郊河道石砌岸边",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "石砌岸线旁有平整作业区",
+      "light_context": "天空自然光与岸边真实遮挡，不默认青山绿水背景"
+    },
+    {
+      "id": "dock",
+      "name": "码头及作业船",
+      "sizes": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "detail": "宽阔码头配稳定作业船，具备设备作业空间",
+      "light_context": "天空自然光与岸边真实遮挡，不默认青山绿水背景"
+    },
+    {
+      "id": "pond",
+      "name": "鱼塘岸边",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "平缓塘岸与稳定岸上接应位置",
+      "light_context": "天空自然光与岸边真实遮挡，不默认青山绿水背景"
+    },
+    {
+      "id": "pool",
+      "name": "景观池",
+      "sizes": [
+        "small"
+      ],
+      "detail": "普通浅景观池，禁止船只与重型起吊设备",
+      "light_context": "天空自然光与岸边真实遮挡，不默认青山绿水背景"
+    },
+    {
+      "id": "urban_river",
+      "name": "城市河道混凝土驳岸",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "普通建筑、护栏与混凝土岸线，无风景宣传构图",
+      "scenic": false,
+      "light_context": "天气与真实周边遮挡决定自然光"
+    },
+    {
+      "id": "ditch",
+      "name": "普通浑水沟渠岸边",
+      "sizes": [
+        "small"
+      ],
+      "detail": "低矮岸线，近处作业可辨，不是完全不可见的污水",
+      "scenic": false,
+      "light_context": "天气与真实周边遮挡决定自然光"
+    },
+    {
+      "id": "bridge",
+      "name": "城市桥下混凝土作业岸边",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "桥墩、护岸和普通城市水道，桥外自然光与桥体阴影",
+      "scenic": false,
+      "light_context": "桥外天空光被桥体遮挡，阴影真实保留"
+    },
+    {
+      "id": "industrial_pool",
+      "name": "工业设施维护水池岸边",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "经安排的工业设施作业区域，不虚构化学介质或危险参数",
+      "scenic": false,
+      "light_context": "天气与真实周边遮挡决定自然光"
+    },
+    {
+      "id": "scenic_lake",
+      "name": "少数郊外湖岸场景",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "自然湖岸与有限远山，仅作为少数兼容地点，不强化旅游山水",
+      "scenic": true,
+      "light_context": "天气与真实周边遮挡决定自然光"
+    },
+    {
+      "id": "canal",
+      "name": "城市运河作业岸段",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "普通运河及可接近的维护岸段",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    },
+    {
+      "id": "culvert",
+      "name": "桥涵外侧排水水域",
+      "sizes": [
+        "small"
+      ],
+      "detail": "只在可见开放水域记录，不展示钻入狭窄涵洞",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    },
+    {
+      "id": "irrigation",
+      "name": "村镇灌溉渠",
+      "sizes": [
+        "small"
+      ],
+      "detail": "浅水窄渠，普通乡村维护环境，无深水或大型目标",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    },
+    {
+      "id": "village_pond",
+      "name": "村镇公共池塘",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "日常池塘与普通村镇岸线",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    },
+    {
+      "id": "aquaculture",
+      "name": "养殖塘作业岸段",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "塘埂与养殖维护环境",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    },
+    {
+      "id": "drydock",
+      "name": "普通船坞水域",
+      "sizes": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "detail": "有相应回收空间和设备承载条件的船坞作业区",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    },
+    {
+      "id": "harbor",
+      "name": "普通港池作业区",
+      "sizes": [
+        "small",
+        "medium",
+        "large"
+      ],
+      "detail": "有回收设备空间的宽阔港池",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    },
+    {
+      "id": "ship_side",
+      "name": "作业船边水域",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "稳定作业船旁，接应在船上进行",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    },
+    {
+      "id": "storage_pool",
+      "name": "工业蓄水池维护区",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "维护水池周边有可站立的工作平台，不展示危险介质",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    },
+    {
+      "id": "factory_drain",
+      "name": "厂区开放沟渠",
+      "sizes": [
+        "small"
+      ],
+      "detail": "浅水开放沟渠，禁止套用深水作业",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    },
+    {
+      "id": "pump_intake",
+      "name": "泵站取排水设施外侧",
+      "sizes": [
+        "small",
+        "medium"
+      ],
+      "detail": "隔离维护区域的开放水域与取排水设施，无运行参数",
+      "light_context": "实际天气与设施遮挡决定自然光",
+      "scenic": false
+    }
+  ],
+  "lighting": [
+    "晴天上午",
+    "晴天下午",
+    "阴天柔光"
+  ],
+  "water": [
+    "淡绿带轻微浑浊",
+    "青绿带悬浮颗粒",
+    "灰绿且能见度有限"
+  ],
+  "bottom": [
+    "泥沙",
+    "碎石",
+    "泥沙与少量水草"
+  ],
+  "teams": [
+    {
+      "id": "navy",
+      "diver": "成年中国男性，短黑发，方脸，中等体型，黑蓝潜水服，黑色面镜，黑色脚蹼",
+      "assistants": "两名成年中国作业人员，一名灰色工作服短发男性、一名藏蓝工作服扎发女性",
+      "equipment": "同套黑色气瓶与浮力背心、调节器、压力表、潜水手电；水面接应人员穿橙色救生衣"
+    },
+    {
+      "id": "black",
+      "diver": "成年中国女性，黑发扎低髻，圆脸，中等体型，黑色潜水服，蓝边面镜，黑色脚蹼",
+      "assistants": "两名成年中国作业人员，一名蓝色工作服短发男性、一名灰色工作服短发男性",
+      "equipment": "同套黑色气瓶与浮力背心、调节器、压力表、潜水手电；水面接应人员穿黄色救生衣"
+    }
+  ],
+  "recovery": {
+    "small": "潜水员以手持或小型回收袋携带，水面递交给接应人员；不出现吊车或重型起吊设备",
+    "medium": "多人配合使用与体量相符的固定吊带、牵引绳和稳定回收设备；禁止单手托起；水面协作时交接牵引绳而非徒手举起物品",
+    "large": "岸上承载平台或作业船配合足额起重设备和多点吊带；人员安全接应牵引绳，禁止徒手递送或单人托举大型目标"
+  },
+  "covers": [
+    {
+      "id": "underwater_discovery",
+      "name": "水下发现定位",
+      "stages": [
+        "discover"
+      ],
+      "action": "水下发现并定位本组目标，画面主体是实际目标及作业者的空间关系，不举起成果展示"
+    },
+    {
+      "id": "storefront",
+      "name": "门店展示",
+      "stages": [],
+      "action": "独立虚构服务门店正面、侧面或装备入口；普通中国本地服务门店，不把门店强行放到打捞案例岸边，不展示已找回目标"
+    }
+  ],
+  "stages": [
+    {
+      "id": "entry_airborne",
+      "name": "滞空入水动作预览",
+      "action": "主潜水员身体已经离开低平台滞空，尚未触水，水面无提前水花",
+      "state": "低落差自然瞬间，人物全身与离岸间隙可辨；没有目标或成果提前在岸上，不是站岸边准备，不是高台悬崖跳水"
+    },
+    {
+      "id": "confirm",
+      "name": "纯装备展示",
+      "action": "只展示本次业务实际适用的装备静物",
+      "state": "不出现人物、手部、目标、遗体或打捞成果；装备自然放置且清晰可辨"
+    },
+    {
+      "id": "prepare",
+      "name": "装备与人员准备",
+      "action": "岸边检查整套潜水装备与回收设备",
+      "state": "目标仍在水下且不可见，未被找回"
+    },
+    {
+      "id": "discover",
+      "name": "发现确认目标",
+      "action": "水底近距离观察并确认唯一目标",
+      "state": "目标位于水底，表面沾泥，未清洗；不能提前放在岸上"
+    },
+    {
+      "id": "recover",
+      "name": "回收出水",
+      "action": "按对象体量回收，突出出水与接应",
+      "state": "目标刚离水，湿润滴水且保留泥痕，无翻新"
+    },
+    {
+      "id": "handover",
+      "name": "结果交接",
+      "action": "岸边稳定放置目标并确认交接",
+      "state": "目标仍湿润、保留泥痕和原有损伤；不宣称恢复使用"
+    }
+  ],
+  "cameras": [
+    "环境全景，关注场地与作业关系",
+    "人物中景，关注动作与装备",
+    "动作近景，关注操作接触点",
+    "物品特写，关注识别特征"
+  ],
+  "fixed_prompt": "真实中国本地潜水打捞服务作业纪实感，同伴自然记录，具体设备随当前岸上或水下阶段匹配，普通工作现场，光线自然，非豪华商业大片、非插画、非3D。AI服务示意，虚构案例与门店，不冒充真实客户案例或真实门店宣传。",
+  "negative_prompt": "禁止无关围观、目标复制、数量形状颜色改变、异常肢体、设备穿模、器材零件随机拼凑、单手托举重物。物品打捞画面不出现被救者或遗体，禁止血腥题材。不得从浑水突然变成透明泳池，不得把目标随机翻新干净。手机默认熄屏，不暗示恢复功能。禁止额外文字、电话号码、地名、价格、成功率、30分钟上门承诺、水印、UI、二维码；不复制参考图文字。",
+  "text_policy": {
+    "default": "raw_no_text_local_overlay",
+    "optional_storefront_name": "潜水打捞",
+    "overlay_enabled": true,
+    "layout_confirmed": true
+  },
+  "assembly_order": [
+    "固定业务与摄影要求",
+    "组设定完整锚点",
+    "首图类型或详情阶段",
+    "动作与当前状态",
+    "景别机位与视觉焦点",
+    "场景限制"
+  ],
+  "continuity_note": "每组先抽样冻结，再组装每张；保存完整设定与规则快照以便复现。提示词不能保证跨图身份完美，仍须实际图像审核。",
+  "branch_common_prompt": "真实中国本地服务作业纪实，自然摄影，AI服务示意，非真实客户案例；不冒充真实门店。只描述作业画面，不提供医学教学、危险施工步骤、电气参数、压力值或切割焊接操作参数。",
+  "branch_negative": "禁止血腥、裸露遗体、伤口、腐败、异常肢体、装备穿模、无关围观、重复主体。禁止广告电话、地名、价格、成功率、上门时限、额外文字、水印和UI。人员搜救与遇难者转运不得互换，不能把人员举给镜头展示成果。",
+  "branch_stages": {
+    "live_rescue": [
+      {
+        "id": "entry_airborne",
+        "name": "滞空入水动作预览",
+        "action": "主潜水员身体已经离开低平台滞空，尚未触水，水面无提前水花",
+        "state": "低落差自然瞬间，人物全身与离岸间隙可辨；没有目标或成果提前在岸上，不是站岸边准备，不是高台悬崖跳水"
+      },
+      {
+        "id": "confirm",
+        "name": "纯装备展示",
+        "action": "只展示本次业务实际适用的装备静物",
+        "state": "不出现人物、手部、目标、遗体或打捞成果；装备自然放置且清晰可辨"
+      },
+      {
+        "id": "prepare",
+        "name": "人员装备准备",
+        "action": "岸或船上救援队准备",
+        "state": "明确为活人搜救，目标未找到"
+      },
+      {
+        "id": "locate",
+        "name": "发现定位待救者",
+        "action": "队员发现并定位一名有生命的成年人，准备水面接应",
+        "state": "目标明确为活人，位置已确认，尚未移交；不展示遗体或医学操作"
+      },
+      {
+        "id": "assist",
+        "name": "水面接应",
+        "action": "救援队接应一名有生命的成年人",
+        "state": "待救者始终为活人，穿着固定服装；无伤口或医疗操作"
+      },
+      {
+        "id": "handover",
+        "name": "移交救援人员",
+        "action": "岸边救援人员接护并移交",
+        "state": "活人已获接护，尊重隐私；不展示医学治疗"
+      }
+    ],
+    "deceased_recovery": [
+      {
+        "id": "entry_airborne",
+        "name": "滞空入水动作预览",
+        "action": "主潜水员身体已经离开低平台滞空，尚未触水，水面无提前水花",
+        "state": "低落差自然瞬间，人物全身与离岸间隙可辨；没有目标或成果提前在岸上，不是站岸边准备，不是高台悬崖跳水"
+      },
+      {
+        "id": "confirm",
+        "name": "纯装备展示",
+        "action": "只展示本次业务实际适用的装备静物",
+        "state": "不出现人物、手部、目标、遗体或打捞成果；装备自然放置且清晰可辨"
+      },
+      {
+        "id": "prepare",
+        "name": "队伍装备准备",
+        "action": "队伍准备遮挡和转运用品",
+        "state": "尚未发现目标；准备画面只显示人员与空用品，不出现遗体；遇难者状态不变"
+      },
+      {
+        "id": "discover",
+        "name": "发现并定位目标",
+        "action": "搜寻人员发现并定位目标，少量穿衣肩背或裤腿在近处可辨，其余自然遮挡",
+        "state": "遗体完整，当前只露出少量穿衣局部；不露全身、面部、皮肤、伤口、血液或腐败，不得表现为断肢"
+      },
+      {
+        "id": "transfer",
+        "name": "覆盖转运接应",
+        "action": "工作人员在遮挡下接应完全覆盖的转运担架",
+        "state": "此阶段全身由完全封闭的不透明遗体袋或覆盖物遮盖，无裸露身体、伤口、血液、腐败或特写"
+      },
+      {
+        "id": "handover",
+        "name": "尊重逝者的移交",
+        "action": "接应人员移交完全覆盖的担架",
+        "state": "远景或中景，遮挡持续，无围观和猎奇展示"
+      }
+    ],
+    "underwater_work": [
+      {
+        "id": "entry_airborne",
+        "name": "滞空入水动作预览",
+        "action": "主潜水员身体已经离开低平台滞空，尚未触水，水面无提前水花",
+        "state": "低落差自然瞬间，人物全身与离岸间隙可辨；没有目标或成果提前在岸上，不是站岸边准备，不是高台悬崖跳水"
+      },
+      {
+        "id": "confirm",
+        "name": "纯装备展示",
+        "action": "只展示本次业务实际适用的装备静物",
+        "state": "不出现人物、手部、目标、遗体或打捞成果；装备自然放置且清晰可辨"
+      },
+      {
+        "id": "prepare",
+        "name": "准备",
+        "action": "队伍准备适配装备",
+        "state": "尚未施工，不提前出现完工状态"
+      },
+      {
+        "id": "work",
+        "name": "水下作业",
+        "action": "展现适配装备参与该项作业的纪实瞬间",
+        "state": "仅作业示意，不写步骤、参数或操作教程"
+      },
+      {
+        "id": "inspect",
+        "name": "检查完成状态",
+        "action": "观察同一部位的完成状态并记录",
+        "state": "保持设施身份与部位一致，不宣称专业验收合格"
+      },
+      {
+        "id": "finish",
+        "name": "收尾",
+        "action": "人员整理装备并记录作业结束",
+        "state": "设施留在原地，不套用物品打捞回收与交接"
+      }
+    ],
+    "pipeline": [
+      {
+        "id": "confirm",
+        "name": "纯装备展示",
+        "action": "只展示本次业务实际适用的装备静物",
+        "state": "不出现人物、手部、目标、遗体或打捞成果；装备自然放置且清晰可辨"
+      },
+      {
+        "id": "prepare",
+        "name": "准备",
+        "action": "准备对应作业装备与现场防护",
+        "state": "仍为处理前状态"
+      },
+      {
+        "id": "treat",
+        "name": "处理",
+        "action": "表现对应管道作业的现场瞬间",
+        "state": "视觉示意，不展示危险施工步骤或参数"
+      },
+      {
+        "id": "recheck",
+        "name": "复查",
+        "action": "检测人员复查同一管段",
+        "state": "只作复查记录，不虚构验收证书或合格承诺"
+      },
+      {
+        "id": "finish",
+        "name": "完工收尾",
+        "action": "整理现场工具并记录完成状态",
+        "state": "同一管段与场地，禁止换管段冒充完工"
+      }
+    ]
+  },
+  "branches": {
+    "objects": {
+      "name": "物品打捞",
+      "stage_source": "stages",
+      "covers": [
+        "storefront",
+        "underwater_search",
+        "before_entry",
+        "emerging",
+        "result",
+        "surface_team"
+      ],
+      "requires_explicit_selection": false
+    },
+    "live_rescue": {
+      "name": "人员搜救（活人）",
+      "covers": [
+        "underwater_discovery"
+      ],
+      "requires_explicit_selection": true,
+      "person_status": "alive",
+      "sites": [
+        "pier",
+        "ramp",
+        "river",
+        "dock",
+        "pond",
+        "urban_river",
+        "bridge",
+        "canal",
+        "village_pond",
+        "aquaculture",
+        "harbor",
+        "ship_side"
+      ],
+      "rule": "仅活人搜救，不从死者池抽取；不表现医学操作教学。"
+    },
+    "deceased_recovery": {
+      "name": "遇难人员搜寻与遗体打捞",
+      "covers": [
+        "underwater_discovery"
+      ],
+      "requires_explicit_selection": true,
+      "person_status": "deceased",
+      "sites": [
+        "pier",
+        "ramp",
+        "river",
+        "dock",
+        "pond",
+        "urban_river",
+        "bridge",
+        "canal",
+        "village_pond",
+        "aquaculture",
+        "harbor",
+        "ship_side"
+      ],
+      "rule": "岸上确认和准备不出现遗体；发现定位镜头要求可见少量穿衣遗体局部，其余由浑水、地形、淤泥或画框自然遮住。遗体完整，禁止断肢、全身、面部、裸露皮肤、创伤、血液、腐败与猎奇特写。出水接应和移交完全遮盖；不改为活人救援。"
+    },
+    "underwater_work": {
+      "name": "水下作业",
+      "covers": [
+        "underwater_discovery"
+      ],
+      "requires_explicit_selection": true,
+      "rule": "水下寻找首图在本分支仅表现探摸定位；不使用物品成果或目标出水首图。"
+    },
+    "pipeline": {
+      "name": "管道作业",
+      "covers": [
+        "storefront"
+      ],
+      "requires_explicit_selection": true,
+      "rule": "非水下管道仅门店概念，其他首图待确认；只有underwater_pipeline作业可用水下适配首图。"
+    }
+  },
+  "person_profiles": {
+    "alive": [
+      {
+        "id": "adult_blue",
+        "identity": "一名成年中国男性，短黑发，蓝色外套，深灰长裤",
+        "status": "alive"
+      },
+      {
+        "id": "adult_gray",
+        "identity": "一名成年中国女性，黑发，灰色外套，深蓝长裤",
+        "status": "alive"
+      }
+    ],
+    "deceased": [
+      {
+        "id": "clothed_adult",
+        "identity": "一名遇难成年人，深蓝外套与深灰长裤；水下发现时仅少量穿衣局部可见，出水转运及移交全身由同一不透明深灰覆盖物遮盖",
+        "status": "deceased",
+        "clothing": "深蓝外套、深灰长裤",
+        "discovery_visible_parts": [
+          "深蓝外套覆盖的少量肩背",
+          "深灰长裤的一小段裤腿"
+        ]
+      }
+    ]
+  },
+  "branch_equipment": {
+    "live_rescue": "完整潜水与水面搜救装备、救生浮具、岸船接应用品；同一专业队伍，画面不演示医疗操作",
+    "deceased_recovery": "完整潜水搜寻装备、遮挡用品、深灰覆盖物、转运担架；同一接应队伍，覆盖状态保持不变",
+    "work_diving": "完整专业作业潜水装备及水面支持系统，匹配现场作业用途，不随机拼接设备零件",
+    "land_team": "两名成年中国作业人员，一名蓝色工作服短发男性、一名灰色工作服扎发女性；适配工作手套与现场防护，不穿潜水装备"
+  },
+  "underwater_jobs": [
+    {
+      "id": "survey",
+      "name": "探摸定位",
+      "target": "水下基础结构",
+      "equipment": "探摸观察与定位记录器材",
+      "sites": [
+        "ramp",
+        "dock",
+        "river",
+        "urban_river",
+        "bridge",
+        "industrial_pool",
+        "canal",
+        "village_pond",
+        "aquaculture",
+        "storage_pool",
+        "pump_intake",
+        "drydock",
+        "harbor",
+        "ship_side"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "专业人员在固定部位开展探摸定位的视觉示意；只展现现场关系"
+    },
+    {
+      "id": "seal",
+      "name": "水下封堵",
+      "target": "水下结构接缝",
+      "equipment": "适配封堵组件与水面支持器材",
+      "sites": [
+        "ramp",
+        "dock",
+        "urban_river",
+        "bridge",
+        "industrial_pool",
+        "storage_pool",
+        "pump_intake",
+        "drydock",
+        "harbor"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "队员在固定接缝处开展封堵组件作业，画面体现组件与接缝的位置关系，不展示施工步骤或参数"
+    },
+    {
+      "id": "weld",
+      "name": "水下焊接",
+      "target": "水下钢结构连接处",
+      "equipment": "成套专业水下焊接装备与水面支持系统",
+      "sites": [
+        "dock",
+        "drydock",
+        "harbor",
+        "ship_side"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "专业人员在固定部位开展水下焊接的视觉示意；只展现现场关系"
+    },
+    {
+      "id": "cut",
+      "name": "水下切割",
+      "target": "待拆水下金属构件",
+      "equipment": "成套专业水下切割装备与水面支持系统",
+      "sites": [
+        "dock",
+        "drydock",
+        "harbor",
+        "ship_side"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "队员在固定待拆金属构件处开展专业切割作业，工具与实际部位关系清楚；不虚构巨大火焰、爆炸或不适配设备"
+    },
+    {
+      "id": "inspect_record",
+      "name": "水下检查与摄像记录",
+      "target": "水下结构表面",
+      "equipment": "水下摄像机、照明与记录器材",
+      "sites": [
+        "ramp",
+        "dock",
+        "river",
+        "pond",
+        "urban_river",
+        "bridge",
+        "industrial_pool",
+        "canal",
+        "village_pond",
+        "aquaculture",
+        "storage_pool",
+        "pump_intake",
+        "drydock",
+        "harbor",
+        "ship_side"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "专业人员在固定部位开展水下检查与摄像记录的视觉示意；只展现现场关系"
+    },
+    {
+      "id": "desilt",
+      "name": "清淤清障",
+      "target": "水下通道与淤积区",
+      "equipment": "专业清淤清障器材与水面支持设备",
+      "sites": [
+        "ramp",
+        "dock",
+        "river",
+        "pond",
+        "urban_river",
+        "bridge",
+        "industrial_pool",
+        "canal",
+        "village_pond",
+        "aquaculture",
+        "storage_pool",
+        "pump_intake",
+        "drydock",
+        "harbor",
+        "ship_side"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "专业人员在固定部位开展清淤清障的视觉示意；只展现现场关系"
+    },
+    {
+      "id": "install",
+      "name": "水下安装",
+      "target": "水下设施连接部位",
+      "equipment": "适配安装拆除器材与固定支持装置",
+      "sites": [
+        "ramp",
+        "dock",
+        "urban_river",
+        "bridge",
+        "industrial_pool",
+        "storage_pool",
+        "pump_intake",
+        "drydock",
+        "harbor"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "队员在固定设施连接部位开展安装组件作业，表现构件与固定支持装置的关系；不展示技术步骤或参数"
+    },
+    {
+      "id": "reinforce",
+      "name": "维修加固",
+      "target": "水下结构受损部位",
+      "equipment": "维修加固组件与专业作业器材",
+      "sites": [
+        "ramp",
+        "dock",
+        "urban_river",
+        "bridge",
+        "industrial_pool",
+        "storage_pool",
+        "pump_intake",
+        "drydock",
+        "harbor"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "专业人员在固定部位开展维修加固的视觉示意；只展现现场关系"
+    },
+    {
+      "id": "hull_clean",
+      "name": "船底清理与缠绕物清除",
+      "target": "停泊船只船底",
+      "equipment": "船底清理器材与专业水面支持装备",
+      "sites": [
+        "dock",
+        "drydock",
+        "harbor",
+        "ship_side"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "专业人员在固定部位开展船底清理与缠绕物清除的视觉示意；只展现现场关系"
+    },
+    {
+      "id": "measure",
+      "name": "测量勘察",
+      "target": "水下结构与周边地形",
+      "equipment": "水下测量记录器材",
+      "sites": [
+        "ramp",
+        "dock",
+        "river",
+        "pond",
+        "urban_river",
+        "bridge",
+        "industrial_pool",
+        "canal",
+        "village_pond",
+        "aquaculture",
+        "storage_pool",
+        "pump_intake",
+        "drydock",
+        "harbor",
+        "ship_side"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "专业人员在固定部位开展测量勘察的视觉示意；只展现现场关系"
+    },
+    {
+      "id": "construction",
+      "name": "水下施工",
+      "target": "水工设施施工部位",
+      "equipment": "成套潜水装备、施工组件及水面支持装置",
+      "sites": [
+        "dock",
+        "industrial_pool",
+        "storage_pool",
+        "pump_intake",
+        "drydock",
+        "harbor"
+      ],
+      "feature": "同一构件外形、位置、材质与使用痕迹保持一致",
+      "action": "专业队员在固定水工构件处进行施工配合作业，仅呈现现场关系，不包含步骤、压力电气参数或施工教学",
+      "variants": [
+        {
+          "target": "取排水设施防护构件与固定连接座",
+          "equipment": "防护构件、固定支持装置与水面配合器材",
+          "sites": [
+            "pump_intake",
+            "industrial_pool"
+          ]
+        },
+        {
+          "target": "港池水下导向支架施工部位",
+          "equipment": "导向支架组件、定位支撑装置与水面配合器材",
+          "sites": [
+            "dock",
+            "harbor",
+            "drydock"
+          ]
+        },
+        {
+          "target": "蓄水设施水下检修支架部位",
+          "equipment": "检修支架组件、配套支撑器材与水面支持装置",
+          "sites": [
+            "storage_pool",
+            "industrial_pool"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "install_remove",
+      "name": "设施安装拆除",
+      "target": "水下设施连接部位",
+      "equipment": "适配安装拆除器材与固定支持装置",
+      "sites": [
+        "ramp",
+        "dock",
+        "urban_river",
+        "bridge",
+        "industrial_pool",
+        "storage_pool",
+        "pump_intake",
+        "drydock",
+        "harbor"
+      ],
+      "feature": "固定作业部位的轮廓、位置与原有磨损不变",
+      "action": "专业人员在固定部位开展设施安装拆除的视觉示意；只展现现场关系"
+    }
+  ],
+  "pipe_categories": {
+    "municipal": {
+      "name": "市政排水/污水管道",
+      "target": "灰色大口径排水管固定检修段",
+      "sites": [
+        {
+          "id": "municipal_site",
+          "name": "市政道路旁隔离的管道维护作业区",
+          "detail": "地面设备操作与管段检查，不展示人员进入危险管内",
+          "indoor": false,
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect",
+            "trenchless"
+          ]
+        },
+        {
+          "id": "municipal_manhole",
+          "name": "市政井口地面检测作业区",
+          "detail": "地面人员和设备记录，不展示人员进入井下",
+          "light_context": "路边自然天空光与现场遮挡",
+          "indoor": false,
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect",
+            "trenchless"
+          ]
+        },
+        {
+          "id": "utility_gallery",
+          "name": "市政管廊检修空间",
+          "indoor": true,
+          "detail": "地面可见维护位置与固定管段，合理实用照明",
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect"
+          ]
+        },
+        {
+          "id": "road_service",
+          "name": "道路旁管线检修区",
+          "indoor": false,
+          "detail": "普通道路边隔离维护位置，不表现大规模施工",
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect",
+            "trenchless"
+          ]
+        }
+      ],
+      "jobs": [
+        "inspect",
+        "clean",
+        "seal",
+        "repair",
+        "connect",
+        "trenchless",
+        "underwater_pipeline"
+      ]
+    },
+    "industrial": {
+      "name": "工业管道",
+      "target": "工业区域灰色金属管道固定连接段",
+      "sites": [
+        {
+          "id": "industrial_site",
+          "name": "工业管道设施的隔离维护区域",
+          "detail": "普通工业设施，现场设备匹配，无运行介质或操作参数展示",
+          "indoor": false,
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect"
+          ]
+        },
+        {
+          "id": "industrial_pipe_room",
+          "name": "普通工业室内管道间",
+          "detail": "设施维护空间，普通实用照明，管段与布局固定",
+          "indoor": true,
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect"
+          ]
+        },
+        {
+          "id": "equipment_room",
+          "name": "厂区设备房管道区",
+          "indoor": true,
+          "detail": "设备房固定管段，真实顶灯和局部照明",
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect"
+          ]
+        },
+        {
+          "id": "factory_courtyard",
+          "name": "厂区院落管道维护位置",
+          "indoor": false,
+          "detail": "厂房外院落与架设管道，普通维护环境",
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect"
+          ]
+        }
+      ],
+      "jobs": [
+        "inspect",
+        "clean",
+        "seal",
+        "repair",
+        "connect",
+        "underwater_pipeline"
+      ]
+    },
+    "domestic": {
+      "name": "家庭下水管道",
+      "target": "家庭厨房浅灰下水支管固定连接处",
+      "sites": [
+        {
+          "id": "domestic_site",
+          "name": "普通中国家庭厨房水槽下方",
+          "detail": "狭小室内工作空间，保持橱柜与管道布局一致",
+          "indoor": true,
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect"
+          ],
+          "target": "该地点的浅灰生活排水支管固定连接处"
+        },
+        {
+          "id": "domestic_utility",
+          "name": "住宅室内管道间",
+          "detail": "小型生活排水管与检修空间，无大型市政工地",
+          "indoor": true,
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect"
+          ],
+          "target": "该地点的浅灰生活排水支管固定连接处"
+        },
+        {
+          "id": "basement",
+          "name": "住宅地下室排水位置",
+          "indoor": true,
+          "detail": "小型生活排水管与普通地下室，不配大型市政设备",
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect"
+          ],
+          "target": "该地点的浅灰生活排水支管固定连接处"
+        },
+        {
+          "id": "home_courtyard",
+          "name": "住宅院落下水管位置",
+          "indoor": false,
+          "detail": "住宅院落生活排水管，普通小型维修空间",
+          "operations": [
+            "inspect",
+            "clean",
+            "seal",
+            "repair",
+            "connect"
+          ],
+          "target": "该地点的浅灰生活排水支管固定连接处"
+        }
+      ],
+      "jobs": [
+        "inspect",
+        "clean",
+        "seal",
+        "repair",
+        "connect"
+      ]
+    }
+  },
+  "pipe_jobs": [
+    {
+      "id": "inspect",
+      "name": "检测/内窥摄像/破损与堵塞排查",
+      "equipment": "管道摄像检测设备与记录终端",
+      "domestic_equipment": "小型管道内窥镜与记录终端",
+      "action": "表现检测/内窥摄像/破损与堵塞排查的作业现场，不提供施工操作教程"
+    },
+    {
+      "id": "clean",
+      "name": "清洗疏通",
+      "equipment": "匹配管径的专业清洗疏通设备",
+      "domestic_equipment": "小型疏通器与接水容器",
+      "action": "表现清洗疏通的作业现场，不提供施工操作教程"
+    },
+    {
+      "id": "seal",
+      "name": "封堵堵漏",
+      "equipment": "适配管段的封堵组件与维护器材",
+      "domestic_equipment": "小型密封维修组件与手工具",
+      "action": "表现封堵堵漏的作业现场，不提供施工操作教程"
+    },
+    {
+      "id": "repair",
+      "name": "维修更换/接口修复",
+      "equipment": "管段维修组件与匹配支撑器材",
+      "domestic_equipment": "匹配家庭支管的替换件与手工具",
+      "action": "表现维修更换/接口修复的作业现场，不提供施工操作教程"
+    },
+    {
+      "id": "connect",
+      "name": "安装连接拆除",
+      "equipment": "管件与安装拆除器材",
+      "domestic_equipment": "小型家庭下水管件与手工具",
+      "action": "表现安装连接拆除的作业现场，不提供施工操作教程"
+    },
+    {
+      "id": "trenchless",
+      "name": "非开挖修复",
+      "equipment": "市政非开挖修复成套设备",
+      "domestic_equipment": "不适用",
+      "action": "表现非开挖修复的作业现场，不提供施工操作教程"
+    },
+    {
+      "id": "underwater_pipeline",
+      "name": "水下管道检查维修",
+      "equipment": "水下管段检测维修器材与成套作业潜水装备",
+      "domestic_equipment": "不适用",
+      "action": "表现水下管道检查维修的作业现场，不提供施工操作教程"
+    }
+  ],
+  "pipe_source_mapping": {
+    "path": "configs/categories/pipe_unclogging.json",
+    "mode": "read_only_role_mapping",
+    "note": "读取并冻结既有角色的合法组合元数据；不复制其生成器或改变既有行为。新增范围采用分支场景描述。",
+    "roles": {
+      "domestic.clean": "厨房下水道疏通",
+      "municipal.clean": "高压清洗管道",
+      "domestic.inspect": "管道内窥镜检测",
+      "municipal.inspect": "管道内窥镜检测",
+      "industrial.inspect": "管道内窥镜检测"
+    }
+  },
+  "output_contract": {
+    "orientation": "portrait",
+    "ratio": "2:3",
+    "raw_generation_size": "1024x1536",
+    "final_size": "1024x1536"
+  },
+  "documentary": {
+    "behavior": "现场由同伴顺手记录；作业者专注工作，不看镜头、不排队摆姿势，不刻意举成果展示。允许侧面、侧背身、非居中、合理局部遮挡和自然裁切，关键动作清楚；不把所有镜头固定为背影。不靠人为糊图、脏镜头或强噪点伪造真实。",
+    "surface_capture": "岸上、水面和室内使用同伴手机随手记录视角，记录作业关系而非广告摆拍。",
+    "underwater_capture": "水下使用同伴近距离水下运动相机记录视角，角度跟随工作，装备与任务一致，不是棚拍水族箱。",
+    "light_constraints": "光照由天气、时间、实际遮挡和环境决定，保留自然明暗，不强提亮黑衣；禁止摄影棚主辅光、无来源轮廓光、戏剧光束、商业大片调色、夸张景深与HDR。确需作业灯时画面能解释灯源，照射范围局部合理，不照亮整片水域。",
+    "indoor_light": "室内窗光与可解释的顶灯或局部工作灯，保留柜下和管道间真实阴影，不套用室外天气或水下偏色",
+    "underwater_visibility": "近处动作能辨认，距离增加可见度降低，远处自然消失；保留合理悬浮物、触底扬泥、偏色和光线自然衰减。不默认清澈蓝海、珊瑚或水族箱，也不把所有水域变为同一种污水或完全不可见。",
+    "water_profiles": [
+      "灰绿色中等浑浊，近处动作清楚，远处逐渐消失",
+      "灰褐色带少量悬浮泥沙，近处可辨，触底局部扬泥",
+      "淡灰绿色轻度浑浊，能见度有限但非完全不透明",
+      "青灰色内陆水体，悬浮物较少，远处自然衰减"
+    ],
+    "framing": [
+      "同伴侧方随手记录，人物略偏左，关键动作完整",
+      "同伴斜侧方记录，主体略偏右，允许少量前景遮挡",
+      "自然略高机位记录工作关系，不俯拍成无人机视角",
+      "同伴平视记录，允许合理裁切画面边缘而不切掉关键动作",
+      "工作侧后方记录，保留现场关系，不要求所有人背对镜头"
+    ],
+    "result": "结果自然放稳在岸边、船上或适合现场的工作台检查交接，保留湿润泥痕；不总是手持面向镜头，不摆奖杯式成果姿势。"
+  },
+  "underwater_pipe_sites": [
+    "ramp",
+    "dock",
+    "urban_river",
+    "bridge",
+    "industrial_pool",
+    "canal",
+    "storage_pool",
+    "pump_intake",
+    "harbor"
+  ],
+  "environment_pools": {
+    "bank": {
+      "mud": "低缓泥岸",
+      "gravel": "碎石岸边",
+      "slope": "混凝土护坡",
+      "stone": "砖石驳岸",
+      "steps": "普通岸边台阶",
+      "rail": "护栏边维护位置",
+      "wood": "木栈桥边",
+      "platform": "码头或设施平台",
+      "boat": "作业船舷边",
+      "indoor": "室内管段接近位置",
+      "road": "地面检修口旁"
+    },
+    "surroundings": {
+      "homes": "普通居民楼一角",
+      "old": "老社区围墙一角",
+      "factory": "厂房外墙一角",
+      "warehouse": "普通仓库一角",
+      "bridge": "桥墩或道路一角",
+      "fields": "农田边缘",
+      "greenhouse": "温棚一角",
+      "shrubs": "普通灌木杂草",
+      "hills": "有限远山与普通湖岸",
+      "cabinet": "普通橱柜或墙面",
+      "pipes": "设备墙面与少量管线"
+    },
+    "surface": {
+      "soil": "夯实泥土地面",
+      "gravel": "碎石接近位置",
+      "concrete": "普通混凝土地面",
+      "brick": "旧砖铺地",
+      "wood": "木平台表面",
+      "deck": "防滑船甲板",
+      "tile": "普通瓷砖地面",
+      "cement": "室内水泥地面"
+    },
+    "wear": {
+      "scuff": "局部正常使用擦痕",
+      "watermark": "少量旧水线痕迹",
+      "patch": "局部修补痕迹",
+      "leaves": "边缘少量落叶",
+      "dust": "少量自然积尘",
+      "clean": "普通使用状态，不强行脏乱"
+    },
+    "weather_time": {
+      "cloud_am": "上午自然阴天",
+      "cloud_pm": "下午自然阴天",
+      "sun_am": "晴天上午",
+      "sun_pm": "晴天下午",
+      "after_rain": "雨后白天，天光平缓",
+      "indoor": "室内工作时段，不强加室外天气"
+    },
+    "light_source": {
+      "sky": "实际天空漫射光",
+      "side_sun": "自然侧向日光与现场阴影",
+      "shade": "天空光经桥体或设施遮挡",
+      "window": "室内窗光与普通顶灯",
+      "worklamp": "可解释的局部工作灯与实际环境光",
+      "ceiling": "普通实用顶灯，保留角落阴影"
+    },
+    "depth": {
+      "shallow": "浅水作业区，不描述为深水潜水",
+      "working": "一般内陆水下作业深度，近远可见度自然衰减",
+      "deep": "较深开放水域，光线随深度衰减，不展示数值或技术教程"
+    },
+    "water_level": {
+      "normal": "水位处于普通日常位置",
+      "lower": "水位偏低，保持同组水线一致",
+      "higher": "水位略高但非洪水，不夸张险情"
+    },
+    "visibility": {
+      "short": "近处可辨、稍远逐渐隐去",
+      "moderate": "中等可见距离，悬浮物自然分布",
+      "limited": "近距离动作清楚，远背景明显衰减，非完全不可见"
+    }
+  },
+  "environment_profiles": {
+    "pier": {
+      "bank": [
+        "wood"
+      ],
+      "surroundings": [
+        "homes",
+        "shrubs"
+      ],
+      "surface": [
+        "wood"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "ramp": {
+      "bank": [
+        "slope",
+        "rail"
+      ],
+      "surroundings": [
+        "homes",
+        "old",
+        "bridge"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working",
+        "deep"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": true
+    },
+    "river": {
+      "bank": [
+        "stone",
+        "steps"
+      ],
+      "surroundings": [
+        "homes",
+        "old",
+        "bridge"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "dock": {
+      "bank": [
+        "platform"
+      ],
+      "surroundings": [
+        "warehouse",
+        "factory"
+      ],
+      "surface": [
+        "concrete"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working",
+        "deep"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": true
+    },
+    "pond": {
+      "bank": [
+        "mud",
+        "gravel"
+      ],
+      "surroundings": [
+        "fields",
+        "greenhouse",
+        "shrubs"
+      ],
+      "surface": [
+        "soil",
+        "gravel"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean",
+        "leaves"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "pool": {
+      "bank": [
+        "slope",
+        "stone",
+        "steps",
+        "rail"
+      ],
+      "surroundings": [
+        "homes",
+        "old",
+        "bridge"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "shallow"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "urban_river": {
+      "bank": [
+        "slope",
+        "rail"
+      ],
+      "surroundings": [
+        "homes",
+        "old",
+        "bridge"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "ditch": {
+      "bank": [
+        "mud",
+        "gravel"
+      ],
+      "surroundings": [
+        "fields",
+        "greenhouse",
+        "shrubs"
+      ],
+      "surface": [
+        "soil",
+        "gravel"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean",
+        "leaves"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "shallow"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "bridge": {
+      "bank": [
+        "slope",
+        "rail"
+      ],
+      "surroundings": [
+        "homes",
+        "old",
+        "bridge"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "shade"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "industrial_pool": {
+      "bank": [
+        "platform",
+        "rail"
+      ],
+      "surroundings": [
+        "factory",
+        "warehouse"
+      ],
+      "surface": [
+        "concrete"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "scenic_lake": {
+      "bank": [
+        "mud",
+        "gravel"
+      ],
+      "surroundings": [
+        "hills",
+        "shrubs"
+      ],
+      "surface": [
+        "soil",
+        "gravel"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean",
+        "leaves"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "canal": {
+      "bank": [
+        "slope",
+        "stone",
+        "steps",
+        "rail"
+      ],
+      "surroundings": [
+        "homes",
+        "old",
+        "bridge"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "culvert": {
+      "bank": [
+        "slope",
+        "stone",
+        "steps",
+        "rail"
+      ],
+      "surroundings": [
+        "homes",
+        "old",
+        "bridge"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade"
+      ],
+      "depth": [
+        "shallow"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "irrigation": {
+      "bank": [
+        "mud",
+        "gravel"
+      ],
+      "surroundings": [
+        "fields",
+        "greenhouse",
+        "shrubs"
+      ],
+      "surface": [
+        "soil",
+        "gravel"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean",
+        "leaves"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "shallow"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "village_pond": {
+      "bank": [
+        "mud",
+        "gravel"
+      ],
+      "surroundings": [
+        "fields",
+        "greenhouse",
+        "shrubs"
+      ],
+      "surface": [
+        "soil",
+        "gravel"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean",
+        "leaves"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "aquaculture": {
+      "bank": [
+        "mud",
+        "gravel"
+      ],
+      "surroundings": [
+        "fields",
+        "greenhouse",
+        "shrubs"
+      ],
+      "surface": [
+        "soil",
+        "gravel"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean",
+        "leaves"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "drydock": {
+      "bank": [
+        "platform"
+      ],
+      "surroundings": [
+        "warehouse",
+        "factory"
+      ],
+      "surface": [
+        "concrete"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working",
+        "deep"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": true
+    },
+    "harbor": {
+      "bank": [
+        "platform"
+      ],
+      "surroundings": [
+        "warehouse",
+        "factory"
+      ],
+      "surface": [
+        "concrete"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working",
+        "deep"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": true
+    },
+    "ship_side": {
+      "bank": [
+        "boat"
+      ],
+      "surroundings": [
+        "warehouse",
+        "bridge"
+      ],
+      "surface": [
+        "deck"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "storage_pool": {
+      "bank": [
+        "platform",
+        "rail"
+      ],
+      "surroundings": [
+        "factory",
+        "warehouse"
+      ],
+      "surface": [
+        "concrete"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "factory_drain": {
+      "bank": [
+        "slope"
+      ],
+      "surroundings": [
+        "factory",
+        "warehouse"
+      ],
+      "surface": [
+        "concrete"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "shallow"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "pump_intake": {
+      "bank": [
+        "platform",
+        "rail"
+      ],
+      "surroundings": [
+        "factory",
+        "warehouse"
+      ],
+      "surface": [
+        "concrete"
+      ],
+      "wear": [
+        "scuff",
+        "watermark",
+        "patch",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "depth": [
+        "working"
+      ],
+      "water_level": [
+        "normal",
+        "lower",
+        "higher"
+      ],
+      "visibility": [
+        "short",
+        "moderate",
+        "limited"
+      ],
+      "heavy_recovery": false
+    },
+    "municipal_site": {
+      "bank": [
+        "road"
+      ],
+      "surroundings": [
+        "homes",
+        "old"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "heavy_recovery": false
+    },
+    "municipal_manhole": {
+      "bank": [
+        "road"
+      ],
+      "surroundings": [
+        "homes",
+        "old"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "heavy_recovery": false
+    },
+    "utility_gallery": {
+      "bank": [
+        "indoor"
+      ],
+      "surroundings": [
+        "pipes"
+      ],
+      "surface": [
+        "tile",
+        "cement"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "indoor"
+      ],
+      "light_source": [
+        "ceiling",
+        "worklamp"
+      ],
+      "heavy_recovery": false
+    },
+    "road_service": {
+      "bank": [
+        "road"
+      ],
+      "surroundings": [
+        "homes",
+        "old"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "heavy_recovery": false
+    },
+    "industrial_site": {
+      "bank": [
+        "road"
+      ],
+      "surroundings": [
+        "factory",
+        "warehouse"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "heavy_recovery": false
+    },
+    "industrial_pipe_room": {
+      "bank": [
+        "indoor"
+      ],
+      "surroundings": [
+        "pipes"
+      ],
+      "surface": [
+        "tile",
+        "cement"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "indoor"
+      ],
+      "light_source": [
+        "ceiling",
+        "worklamp",
+        "window"
+      ],
+      "heavy_recovery": false
+    },
+    "equipment_room": {
+      "bank": [
+        "indoor"
+      ],
+      "surroundings": [
+        "pipes"
+      ],
+      "surface": [
+        "tile",
+        "cement"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "indoor"
+      ],
+      "light_source": [
+        "ceiling",
+        "worklamp",
+        "window"
+      ],
+      "heavy_recovery": false
+    },
+    "factory_courtyard": {
+      "bank": [
+        "road"
+      ],
+      "surroundings": [
+        "factory",
+        "warehouse"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "heavy_recovery": false
+    },
+    "domestic_site": {
+      "bank": [
+        "indoor"
+      ],
+      "surroundings": [
+        "cabinet",
+        "pipes"
+      ],
+      "surface": [
+        "tile",
+        "cement"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "indoor"
+      ],
+      "light_source": [
+        "ceiling",
+        "worklamp",
+        "window"
+      ],
+      "heavy_recovery": false
+    },
+    "domestic_utility": {
+      "bank": [
+        "indoor"
+      ],
+      "surroundings": [
+        "cabinet",
+        "pipes"
+      ],
+      "surface": [
+        "tile",
+        "cement"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "indoor"
+      ],
+      "light_source": [
+        "ceiling",
+        "worklamp",
+        "window"
+      ],
+      "heavy_recovery": false
+    },
+    "basement": {
+      "bank": [
+        "indoor"
+      ],
+      "surroundings": [
+        "cabinet",
+        "pipes"
+      ],
+      "surface": [
+        "tile",
+        "cement"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "indoor"
+      ],
+      "light_source": [
+        "ceiling",
+        "worklamp"
+      ],
+      "heavy_recovery": false
+    },
+    "home_courtyard": {
+      "bank": [
+        "road"
+      ],
+      "surroundings": [
+        "homes",
+        "old"
+      ],
+      "surface": [
+        "concrete",
+        "brick"
+      ],
+      "wear": [
+        "scuff",
+        "patch",
+        "dust",
+        "clean"
+      ],
+      "weather_time": [
+        "cloud_am",
+        "cloud_pm",
+        "sun_am",
+        "sun_pm",
+        "after_rain"
+      ],
+      "light_source": [
+        "sky",
+        "shade",
+        "side_sun"
+      ],
+      "heavy_recovery": false
+    }
+  },
+  "deceased_preview_policy": {
+    "historical_preview_constraints": "旧预览中水下任何阶段都不显示遗体/轮廓的附加限制已被此次用户要求取代，不得叠加到新发现镜头。旧文件仅保留历史，不覆盖或删除。",
+    "discovery_required": true,
+    "surface_fully_covered": true
+  },
+  "cover_only_stages": [
+    {
+      "id": "search",
+      "name": "入水搜寻",
+      "action": "潜水员在固定水体中探照水底寻找",
+      "state": "尚未确认目标，允许目标完全不可见；禁止岸上出现目标"
+    }
+  ],
+  "independent_generation": {
+    "rule": "每张独立生成，连续性仅依靠冻结的人物、服装、装备、目标、场地、天气与光照文字。禁止把上一张或任何中间生成产物递归作为下一张参考；可选参考仅限固定原始干净资产，不串联传递。本次默认纯文生图，无参考路径或最近图引用。浑水悬浮物、触底扬泥与距离衰减仅是水中局部物理现象，禁止整图颗粒滤镜、脏镜头、人工模糊与噪点叠加；岸上保持自然正常清晰，不为纪实做旧。",
+    "mode": "text_to_image",
+    "reference_policy": "fixed_clean_originals_only_if_explicitly_selected",
+    "recursive_generated_references": false
+  },
+  "equipment_display_rule": "装备静物详情只展示本次实际适用装备；无人物、手部、目标、遗体或成果。装备在同场地地面、船上或工作台自然放置，允许合理使用痕迹但不脏乱，不整齐排列成展销摆拍，不棚拍商品广告，不加文字标注。后续人员准备详情保留人员准备过程。内部confirm标识仅为兼容旧接口，含义已替换为纯装备展示。",
+  "legacy_cover_definitions": [
+    {
+      "id": "storefront",
+      "name": "门店展示",
+      "stages": [],
+      "action": "独立虚构服务门店正面、侧面或装备入口；普通中国本地服务门店，不把门店强行放到打捞案例岸边，不展示已找回目标"
+    },
+    {
+      "id": "underwater_search",
+      "name": "水下寻找过程",
+      "stages": [
+        "search"
+      ],
+      "action": "潜水员用手电探照观察或接近可能目标，不举物炫耀"
+    },
+    {
+      "id": "before_entry",
+      "name": "即将入水的前一秒",
+      "stages": [
+        "prepare"
+      ],
+      "action": "装备检查完毕准备入水，身体仍全部在岸或船上，尚未进入水中，无提前水花"
+    },
+    {
+      "id": "emerging",
+      "name": "出水瞬间",
+      "stages": [
+        "recover"
+      ],
+      "action": "目标刚露水面并有水滴；小件随潜水员出水，中大件按固定回收方式缓慢露出水面"
+    },
+    {
+      "id": "result",
+      "name": "找回成果",
+      "stages": [
+        "handover"
+      ],
+      "action": "可辨识目标近景或在岸边稳定放置；保留湿润和泥痕，不暗示维修恢复功能"
+    },
+    {
+      "id": "surface_team",
+      "name": "水面协作",
+      "stages": [
+        "recover"
+      ],
+      "action": "水中与岸上或船上人员接应；小件递物，中大件接应牵引绳与起吊协作，不徒手递送重物"
+    }
+  ],
+  "cover_policy": {
+    "underwater": "underwater_discovery",
+    "non_underwater_pipeline": "pending_user_decision_keep_existing_storefront",
+    "rule": "仅首图使用更有冲击力的照片构图：以斜向动势、主体大小对比、前后景层次和明确视觉焦点形成适量海报感。保持自然水下光与合理浑浊衰减，不使用棚光、无来源轮廓光、特效、滤镜、噪点、文案或边框。发现详情采用不同视角和景别，仍为自然随手记录。人员尤其遇难者不以猎奇近拍制造冲击；遇难者头部绝不入镜。水下作业只定位实际工作部位，不强加打捞物。"
+  },
+  "underwater_operation_aliases": {
+    "水下封堵": "seal",
+    "水下切割": "cut",
+    "水下安装": "install",
+    "水下施工": "construction"
+  },
+  "variation_pools": {
+    "lead": [
+      "成年中国男性，短黑发、方脸、结实体型",
+      "成年中国女性，低发髻、圆脸、中等体型",
+      "成年中国男性，寸头、长脸、偏瘦体型",
+      "成年中国女性，短黑发、椭圆脸、结实体型",
+      "成年中国男性，短卷发、圆脸、中等体型",
+      "成年中国女性，黑发收束、方脸、偏瘦体型"
+    ],
+    "suit": [
+      "黑蓝潜水服，黑色面镜与黑脚蹼",
+      "深灰潜水服，灰边面镜与黑脚蹼",
+      "黑色潜水服，蓝边面镜与深蓝脚蹼",
+      "黑色暗红拼接潜水服，黑面镜与黑脚蹼"
+    ],
+    "support": [
+      "成年中国男性，短发、方脸",
+      "成年中国女性，扎发、圆脸",
+      "成年中国男性，寸头、圆脸",
+      "成年中国女性，短发、长脸",
+      "成年中国男性，短发、偏瘦",
+      "成年中国女性，收束黑发、结实体型"
+    ],
+    "clothes": [
+      "灰色工作服",
+      "藏蓝工作服",
+      "深绿工作服",
+      "棕灰工作服",
+      "蓝灰工作服",
+      "深灰短袖工作服"
+    ],
+    "vest": [
+      "橙色救生衣",
+      "黄色救生衣",
+      "红色救生衣"
+    ],
+    "kit": [
+      "完整黑色气瓶、黑浮力背心、调节器、压力表和潜水手电",
+      "银灰气瓶、黑浮力背心、配套调节器压力表及潜水手电",
+      "深灰气瓶、黑浮力背心、配套调节器压力表及小型潜水照明"
+    ],
+    "water": {
+      "green": "淡绿内陆水体，少量悬浮物，近处相对清楚、远处自然隐去",
+      "bluegrey": "青灰水体，少量悬浮物，光随距离自然衰减",
+      "brown": "浅褐色泥沙水体，中度浑浊、近处可辨",
+      "greybrown": "灰褐水体，细悬浮泥沙，触底仅局部扬泥",
+      "olive": "橄榄绿内陆水体，柔和偏色，距离增加可见度下降",
+      "clear": "相对清亮的淡青内陆水体，仍有细悬浮物与距离衰减，非蓝海或透明泳池"
+    },
+    "water_view": {
+      "pov": "同伴第一视角，只见自己的手工具与前方目标",
+      "side": "与作业方向垂直的侧面视点",
+      "bottom": "低近底斜看目标和作业关系",
+      "overhead": "斜俯视实际工作结构",
+      "front": "侧前方与作业者形成夹角",
+      "rear": "侧后方跟随工作位置"
+    },
+    "shore_view": {
+      "side": "同伴侧面平视",
+      "low": "自然较低机位",
+      "diagonal": "斜侧方中等高度",
+      "overhead": "近旁略高机位，非无人机",
+      "oblique": "沿工作区域斜向记录",
+      "across": "从作业区另一侧自然平视"
+    },
+    "water_distance": [
+      "近距离保留关键作业关系",
+      "中距离呈现目标与环境比例",
+      "较宽视野但近处关键动作清楚"
+    ],
+    "shore_distance": [
+      "近景只保留工作区域",
+      "中景保留动作关系",
+      "稍远记录人与场地"
+    ],
+    "body": [
+      "主作业者全身但不居中",
+      "主作业者半身与手工具",
+      "只有作业者手臂或局部，无全身人物"
+    ],
+    "shore_body": [
+      "人物半身与工作区域",
+      "人物全身但不居中",
+      "只保留手臂与关键动作，面部在画外"
+    ],
+    "direction": [
+      "动作沿左下向右上展开",
+      "动作沿右下向左上展开",
+      "侧向横贯画面但保留竖幅",
+      "不对称纵向层次"
+    ],
+    "negative_space": [
+      "左侧保留适量环境空隙",
+      "右侧保留环境空隙",
+      "上方保留自然水域或场地",
+      "前景保留少量空间而不挡动作"
+    ],
+    "water_occlusion": [
+      "无遮住关键动作的前景",
+      "少量水草只遮画面边缘",
+      "局部泥沙薄层在远侧而非整图",
+      "装备边缘轻入前景但不遮目标"
+    ],
+    "shore_occlusion": [
+      "无前景遮挡",
+      "画面边缘少量护栏或设施结构",
+      "工具箱边缘轻入画面",
+      "附近装备局部作为前景"
+    ],
+    "target_relation": [
+      "目标与作业者分处不同纵深",
+      "目标处于作业者侧前方",
+      "手或工具把视线引向目标",
+      "目标与作业者形成横向空间关系"
+    ],
+    "target_position": [
+      "目标偏左中部",
+      "目标偏右中部",
+      "目标位于下方侧部而非底部正中",
+      "目标接近中部但人物偏离中心"
+    ],
+    "target_scale": [
+      "目标真实尺寸，以近远关系可辨",
+      "保留目标与手工具比例",
+      "略靠近目标但不放大其物理尺寸"
+    ],
+    "target_scale_large": [
+      "大目标仅呈局部构件，真实尺度",
+      "较远保留大型目标与队员比例",
+      "目标占较多画面，队员自然较小"
+    ],
+    "water_progress": [
+      "动作刚接近关键部位",
+      "正在观察确认关键接触点",
+      "动作持续进行的中间瞬间"
+    ],
+    "prepare_task": [
+      "一名队员正在拿取本次适用工具，其余人在画外",
+      "正在穿戴本分支工作装备",
+      "正在整理本次适用的器材连接与收纳位置",
+      "正在检查本次适用装备，动作未完成"
+    ],
+    "finish_task": [
+      "一名队员正在收纳适用工具",
+      "一名队员自然检查交接位置",
+      "两人分工，一人处理核心交接另一人在侧边整理装备"
+    ],
+    "shore_progress": [
+      "动作刚开始，手仍在移动位置",
+      "动作进行中，尚未整齐收妥",
+      "一个动作将结束但未摆正给镜头"
+    ],
+    "facing": [
+      "侧身专注工作",
+      "斜向低头关注手边任务",
+      "半转身衔接下一项工作",
+      "自然侧背面，不要求所有人背影"
+    ],
+    "spacing": [
+      "一近一远，各自执行不同任务",
+      "一人在较低位置，一人在较高岸上",
+      "两人横向错开而不围站",
+      "一人靠画边，另一人靠工作部位"
+    ],
+    "cover_structure": [
+      "侧向人物与工作部位形成宽窄对比",
+      "上方作业者与中部目标形成纵深",
+      "近处关键部位与远处作业者形成尺度对比",
+      "第一视角工具引向中心偏侧的目标",
+      "主体横向错位，留出单侧负空间",
+      "斜俯视结构形成几何层次"
+    ]
+  },
+  "entry_sites": {
+    "pier": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "ramp": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "river": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "dock": "靠近作业水域的低落差船边平台，水面与落点无遮挡",
+    "pond": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "urban_river": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "bridge": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "industrial_pool": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "scenic_lake": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "canal": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "village_pond": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "aquaculture": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "drydock": "靠近作业水域的低落差船边平台，水面与落点无遮挡",
+    "harbor": "靠近作业水域的低落差船边平台，水面与落点无遮挡",
+    "ship_side": "靠近作业水域的低落差船边平台，水面与落点无遮挡",
+    "storage_pool": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃",
+    "pump_intake": "该岸段已有的临水低平台或维护台阶边缘，水面落点开阔，非护栏外高空跳跃"
+  },
+  "water_compatibility": {
+    "pier": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "ramp": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "river": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "dock": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "pond": [
+      "brown",
+      "greybrown",
+      "olive"
+    ],
+    "pool": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "urban_river": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "ditch": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "bridge": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "industrial_pool": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "scenic_lake": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "canal": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "culvert": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "irrigation": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "village_pond": [
+      "brown",
+      "greybrown",
+      "olive"
+    ],
+    "aquaculture": [
+      "brown",
+      "greybrown",
+      "olive"
+    ],
+    "drydock": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "harbor": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "ship_side": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "storage_pool": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "factory_drain": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ],
+    "pump_intake": [
+      "green",
+      "bluegrey",
+      "brown",
+      "greybrown",
+      "olive",
+      "clear"
+    ]
+  },
+  "entry_stage": {
+    "id": "entry_airborne",
+    "name": "滞空入水动作预览",
+    "action": "主潜水员身体已经离开低平台滞空，尚未触水，水面无提前水花",
+    "state": "低落差自然瞬间，人物全身与离岸间隙可辨；没有目标或成果提前在岸上，不是站岸边准备，不是高台悬崖跳水"
+  },
+  "physical_scene_rules": {
+    "version": 1,
+    "note": "物理关系是画面一致性约束，不是救援操作教程或安全认证；任何随机变量不得覆盖身体位置、支撑与接触归属。",
+    "bundles": {
+      "live_water": [
+        {
+          "id": "float_side",
+          "target_side": "water",
+          "placement": "待救者躯干、骨盆与腿全部在岸缘外侧水域，水线经过身体而非泥土吞没身体；主潜水员也在水侧，support1在岸侧。",
+          "support": "待救者由可见救生浮具与水体浮力承托；岸上队员双脚有稳定平台支撑；不表现悬腕吊起整个人。",
+          "action": "主潜水员在水侧陪护待救者与浮具，岸上support1接应浮具；不画双方互扯手腕。",
+          "relation": "两名队员沿岸水方向错开，非跨岸拉手",
+          "crew": [
+            "lead",
+            "support1"
+          ],
+          "contacts": [
+            "lead.right_hand → float_handle",
+            "support1.left_hand → float_handle_other"
+          ],
+          "contact_map": [
+            [
+              "lead",
+              "right_hand",
+              "float_handle"
+            ],
+            [
+              "support1",
+              "left_hand",
+              "float_handle_other"
+            ]
+          ],
+          "contact_targets": [
+            "float_handle",
+            "float_handle_other"
+          ],
+          "body": "角色躯干与四肢关系可判断，必要接触点与支撑不被裁掉",
+          "visible": "作业人员只见lead,support1；目标按阶段显示，其余队员在画外",
+          "limb_integrity": "continuous",
+          "support_visible": true,
+          "touches_water": false,
+          "splash": false
+        },
+        {
+          "id": "float_diagonal",
+          "target_side": "water",
+          "placement": "待救者躯干、骨盆与腿全部在岸缘外侧水域，水线经过身体而非泥土吞没身体；主潜水员也在水侧，support1在岸侧。",
+          "support": "待救者由可见救生浮具与水体浮力承托；岸上队员双脚有稳定平台支撑；不表现悬腕吊起整个人。",
+          "action": "主潜水员在水侧陪护待救者与浮具，岸上support1接应浮具；不画双方互扯手腕。",
+          "relation": "两名队员斜向错位，手臂各归其主，不交叉穿插",
+          "crew": [
+            "lead",
+            "support1"
+          ],
+          "contacts": [
+            "lead.right_hand → float_handle",
+            "support1.left_hand → float_handle_other"
+          ],
+          "contact_map": [
+            [
+              "lead",
+              "right_hand",
+              "float_handle"
+            ],
+            [
+              "support1",
+              "left_hand",
+              "float_handle_other"
+            ]
+          ],
+          "contact_targets": [
+            "float_handle",
+            "float_handle_other"
+          ],
+          "body": "角色躯干与四肢关系可判断，必要接触点与支撑不被裁掉",
+          "visible": "作业人员只见lead,support1；目标按阶段显示，其余队员在画外",
+          "limb_integrity": "continuous",
+          "support_visible": true,
+          "touches_water": false,
+          "splash": false
+        }
+      ],
+      "live_land": [
+        {
+          "id": "seated_side",
+          "target_side": "land",
+          "placement": "待救者已完全离水，在岸上平整支撑面坐稳；骨盆、腿、脚均在岸侧，身体不穿入岸坡。",
+          "support": "坐姿重心落在可见坐垫或稳定地面，腿与脚自然落地；support1双脚落在同一岸上支撑面。",
+          "action": "support1在侧边接护已坐稳的待救者，手接触可见救生浮具边缘而非扭拉待救者手腕；没有医学操作。",
+          "relation": "support1与待救者侧向相邻但身体不穿插；两名队员沿岸水方向错开，非跨岸拉手",
+          "crew": [
+            "support1"
+          ],
+          "contacts": [
+            "support1.right_hand → float_edge"
+          ],
+          "contact_map": [
+            [
+              "support1",
+              "right_hand",
+              "float_edge"
+            ]
+          ],
+          "contact_targets": [
+            "float_edge"
+          ],
+          "body": "角色躯干与四肢关系可判断，必要接触点与支撑不被裁掉",
+          "visible": "作业人员只见support1；目标按阶段显示，其余队员在画外",
+          "limb_integrity": "continuous",
+          "support_visible": true,
+          "touches_water": false,
+          "splash": false
+        },
+        {
+          "id": "seated_diagonal",
+          "target_side": "land",
+          "placement": "待救者已完全离水，在岸上平整支撑面坐稳；骨盆、腿、脚均在岸侧，身体不穿入岸坡。",
+          "support": "坐姿重心落在可见坐垫或稳定地面，腿与脚自然落地；support1双脚落在同一岸上支撑面。",
+          "action": "support1在侧边接护已坐稳的待救者，手接触可见救生浮具边缘而非扭拉待救者手腕；没有医学操作。",
+          "relation": "support1与待救者侧向相邻但身体不穿插；两名队员斜向错位，手臂各归其主，不交叉穿插",
+          "crew": [
+            "support1"
+          ],
+          "contacts": [
+            "support1.right_hand → float_edge"
+          ],
+          "contact_map": [
+            [
+              "support1",
+              "right_hand",
+              "float_edge"
+            ]
+          ],
+          "contact_targets": [
+            "float_edge"
+          ],
+          "body": "角色躯干与四肢关系可判断，必要接触点与支撑不被裁掉",
+          "visible": "作业人员只见support1；目标按阶段显示，其余队员在画外",
+          "limb_integrity": "continuous",
+          "support_visible": true,
+          "touches_water": false,
+          "splash": false
+        }
+      ],
+      "covered_water": [
+        {
+          "id": "covered_water_stretcher",
+          "target_side": "water",
+          "placement": "遗体全遮盖且身体保持完整，位于连续担架之内；担架完整位于水域一侧，不穿过土岸。",
+          "support": "担架由可见浮式承托结构与水体承托，岸边队员站稳，不得把隐藏人体画成插在岸里。",
+          "action": "队员接应全遮盖担架的把手，不直接拉扯人体。",
+          "relation": "两人分处担架相邻把手侧，各自手臂完整，不交叉归属",
+          "crew": [
+            "lead",
+            "support1"
+          ],
+          "contacts": [
+            "lead.right_hand → stretcher_handle_a",
+            "support1.left_hand → stretcher_handle_b"
+          ],
+          "contact_map": [
+            [
+              "lead",
+              "right_hand",
+              "stretcher_handle_a"
+            ],
+            [
+              "support1",
+              "left_hand",
+              "stretcher_handle_b"
+            ]
+          ],
+          "contact_targets": [
+            "stretcher_handle_a",
+            "stretcher_handle_b"
+          ],
+          "body": "角色躯干与四肢关系可判断，必要接触点与支撑不被裁掉",
+          "visible": "作业人员只见lead,support1；目标按阶段显示，其余队员在画外",
+          "limb_integrity": "continuous",
+          "support_visible": true,
+          "touches_water": false,
+          "splash": false
+        }
+      ],
+      "covered_land": [
+        {
+          "id": "covered_land_stretcher",
+          "target_side": "land",
+          "placement": "遗体全遮盖且身体保持完整，位于连续担架之内；担架已完全在岸上，不与水线或土坡相交。",
+          "support": "担架由可见担架支腿或平整作业面承托，不得把隐藏人体画成插在岸里。",
+          "action": "队员接应全遮盖担架的把手，不直接拉扯人体。",
+          "relation": "两人分处担架相邻把手侧，各自手臂完整，不交叉归属",
+          "crew": [
+            "lead",
+            "support1"
+          ],
+          "contacts": [
+            "lead.right_hand → stretcher_handle_a",
+            "support1.left_hand → stretcher_handle_b"
+          ],
+          "contact_map": [
+            [
+              "lead",
+              "right_hand",
+              "stretcher_handle_a"
+            ],
+            [
+              "support1",
+              "left_hand",
+              "stretcher_handle_b"
+            ]
+          ],
+          "contact_targets": [
+            "stretcher_handle_a",
+            "stretcher_handle_b"
+          ],
+          "body": "角色躯干与四肢关系可判断，必要接触点与支撑不被裁掉",
+          "visible": "作业人员只见lead,support1；目标按阶段显示，其余队员在画外",
+          "limb_integrity": "continuous",
+          "support_visible": true,
+          "touches_water": false,
+          "splash": false
+        }
+      ],
+      "item_water": [
+        {
+          "id": "small_item_handoff",
+          "target_side": "water",
+          "placement": "潜水员躯干和腿在水侧；support1双脚在岸侧；小物件在岸缘外侧交接，土岸不吞没潜水员下半身。",
+          "support": "潜水员由水体浮力承托，岸上队员有可见站立支撑，物件由明确的手承托。",
+          "action": "lead将小件交给support1，不抓对方手腕；每个手指与所属手掌相连。",
+          "relation": "两人相邻但不跨越过远距离；接触只发生于物件两侧",
+          "crew": [
+            "lead",
+            "support1"
+          ],
+          "contacts": [
+            "lead.right_hand → item_side_a",
+            "support1.left_hand → item_side_b"
+          ],
+          "contact_map": [
+            [
+              "lead",
+              "right_hand",
+              "item_side_a"
+            ],
+            [
+              "support1",
+              "left_hand",
+              "item_side_b"
+            ]
+          ],
+          "contact_targets": [
+            "item_side_a",
+            "item_side_b"
+          ],
+          "body": "角色躯干与四肢关系可判断，必要接触点与支撑不被裁掉",
+          "visible": "作业人员只见lead,support1；目标按阶段显示，其余队员在画外",
+          "limb_integrity": "continuous",
+          "support_visible": true,
+          "touches_water": false,
+          "splash": false
+        }
+      ],
+      "load_water": [
+        {
+          "id": "supported_load",
+          "target_side": "water",
+          "placement": "中大型目标仍在水域一侧，与岸缘不穿插；潜水员身体同样在水侧。",
+          "support": "目标由该体量对应的已冻结回收设备承托，重心与承托位置明确，不用人的手托起重物。",
+          "action": "队员在适配回收装置旁配合，手不承担整件重物重量。",
+          "relation": "人与设备各自占据独立空间，不靠画外支撑解释悬空",
+          "crew": [
+            "lead",
+            "support1"
+          ],
+          "contacts": [],
+          "contact_map": [],
+          "contact_targets": [],
+          "body": "角色躯干与四肢关系可判断，必要接触点与支撑不被裁掉",
+          "visible": "作业人员只见lead,support1；目标按阶段显示，其余队员在画外",
+          "limb_integrity": "continuous",
+          "support_visible": true,
+          "touches_water": false,
+          "splash": false
+        }
+      ],
+      "item_land": [
+        {
+          "id": "grounded_item",
+          "target_side": "land",
+          "placement": "目标完全放在岸上适配平整支撑面，不卡在水线或土坡；人物也在岸侧。",
+          "support": "目标重心落在可见地面或工作台，保留湿润泥痕；人物双脚有支撑。",
+          "action": "support1查看已放稳目标，不把目标举给镜头，不悬空交接。",
+          "relation": "一个接应者在目标侧方，人与目标不穿插",
+          "crew": [
+            "support1"
+          ],
+          "contacts": [],
+          "contact_map": [],
+          "contact_targets": [],
+          "body": "角色躯干与四肢关系可判断，必要接触点与支撑不被裁掉",
+          "visible": "作业人员只见support1；目标按阶段显示，其余队员在画外",
+          "limb_integrity": "continuous",
+          "support_visible": true,
+          "touches_water": false,
+          "splash": false
+        }
+      ],
+      "entry": [
+        {
+          "id": "airborne_low_entry",
+          "target_side": "none",
+          "placement": "主潜水员全身在水侧上方短暂滞空，双脚刚离开低平台，尚未触水，地面与身体不穿插。",
+          "support": "这是刚离开支撑的运动瞬间，不是静止悬浮；画面保留起点、人体重心方向与开阔落点水面。",
+          "action": "低落差离岸入水动作预览，尚未触水，无提前水花；不提供技术步骤。",
+          "relation": "仅主潜水员，平台边缘与水面间隙清楚",
+          "crew": [
+            "lead"
+          ],
+          "contacts": [],
+          "contact_map": [],
+          "contact_targets": [],
+          "body": "主潜水员全身连续可见，头肩躯干骨盆腿脚合理连接，未触水",
+          "visible": "作业人员只见lead；目标按阶段显示，其余队员在画外",
+          "limb_integrity": "continuous",
+          "support_visible": true,
+          "touches_water": false,
+          "splash": false
+        }
+      ]
+    },
+    "visual_acceptance": [
+      "岸坡、平台与水线边界清楚，人物位于对应水侧或岸侧；否则不通过",
+      "躯干、骨盆、腿和脚连续；土岸吞没身体、断肢或身体穿插遮挡物均不通过",
+      "手臂归属、左右手和实际接触点可判断；错接手、扭曲关节或无接触受力均不通过",
+      "重心与可见支撑相容；不得用画外支撑解释悬空或缺失肢体",
+      "滞空图应有离岸间隙且未触水，无提前水花；落点若明显浅滩或泥坑则不通过",
+      "看不清关键身体关系或支撑时标记需重审，不能自动判通过；文字和结构检查不等于像素审查"
+    ]
+  },
+  "land_survey_stage": {
+    "id": "site_survey",
+    "name": "现场定位",
+    "action": "工作人员在同一现场观察待处理管段与周边环境，确认工作位置",
+    "state": "处理前的现场记录，同一管段和工具保持一致，不展示潜水动作，不虚构检测结论"
+  },
+  "service_items": [
+    "潜水打捞",
+    "打捞手机",
+    "打捞汽车",
+    "水下作业",
+    "打捞沉船",
+    "打捞落水人员",
+    "打捞黄金首饰",
+    "打捞无人机",
+    "打捞相机",
+    "水下探摸",
+    "水下封堵",
+    "水下电焊切割"
+  ]
+}

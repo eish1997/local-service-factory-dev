@@ -20,11 +20,15 @@ class SharedTasks(unittest.TestCase):
   self.addCleanup(lambda:[p.stop() for p in reversed(self.patches)])
  def batch(self,category='road_rescue',count=1,source='agent'):
   return lib.assemble({'category':category,'count':count,'seed':1401,'phone':'15795643941','source':source})
- def request(self,b,groups):return {'category':b['category'],'batch':b['id'],'groups':groups}
+ def request(self,b,groups):return {'category':b['category'],'batch':b['id'],'groups':groups,'auto_complete':False}
  def ready(self):
   return patch.multiple(lib,api_config=lambda:{'model':'offline-test','api_size':'1024x1536','quality':'medium','output_format':'png'},readiness=lambda *a:([],[1,2,3,4]))
  def test_all_eight_sources_produce_identical_frozen_groups(self):
   for p in vc.projects():
+   definition=vc.read_json(vc.project_dir(p['id'])/'project.json')
+   if definition.get('assembly_blocked'):
+    with self.assertRaises(ValueError): self.batch(p['id'])
+    continue
    a=self.batch(p['id'],source='agent');b=self.batch(p['id'],source='dashboard')
    self.assertEqual(a['manifest_sha256'],b['manifest_sha256'],p['id'])
    av=lib.view({**self.request(a,[1]),'limit':1});bv=lib.view({**self.request(b,[1]),'limit':1})
@@ -69,13 +73,10 @@ class SharedTasks(unittest.TestCase):
    start={**req,'plan_sha256':p['plan_sha256'],'request_id':'execution-one','authorization':'execute_selected_groups'}
    task=lib.start(start);self.assertEqual(lib.start({**start,'source':'dashboard'})['id'],task['id']);self.assertEqual(launch.call_count,1)
    self.assertTrue(lib.plan(req)['blocks'])
-   def fail(client,config,prompt):raise TimeoutError('timed out')
-   worker.run(b['category'],b['id'],task['id'],generate=fail,clients=[(1,object())],render=lambda *args:None)
-   task=lib.read(lib.batch_dir(b['category'],b['id'])/'tasks'/task['id']/'task.json')
-   self.assertEqual(task['status'],'paused');self.assertEqual(task['requests_used'],3)
-   resumed=lib.resume({'category':b['category'],'batch':b['id'],'task':task['id'],'source':'dashboard'})
-   self.assertEqual(resumed['max_requests'],28);self.assertEqual(resumed['requests_used'],3)
+   calls=[]
    def generate(client,config,prompt):
+    calls.append(prompt)
+    if len(calls)<=3:raise TimeoutError('timed out')
     captures.append(prompt);out=io.BytesIO();Image.new('RGB',(1024,1536),(40+len(captures),60,70)).save(out,format='PNG');return out.getvalue()
    worker.run(b['category'],b['id'],task['id'],generate=generate,clients=[(1,object()),(2,object())],render=lambda *args:None)
    done=lib.read(lib.batch_dir(b['category'],b['id'])/'tasks'/task['id']/'task.json')
@@ -97,15 +98,15 @@ class SharedTasks(unittest.TestCase):
    worker.run(b['category'],b['id'],task['id'],generate=pause_inside,clients=[(1,object())],render=lambda *a:None)
    state=lib.read(file);self.assertEqual(state['requests_used'],1);self.assertEqual(state['status'],'paused');self.assertEqual(state['completed_units'],1)
    lib.resume(target)
-   def fail(*args):raise TimeoutError('timed out')
+   def fail(*args):lib.pause(target);raise TimeoutError('timed out')
    worker.run(b['category'],b['id'],task['id'],generate=fail,clients=[(1,object())],render=lambda *a:None)
-   self.assertEqual(lib.read(file)['requests_used'],4)
+   self.assertEqual(lib.read(file)['requests_used'],2)
    lib.dispatch('retry',target)
    worker.run(b['category'],b['id'],task['id'],generate=lambda *a:payload(),clients=[(1,object())],render=lambda *a:None)
-   state=lib.read(file);self.assertEqual(state['requests_used'],7);self.assertEqual(state['completed_units'],4);self.assertEqual(state['status'],'paused')
+   state=lib.read(file);self.assertEqual(state['requests_used'],3);self.assertEqual(state['completed_units'],2);self.assertEqual(state['status'],'paused')
    lib.resume(target)
    worker.run(b['category'],b['id'],task['id'],generate=lambda *a:payload(),clients=[(1,object())],render=lambda *a:None)
-   state=lib.read(file);self.assertEqual(state['requests_used'],10);self.assertEqual(state['max_requests'],14);self.assertEqual(state['status'],'completed')
+   state=lib.read(file);self.assertEqual(state['requests_used'],8);self.assertEqual(state['max_requests'],14);self.assertEqual(state['status'],'completed')
  def test_concurrent_start_budget_binding_and_uncertain_request(self):
   b=self.batch();req=self.request(b,[1]);barrier=threading.Barrier(2)
   with self.ready(),patch.object(lib,'launch',return_value=99999999) as launch:
@@ -120,8 +121,11 @@ class SharedTasks(unittest.TestCase):
    changed=copy.deepcopy(task);changed['max_requests']+=1;lib.write(file,changed)
    with self.assertRaises(ValueError):lib.resume({'category':b['category'],'batch':b['id'],'task':task['id']})
    lib.write(file,task);lic=lib.read(file.parent/'license.json');lic['requests_used']=1;lic['attempts']={'g0001_u01':1};lib.write(file.parent/'license.json',lic)
-   with self.assertRaisesRegex(ValueError,'结果不确定'):
-    lib.resume({'category':b['category'],'batch':b['id'],'task':task['id']})
+   resumed=lib.resume({'category':b['category'],'batch':b['id'],'task':task['id']})
+   self.assertEqual(resumed['requests_used'],1)
+   self.assertEqual(resumed['resume_summary']['reasons'],{'uncertain':1})
+   self.assertEqual(resumed['resume_summary']['ready_count'],6)
+   self.assertEqual(lib.read(file.parent/'license.json'),lic)
 
  def test_real_local_render_and_queue_use_isolated_batch(self):
   for category in ('road_rescue','pet_transport'):

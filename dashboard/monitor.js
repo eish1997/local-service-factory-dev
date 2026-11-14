@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ACTIVE_STATUSES = new Set(['queued', 'starting', 'running', 'waiting_for_api']);
+const ACTIVE_STATUSES = new Set(['queued', 'starting', 'running', 'recovering', 'waiting_for_api']);
 const FINISHED_STATUSES = new Set(['completed', 'completed_with_errors', 'awaiting_review']);
 const STALE_AFTER_SECONDS = 180;
 

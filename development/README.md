@@ -17,7 +17,7 @@ $env:ROAD_RESCUE_PYTHON = (Resolve-Path .venv/Scripts/python.exe).Path
 npm --prefix dashboard start
 ```
 
-Agent 打开整个仓库并先读 AGENTS.md。三个 skill 都位于 `.agents/skills/`，不依赖原电脑的个人 skill 目录。Agent 与看板使用同一解释器和公共命令；命令示例中的 python 可换成本机 `.venv/Scripts/python.exe`。
+Agent 打开整个仓库并先读 AGENTS.md。项目 skill 位于 `.agents/skills/`，不依赖原电脑的个人 skill 目录。Agent 与看板使用同一解释器和公共命令；命令示例中的 python 可换成本机 `.venv/Scripts/python.exe`。
 
 生产前通过本机 `.env`/看板密码表单配置密钥及已有可信渠道，明确本批次的组数、号码与范围。仓库不保存原电脑的客户资料、生成图片、任务许可、签名私钥或账号凭证；新电脑不能据此继续原电脑尚未同步的生产任务。
 
@@ -41,3 +41,9 @@ git push
 `python development/export_source.py --destination <全新目录>` 只生成干净开发源码，复用规则白名单及脱敏逻辑，不上传、不复制运行数据、不覆盖已有 Git 工作副本。首次导出后在该副本初始化 Git 并推送。以后在克隆/开发副本中直接使用标准 Git 流程。
 
 如果仍在原生产工作区修改，源码不会自动同步到开发副本；再次导出到新目录后审阅差异，再合并到 Git 副本。不要整目录覆盖已存在的开发副本或生产用户数据。
+
+## 使用 skill 整理推送
+
+开发任务完成后，在对话中调用：`使用 $factory-push-source，把已完成的开发源码和 Agent 指引整理并推送到私有开发仓库。`
+
+该 skill 位于 `.agents/skills/factory-push-source/`，会判断当前是 Git 开发副本还是原生产目录，检查并合并远端改动，脱敏审阅、提交推送并验证远端提交。另一个对话仍在修改时等待开发完成；仅创建或查看 skill 不会触发推送。它与安装包发布、云端规则发布相互独立。

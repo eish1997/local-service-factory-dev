@@ -333,6 +333,9 @@ def command_projects(_: argparse.Namespace) -> int:
         group = definition["content_group"]
         marker = " current=true" if item["id"] == registry.get("active_project") else ""
         print(f"- {item['name']} ({item['id']}) status={item['status']}{marker}")
+        if definition.get("assembly_blocked"):
+            print("  每组张数待确认；仅可离线内容草稿组装。")
+            continue
         if int(group.get("triptych_count", 0) or 0):
             print(
                 f"  每组：{group['cover_count']}张首图 + "
@@ -353,7 +356,7 @@ def command_project_status(args: argparse.Namespace) -> int:
     content_group = definition.get("content_group", {})
     cover_count = content_group.get("cover_count", 1)
     detail_count = content_group.get("detail_count", 8)
-    total_images = content_group.get("total_images", cover_count + detail_count)
+    total_images = content_group.get("total_images", (cover_count or 0) + (detail_count or 0))
     prompt_sources = definition.get("prompt_sources", {})
     detail_prompt_count = prompt_sources.get("detail_prompt_count", 0)
     available_detail_sets = prompt_sources.get(
@@ -363,6 +366,10 @@ def command_project_status(args: argparse.Namespace) -> int:
     phones_ready = bool(business.get("user_confirmed") and business.get("contact_phones"))
     phone_status = "placeholder only; formal number required before batch" if business.get("placeholder_only") else ("ready" if phones_ready else "required before cover prompts")
     print(f"PROJECT_STATUS id={args.project_id} name={definition['name']}")
+    if definition.get("assembly_blocked"):
+        print(definition["assembly_blocked"])
+        print("Offline draft: no phone required; no API calls; style not approved.")
+        return 0
     triptych_count = int(content_group.get("triptych_count", 0) or 0)
     if triptych_count:
         print(
@@ -6547,6 +6554,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Road-rescue image factory")
     subparsers = parser.add_subparsers(dest="command")
     subparsers.required = True
+
+    from tools.diving_salvage import add_arguments as add_salvage_arguments
+    add_salvage_arguments(subparsers.add_parser('diving-salvage', help='潜水打捞离线规则与草稿校验'))
 
     from tools.business_ktv.cli import add_arguments as add_business_ktv_arguments
     add_business_ktv_arguments(subparsers.add_parser('business-ktv', help='商务KTV独立类目；第一阶段mock闭环'))

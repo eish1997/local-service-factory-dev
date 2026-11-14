@@ -1,17 +1,12 @@
-const fs=require('fs'),path=require('path');
+const fs=require('fs'),path=require('path'),{spawnSync}=require('child_process');
 function initialize(app,resources=process.resourcesPath){
  const engine=path.join(resources,'engine'),python=path.join(resources,'python','python.exe');
  if(!fs.existsSync(path.join(engine,'factory.py'))||!fs.existsSync(python))throw Error('安装不完整：缺少独立生成引擎，请重新安装');
  const root=path.join(app.getPath('userData'),'workspace');
  for(const part of ['.runtime/updates','prompts/library','output','projects'])fs.mkdirSync(path.join(root,part),{recursive:true});
- const pointer=path.join(root,'.runtime/updates/active_rules.json');
- if(!fs.existsSync(pointer)){
-  const baseline=JSON.parse(fs.readFileSync(path.join(engine,'distribution/baseline-rules.json'),'utf8'));
-  const rules=path.join(root,'.runtime/rules/1');fs.mkdirSync(rules,{recursive:true});
-  for(const name of baseline.files){const to=path.resolve(rules,name),relative=path.relative(rules,to);if(relative.startsWith('..')||path.isAbsolute(relative))throw Error('内置规则路径无效');fs.mkdirSync(path.dirname(to),{recursive:true});fs.copyFileSync(path.join(engine,name),to);}
-  fs.writeFileSync(path.join(rules,'manifest.json'),JSON.stringify({version:'1',bundled:true,app_version:app.getVersion()}));
-  const temp=pointer+'.tmp';fs.writeFileSync(temp,JSON.stringify({version:'1',previous:null,bundled:true}));fs.renameSync(temp,pointer);
- }
+ const prepared=spawnSync(python,['-X','utf8',path.join(engine,'factory.py'),'rules','bootstrap'],{cwd:root,input:'{}',encoding:'utf8',windowsHide:true,timeout:90000,env:{...process.env,FACTORY_DATA_HOME:root,PYTHONIOENCODING:'utf-8'}});
+ let result;try{result=JSON.parse(prepared.stdout);}catch{throw Error('无法准备兼容规则，请检查安装完整性后重试');}
+ if(prepared.status!==0||!result.ok)throw Error('无法准备兼容规则：'+(result.error||'本地更新操作尚未结束，请重试'));
  const env=path.join(root,'.env');
  if(!fs.existsSync(env))fs.writeFileSync(env,'FACTORY_KEY_POOL_MANAGED=1\nOPENAI_PROVIDER=relay\nOPENAI_BASE_URL=http<local-path>
  process.env.FACTORY_DATA_HOME=root;process.env.FACTORY_ENGINE_HOME=engine;process.env.ROAD_RESCUE_PYTHON=python;

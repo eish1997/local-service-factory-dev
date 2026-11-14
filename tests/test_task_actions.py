@@ -77,6 +77,21 @@ class TaskActions(unittest.TestCase):
   b=self.batch()
   prepared=actions.prepare_replacement({'category':b['category'],'batch':b['id'],'group':1,'position':2,'request_id':'triptych'})
   self.assertEqual(prepared['prompt_count'],3);self.assertEqual(prepared['structure']['total_images'],1)
+ def test_replacement_exhausted_auto_retry_preserves_current_output(self):
+  b=self.batch();original=lib.delivery_path(b['category'],b['id'],1,1,'cover');original.parent.mkdir(parents=True)
+  Image.new('RGB',(1024,1536),'red').save(original);before=original.read_bytes()
+  prepared=actions.prepare_replacement({'category':b['category'],'batch':b['id'],'group':1,'position':1,'request_id':'exhausted-replacement'})
+  req={'category':b['category'],'batch':prepared['id'],'groups':[1]}
+  with self.ready(),patch.object(lib,'launch',return_value=99999999):
+   planned=lib.plan(req);task=lib.start({**req,'request_id':'exhausted-run','authorization':'execute_selected_groups','plan_sha256':planned['plan_sha256']})
+   def fail(*args):raise TimeoutError('timed out')
+   result=worker.run(b['category'],prepared['id'],task['id'],generate=fail,clients=[(1,object())],render=lambda *a:None)
+   self.assertEqual(result,0)
+   state=lib.read(lib.batch_dir(b['category'],prepared['id'])/'tasks'/task['id']/'task.json')
+   self.assertEqual(state['status'],'completed_with_errors');self.assertEqual(state['requests_used'],2)
+   self.assertEqual(state['skipped_units'],1);self.assertEqual(original.read_bytes(),before)
+   with self.assertRaisesRegex(ValueError,'单图两次请求已用尽'):lib.resume({'category':b['category'],'batch':prepared['id'],'task':task['id']})
+
  def test_replacement_preserves_old_on_failure_and_replaces_one(self):
   b=self.batch();original=lib.delivery_path(b['category'],b['id'],1,1,'cover');original.parent.mkdir(parents=True)
   Image.new('RGB',(1024,1536),'red').save(original);before=original.read_bytes()
@@ -86,7 +101,9 @@ class TaskActions(unittest.TestCase):
   req={'category':b['category'],'batch':prepared['id'],'groups':[1]}
   with self.ready(),patch.object(lib,'launch',return_value=99999999):
    planned=lib.plan(req);task=lib.start({**req,'request_id':'replace-run','authorization':'execute_selected_groups','plan_sha256':planned['plan_sha256']})
-   def fail(*args):raise TimeoutError('timed out')
+   def fail(*args):
+    lib.pause({'category':b['category'],'batch':prepared['id'],'task':task['id']})
+    raise TimeoutError('timed out')
    worker.run(b['category'],prepared['id'],task['id'],generate=fail,clients=[(1,object())],render=lambda *a:None)
    self.assertEqual(original.read_bytes(),before)
    lib.resume({'category':b['category'],'batch':prepared['id'],'task':task['id']})

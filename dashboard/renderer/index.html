@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>本地图片看板</title>
+  <link rel="icon" href="../branding/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="compact-overrides.css">
   <link rel="stylesheet" href="variables.css">
@@ -11,10 +12,16 @@
   <link rel="stylesheet" href="workspace.css">
   <link rel="stylesheet" href="icons.css">
   <link rel="stylesheet" href="actions.css">
+  <link rel="stylesheet" href="postprocess.css">
+  <link rel="stylesheet" href="image-history.css">
+  <link rel="stylesheet" href="dialogs.css">
+  <link rel="stylesheet" href="selects.css">
+  <link rel="stylesheet" href="product-ui.css">
 </head>
 <body>
   <div class="titlebar" title="精简模式下双击恢复">
     <div class="title-status">
+      <img class="application-logo" src="../branding/logo.svg" alt="图片工厂" draggable="false">
       <i></i>
       <strong id="title-state">空闲</strong>
       <span id="title-progress">0 / 0</span>
@@ -22,8 +29,6 @@
     </div>
     <div class="window-actions">
       <button id="update-settings" title="版本与更新" aria-label="版本与更新"></button>
-      <button id="key-settings" title="渠道与密钥" aria-label="渠道与密钥"></button>
-      <button id="open-folder" title="设置资产路径">□</button>
       <button id="compact-toggle" title="精简模式">↙</button>
       <button id="window-minimize" title="最小化">−</button>
       <button id="window-maximize" title="最大化">□</button>
@@ -31,26 +36,52 @@
     </div>
   </div>
   <main>
-    <section id="job-monitor" class="job-monitor monitor-idle" aria-label="全局任务状态"></section>
+    <div class="status-strip">
+      <div class="status-tools" role="group" aria-label="设置操作">
+<button id="key-settings" title="渠道与密钥" aria-label="渠道与密钥"></button>
+<button id="open-folder" title="设置资产路径">□</button>
+      </div>
+    <section id="job-monitor" class="job-monitor monitor-idle" aria-label="全局任务状态"><p id="task-message" role="status" hidden></p><div id="monitor-body"></div></section>
+    </div>
     <div id="gallery-panel">
     <aside class="project-column"><header>项目</header><div id="project-tabs" class="project-tabs"></div></aside>
-    <aside class="batch-column"><header><nav class="page-tabs"><button id="gallery-page" class="selected">批次</button><button id="variables-page">提示词</button></nav><button id="task-new" class="icon-button" title="新建批次" aria-label="新建批次">＋</button></header><div id="task-batch-list"></div><aside id="variable-types" hidden></aside><select id="task-batch" hidden aria-label="当前批次"></select></aside>
+    <aside class="batch-column"><header><nav class="page-tabs"><button id="gallery-page" class="selected">批次</button><button id="variables-page">提示词</button><button id="postprocess-page">后处理</button></nav><button id="task-new" class="icon-button" title="新建批次" aria-label="新建批次">＋</button></header><div id="task-batch-list"></div><aside id="postprocess-input" hidden><label>图片来源<select id="postprocess-source"><option value="batch">批次图片</option><option value="import">本地导入</option></select></label><div id="postprocess-batch-input"><label>组<select id="postprocess-group"></select></label><label>图片<select id="postprocess-image"></select></label></div><div id="postprocess-import-input" hidden><label>类型<select id="postprocess-kind"><option value="cover">封面</option><option value="detail">详情</option></select></label><button id="postprocess-import">选择图片</button><p id="postprocess-file"></p></div></aside><aside id="variable-types" hidden></aside><select id="task-batch" hidden aria-label="当前批次"></select></aside>
     <section class="content-column">
       <div class="content-toolbar">
+
         <div id="task-actions" hidden>
-          <button id="task-select-all" title="全选当前批次" aria-label="全选当前批次">☑</button><button id="task-clear" title="取消选择" aria-label="取消选择">☐</button><span id="task-selection">未选择组</span>
-          <button id="task-plan" title="查看执行范围与预算" aria-label="查看执行范围与预算">ⓘ</button><button id="task-start" title="执行选中组" aria-label="执行选中组" disabled>▶</button>
-          <span class="toolbar-divider"></span><select id="task-target" aria-label="要操作的任务"><option value="">暂无任务</option></select>
-          <button id="task-package" title="打包所选组" aria-label="打包所选组" disabled></button><button id="task-pause" title="暂停调度，已发出的请求继续收尾" aria-label="暂停调度" disabled>Ⅱ</button><button id="task-resume" title="继续原任务" aria-label="继续原任务" disabled>▷</button><button id="task-retry" title="仅重试允许恢复的失败项" aria-label="重试失败项" disabled>↻</button>
-          <select id="task-filter" aria-label="按组状态筛选"><option value="">全部状态</option><option value="pending">待生成</option><option value="active">生成中</option><option value="failed">失败 / 暂停</option><option value="review">待审核</option><option value="completed">已完成</option></select>
+          <input id="task-select-all" type="checkbox" aria-label="全选或取消全选当前批次" title="全选或取消全选当前批次"><span id="task-selection" title="本批次总组数（已选组数）">0 ( 0 ) 组</span>
+          <button id="task-start" title="直接开始生成，整批最高请求次数为待生成张数的6倍" aria-label="开始生成" disabled>开始生成</button>
+          <span class="toolbar-divider"></span>
+          <button id="task-package" title="打包所选组" aria-label="打包所选组" disabled></button><button id="task-pause" title="暂停调度，已发出的请求继续收尾" aria-label="暂停调度" disabled>Ⅱ</button><button id="task-resume" title="继续原任务" aria-label="继续原任务" disabled>▷</button>
         </div>
         <button id="task-refresh" title="刷新" aria-label="刷新">⟳</button>
       </div>
       <div class="content-scroll">
-        <span id="group-summary"></span>
-        <section id="task-library"><p id="task-message" role="status">选择项目与批次，或点击批次栏的 ＋ 创建新批次。</p><div id="task-plan-info" hidden></div><div id="task-jobs"></div><div id="task-cards"></div></section>
+
+        <section id="task-library"><div id="task-plan-info" hidden></div><dialog id="task-jobs-section" class="action-dialog"><form method="dialog"><button value="cancel">取消</button><button value="confirm">确定</button></form><select id="task-target" aria-label="要操作的任务"><option value="">暂无任务</option></select><div id="task-jobs"></div></dialog><div id="task-cards"></div></section>
         <div id="key-pool" class="key-pool"></div><div id="gallery" class="group-gallery"></div>
       </div>
+    <section id="postprocess-panel" hidden aria-label="后处理查看与预览">
+      <div class="postprocess-toolbar"><strong>后处理</strong><button id="postprocess-random-pick">换个样式</button><button id="postprocess-random-all">全部随机</button><button id="postprocess-apply" disabled>应用预览</button><details class="postprocess-options"><summary>随机设置</summary><label class="layout-variable"><input type="checkbox" id="postprocess-variation" checked>模板内变化</label><input id="postprocess-seed" type="number" min="0" max="9007199254740991" placeholder="固定随机种子（可选）" aria-label="随机种子"></details><button id="postprocess-refresh" class="icon-button" title="重新预览" aria-label="重新预览"></button></div>
+      <p id="postprocess-status" role="status"></p>
+      <section id="postprocess-text" aria-label="文字内容">
+        <strong>文字内容</strong>
+        <p id="postprocess-content"></p>
+        <form id="postprocess-text-form">
+          <label>电话<input id="postprocess-phone" inputmode="tel" autocomplete="off" maxlength="16" aria-label="后处理电话"></label>
+          <div id="postprocess-lines"></div>
+          <p>增删的文字会留给这个项目之后新建的批次，新建窗口也会逐行列出，右键重新生成或重新后处理也会用这组文字。电话只用于当前预览，新批次仍在创建时填写。已经生成的图片不会自动改。</p>
+          <div class="postprocess-text-actions">
+            <button type="button" id="postprocess-add-line">添加一条</button>
+            <button type="button" id="postprocess-reset-text">恢复默认</button>
+            <button type="submit" id="postprocess-save-text">按此文字重新预览</button>
+          </div>
+        </form>
+      </section>
+      <div id="postprocess-previews"></div><div id="postprocess-presets" aria-label="全部设计预设"></div>
+      <details id="postprocess-evidence"><summary>处理参数、校验与历史版本</summary><button id="postprocess-history">查看当前图及历史版本</button><article id="postprocess-info"></article></details>
+    </section>
     <section id="variables-panel" hidden>
       <div class="variable-toolbar">
         <select id="variable-project" hidden aria-label="当前项目"></select>
@@ -59,7 +90,7 @@
         <select id="variable-filter" aria-label="生效状态"><option value="">全部状态</option><option value="active">当前生效</option><option value="legacy">旧批次使用</option><option value="disabled">已停用候选</option></select>
         <button id="variable-reload" title="刷新变量" aria-label="刷新变量">⟳</button>
       </div>
-      <p class="variable-guidance">如需修改变量，请在 Agent 对话中提出。</p>
+      <details class="content-details"><summary>使用说明</summary><p class="variable-guidance">变量只读；修改请在 Agent 对话中提出。</p></details>
       <p id="variable-status" role="status">加载变量目录…</p>
       <article id="variable-content"></article>
     </section>
@@ -67,18 +98,28 @@
     </div>
     <dialog id="task-create-dialog" aria-labelledby="task-create-title">
       <form id="task-create-form"><header><h2 id="task-create-title">新建批次</h2><button type="button" id="task-create-close" title="关闭" aria-label="关闭">×</button></header>
-        <p>按当前项目的完整组结构组装提示词，不会自动生图。</p>
         <label>组数 <input id="task-count" type="number" min="1" max="100" required value="10"></label>
         <label>手机号 <input id="task-phone" type="tel" inputmode="numeric" maxlength="11" pattern="1[3-9][0-9]{9}" required autocomplete="off" placeholder="必填，本批次手机号"></label>
+        <div id="task-watermark">
+          <span>水印文字</span>
+          <p id="task-watermark-phone">电话：</p>
+          <div id="task-watermark-lines"></div>
+          <button type="button" id="task-watermark-add">添加一条</button>
+        </div>
+        <label id="task-type-field" hidden>任务类型 <select id="task-type"></select><small>每组1张首图＋6张详情，自动匹配任务流程</small></label>
+        <p class="form-hint">每条服务词一行，空行会去掉。这组文字印在本批次，并作为下次新建的默认。已经生成的图片不改。创建后点“准备生成”，再开始。</p>
         <p id="task-create-error" role="alert"></p><footer><button type="button" id="task-create-cancel">取消</button><button id="task-assemble" type="submit">创建批次</button></footer>
       </form>
     </dialog>
 
   </main>
   <script src="icons.js"></script>
+  <script src="ui.js"></script>
   <script src="app.js"></script>
   <script src="variables.js"></script>
+  <script src="image-history.js"></script>
   <script src="tasks.js"></script>
   <script src="actions.js"></script>
+  <script src="postprocess.js"></script>
 </body>
 </html>

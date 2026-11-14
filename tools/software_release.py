@@ -51,8 +51,8 @@ def publish(request):
     base=f'https://github.com/{cfg["owner"]}/{cfg["software_repo"]}/releases/download/v{version}/'
     for name,expected in plan['files'].items():
         size=(Path(plan['directory'])/name).stat().st_size
-        if protocol.sha(protocol.download(base+name,size+1))!=expected:raise ValueError('软件公开下载校验失败，尚未设为最新版本')
-    downloaded=protocol.verify(json.loads(protocol.download(base+'software-manifest.json',1024*1024)),cfg['public_keys'])
+        if protocol.sha(protocol.download(base+name,size+1,timeout=3600))!=expected:raise ValueError('软件公开下载校验失败，尚未设为最新版本')
+    downloaded=protocol.verify(json.loads(protocol.download(base+'software-manifest.json',1024*1024,timeout=120)),cfg['public_keys'])
     if downloaded!=payload:raise ValueError('软件公开签名清单不一致，尚未设为最新版本')
     protocol.github('PATCH',repo+'/releases/'+str(release['id']),{'make_latest':'true'})
     protocol.github('DELETE',repo+'/git/refs/tags/software-publish-lock')

@@ -1,0 +1,54 @@
+/* Actual renderer + public task commands, isolated files and fake image API. */
+const {app,BrowserWindow}=require('electron');
+const fs=require('fs'),path=require('path'),assert=require('node:assert/strict'),{spawnSync}=require('child_process');
+const root=path.resolve(__dirname,'../..'),fixture=fs.mkdtempSync(path.join(root,'.runtime/task-continuation-ui-'));
+const python=process.env.ROAD_RESCUE_PYTHON||'python';
+fs.writeFileSync(path.join(fixture,'factory.py'),`import sys,io,json,hashlib\nfrom pathlib import Path\nsys.path.insert(0,${JSON.stringify(root)})\nfrom tools import task_library as lib,variable_catalog as vc,task_worker as worker,task_recovery\nfrom PIL import Image\nconfigs={p['id']:lib.business_config(p['id']) for p in vc.projects()}\nlib.ROOT=Path(__file__).parent\nlib.business_config=lambda c:configs[c]\nlib.api_config=lambda:{'model':'offline-test','api_size':'1024x1536','quality':'medium','output_format':'png'}\nlib.readiness=lambda *a:([],[1])\ndef payload():\n out=io.BytesIO();Image.new('RGB',(1024,1536),'gray').save(out,format='PNG');return out.getvalue()\nif len(sys.argv)>1 and sys.argv[1]=='fixture':\n lib.launch=lambda *a:99999999\n b=lib.assemble({'category':'pet_transport','count':1,'phone':'{已确认电话}','seed':1401})\n req={'category':b['category'],'batch':b['id'],'groups':[1],'auto_complete':False};plan=lib.plan(req)\n t=lib.start({**req,'request_id':'ui-recovery','authorization':'execute_selected_groups','plan_sha256':plan['plan_sha256']})\n p=lib.batch_dir(b['category'],b['id']);rows=lib.selected(p,b,[1]);units=rows[0]['units'];raw=lib.unit_raw(b['category'],b['id'],1,units[0]);raw.parent.mkdir(parents=True);raw.write_bytes(payload());lib.write(raw.with_suffix('.receipt.json'),{'prompt_sha256':units[0]['prompt_sha256'],'raw_sha256':hashlib.sha256(raw.read_bytes()).hexdigest()})\n t.update(status='paused',requests_used=2,attempts={units[0]['id']:1,units[1]['id']:1},results={units[0]['id']:{'status':'generated'},units[1]['id']:{'status':'failed','error':'APIStatusError','http_status':401}})\n _,t['resume_summary']=task_recovery.partition(b['category'],b['id'],rows,t)\n f=p/'tasks'/t['id']/'task.json';lic=lib.read(f.parent/'license.json');lic.update(requests_used=2,attempts=t['attempts']);lib.write(f.parent/'license.json',lic);lib.write(f,t)\n print(json.dumps({'category':b['category'],'batch':b['id'],'task':t['id']}));raise SystemExit(0)\nimport factory\nif len(sys.argv)>2 and sys.argv[2]=='worker':\n args=factory.build_parser().parse_args();p,b=lib.load_batch(args.category,args.batch);units=lib.selected(p,b,[1])[0]['units'];calls={}\n class Blocked(Exception):status_code=451\n def generate(c,cfg,prompt):\n  calls[prompt]=calls.get(prompt,0)+1\n  if prompt==units[2]['prompt'] and calls[prompt]==1:raise TimeoutError('timed out')\n  if prompt==units[3]['prompt']:raise Blocked('not persisted')\n  return payload()\n raise SystemExit(worker.run(args.category,args.batch,args.task,generate=generate,clients=[(1,object())],render=lambda *a:None))\nfactory.main()\n`);
+const prepared=spawnSync(python,['-X','utf8',path.join(fixture,'factory.py'),'fixture'],{encoding:'utf8',windowsHide:true});
+assert.equal(prepared.status,0,prepared.stdout+prepared.stderr);const target=JSON.parse(prepared.stdout);
+fs.mkdirSync(path.join(fixture,'projects'),{recursive:true});fs.mkdirSync(path.join(fixture,'output'),{recursive:true});fs.copyFileSync(path.join(root,'projects/registry.json'),path.join(fixture,'projects/registry.json'));
+process.env.ROAD_RESCUE_FACTORY_HOME=fixture;process.env.ROAD_RESCUE_DASHBOARD_TEST='1';process.env.ROAD_RESCUE_PYTHON=python;
+delete process.env.FACTORY_ENGINE_HOME;delete process.env.FACTORY_DATA_HOME;
+require('../main');
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+async function run(){
+ await app.whenReady();const win=BrowserWindow.getAllWindows()[0];let pageErrors=[];win.webContents.on('console-message',(_e,_l,message)=>{if(message.includes('Uncaught'))pageErrors.push(message);});
+ const js=s=>win.webContents.executeJavaScript(s);
+ async function until(code){for(let i=0;i<250;i++){if(await js(code))return;await pause(100);}throw Error('timeout '+code);}
+ await until('document.querySelectorAll("#project-tabs button").length===8');
+ await js(`document.querySelector('#project-tabs [data-project="pet_transport"]').click()`);
+ await until('document.querySelectorAll(".task-job").length===1');
+ assert.equal(await js('document.getElementById("task-resume").disabled'),false);
+ assert.equal(await js('document.querySelector(".task-recovery summary").textContent.includes("可继续 4 张")'),true);
+ await js('document.querySelector(".task-recovery").open=true');
+ assert.equal(await js('document.querySelector(".task-recovery").textContent.includes("HTTP 401")'),true);
+ assert.equal(await js('document.getElementById("task-retry").disabled'),true);
+ await js('document.getElementById("task-resume").click()');
+ await until('document.getElementById("task-message").textContent.includes("跳过待处理 1 张")');
+ await until('document.querySelector(".task-recovery summary")?.textContent.includes("可继续 0 张")');
+ assert.equal(await js('document.getElementById("task-resume").disabled'),true);
+ assert.equal(await js('document.querySelector(".task-job>button").disabled'),true);
+ const taskfile=path.join(fixture,'prompts/library/pet_transport',target.batch,'tasks',target.task,'task.json');
+ const task=JSON.parse(fs.readFileSync(taskfile,'utf8')),license=JSON.parse(fs.readFileSync(path.join(path.dirname(taskfile),'license.json'),'utf8'));
+ assert.equal(task.requests_used,7);assert.equal(task.max_requests,12);assert.equal(task.completed_units,4);assert.equal(task.resume_summary.blocked_count,2);assert.equal(task.status,"completed_with_errors");assert.equal(task.skipped_units,2);assert.equal(task.attempts.g0001_u03,2);assert.equal(task.attempts.g0001_u04,1);
+ assert.deepEqual(task.attempts,license.attempts);assert.equal(task.attempts.g0001_u02,1);
+ await until('document.getElementById("title-progress").textContent.startsWith("4/6")');
+ assert.equal(await js('document.getElementById("title-state").textContent'), '已结束 · 部分待处理');
+ assert.equal(await js('document.getElementById("title-progress").textContent.includes("待处理2")'),true);
+ assert.equal(await js('document.querySelector(".task-job-body").textContent.includes("已结束 · 部分图片待处理")'),true);
+ assert.equal(await js('document.querySelector(".task-recovery").textContent.includes("HTTP 451")'),true);
+ await js('document.querySelector(".task-recovery").open=true');
+ win.setSize(820,750);await pause(150);
+ assert.equal(await js('document.documentElement.scrollWidth<=innerWidth'),true);
+ fs.writeFileSync(path.join(root,'.runtime/task-continuation-ui.png'),(await win.webContents.capturePage()).toPNG());
+  await js(`document.querySelector('.task-recovery [data-repair="1:4"]').click()`);
+ await until('document.querySelector(".action-dialog .primary-action")!==null');
+ assert.equal(await js('document.querySelector(".action-dialog h2").textContent'), '补生成此图');
+ assert.equal(await js('document.querySelector(".action-dialog").textContent.includes("1 个生成单元 · 请求上限 2 次")'),true);
+ assert.equal(await js('document.querySelector(".action-dialog .primary-action").disabled'),false);
+ assert.equal(JSON.parse(fs.readFileSync(taskfile,'utf8')).requests_used,7);
+ fs.writeFileSync(path.join(root,'.runtime/task-repair-ui.png'),(await win.webContents.capturePage()).toPNG());
+ assert.deepEqual(pageErrors,[]);
+ fs.writeFileSync(path.join(root,'.runtime/task-continuation-ui-result.json'),JSON.stringify({ok:true,fixture,simulatedNewRequests:5,unsafeSkipped:2,automaticRetries:1,savedReused:1,repairPlanReviewed:true,repairPending:1,repairMaxRequests:2,budgetUnchanged:true,narrowWidth:820,pageErrors,actualPaidRequests:0}));app.exit(0);
+}
+run().catch(e=>{fs.writeFileSync(path.join(root,'.runtime/task-continuation-ui-result.json'),JSON.stringify({ok:false,error:e.stack,fixture}));app.exit(1);});

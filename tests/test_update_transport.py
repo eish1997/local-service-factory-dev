@@ -2,12 +2,18 @@ import io
 import os
 import unittest
 from unittest.mock import patch, MagicMock
-from urllib.error import URLError
+from urllib.error import URLError,HTTPError
 from urllib.request import Request
 from tools import update_protocol as p
 
 
 class UpdateTransport(unittest.TestCase):
+    def test_http_quota_is_not_repeated_and_index_read_is_bounded(self):
+        opener=MagicMock();opener.open.side_effect=HTTPError('https://api.github.com/x',403,'quota',{},None)
+        with patch.object(p,'build_opener',return_value=opener):
+            with self.assertRaises(HTTPError):p.download('https://api.github.com/x',timeout=12,attempts=1)
+        self.assertEqual(opener.open.call_count,1)
+        self.assertEqual(opener.open.call_args.kwargs['timeout'],12)
     def test_download_recovers_transient_connection_without_removing_size_limit(self):
         response = io.BytesIO(b'valid')
         response.headers = {'Content-Length': '5'}

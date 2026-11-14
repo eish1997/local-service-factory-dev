@@ -252,7 +252,13 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _io_path(path: Path) -> Path:
+    from tools.task_library import io_path
+    return io_path(path)
+
+
 def atomic_json(path: Path, payload: dict[str, Any]) -> None:
+    path = _io_path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -793,6 +799,7 @@ def parse_size(value: str) -> tuple[int, int]:
 
 
 def valid_png(path: Path, expected_size: tuple[int, int]) -> bool:
+    path = _io_path(path)
     if not path.is_file() or path.stat().st_size <= 0:
         return False
     try:
@@ -1923,7 +1930,7 @@ def _json_sha256(value: Any) -> str:
 
 def _file_sha256(path: Path) -> str:
     digest = hashlib.sha256()
-    with path.open("rb") as handle:
+    with _io_path(path).open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
@@ -2920,25 +2927,27 @@ def openai_clients_by_slot(config: dict[str, Any], slots: list[int]) -> list[tup
     return clients
 
 
-def _font(size: int) -> Any:
+def _font(size: int, family: str | None = None) -> Any:
     from PIL import ImageFont
 
     windows = Path(os.environ.get("WINDIR", "C:/Windows")) / "Fonts"
-    for candidate in [windows / "msyhbd.ttc", windows / "msyh.ttc", windows / "simhei.ttf", windows / "arialbd.ttf"]:
+    preferred = {"msyh_bold":"msyhbd.ttc","msyh":"msyh.ttc","simhei":"simhei.ttf"}
+    candidates = ([windows / preferred[family]] if family in preferred else []) + [windows / "msyhbd.ttc", windows / "msyh.ttc", windows / "simhei.ttf", windows / "arialbd.ttf"]
+    for candidate in candidates:
         if candidate.is_file():
             return ImageFont.truetype(str(candidate), size=size)
     return ImageFont.load_default()
 
 
-def _fit_font(draw: Any, text: str, max_width: int, start_size: int, min_size: int = 18, stroke: int = 0, max_height: int | None = None) -> Any:
+def _fit_font(draw: Any, text: str, max_width: int, start_size: int, min_size: int = 18, stroke: int = 0, max_height: int | None = None, family: str | None = None) -> Any:
     size = start_size
-    font = _font(size)
+    font = _font(size, family)
     while size > min_size:
         box = draw.textbbox((0, 0), text, font=font, stroke_width=stroke)
         if box[2] - box[0] <= max_width and (max_height is None or box[3] - box[1] <= max_height):
             break
         size -= 2
-        font = _font(size)
+        font = _font(size, family)
     return font
 
 
@@ -3625,11 +3634,18 @@ def apply_overlays(
     structure_version: str | None = None,
     generation_mode: str | None = None,
     overlay_profile: str | None = None,
+    postprocess_rules: dict | None = None,
+    preserve_signboard: bool = False,
+    signboard_phone_required: bool | None = None,
 ) -> dict[str, Any]:
     from PIL import Image, ImageDraw
 
     if overlay_profile not in (None, "interior_phone_eight_services"):
         raise CategoryPromptError(f"不支持的本地叠字配置：{overlay_profile}")
+    from tools.postprocess_rules import parameters
+    pp = parameters(postprocess_rules)
+    crop_rules = pp.get("crop", {})
+    text_rules = pp.get("cover" if role == "cover" else "detail", {})
     interior_profile = overlay_profile == "interior_phone_eight_services"
     if interior_profile:
         if role != "cover":
@@ -3638,7 +3654,7 @@ def apply_overlays(
             raise CategoryPromptError("室内电话与八词叠字必须提供恰好八个非空服务词")
         if raw_path.resolve() == target.resolve():
             raise CategoryPromptError("本地叠字成品不能覆盖原图")
-    with Image.open(raw_path) as source:
+    with Image.open(_io_path(raw_path)) as source:
         source.load()
         source_image = source.convert("RGBA")
     requested_size = source_image.size if final_size is None else parse_size(_size_text(final_size))
@@ -3649,7 +3665,12 @@ def apply_overlays(
     elif not ktv_portrait and (requested_size[0] != RAW_API_SIZE[0] or requested_size[1] > RAW_API_SIZE[1]):
         raise CategoryPromptError(f"不支持的本地成品尺寸：{requested_size[0]}x{requested_size[1]}")
     anchor_y = 0.0 if role == "cover" else ((group_index + position) % 3) / 2
+    anchor_y = crop_rules.get("cover_anchor_y" if role == "cover" else "detail_anchor_y", anchor_y)
     image = source_image.copy() if interior_profile else _fit_image(source_image, requested_size, anchor_y=anchor_y)
+    if postprocess_rules and postprocess_rules.get('template'):
+        from tools.graphic_templates import render_delivery
+        return render_delivery(image,target,phone,service_items,postprocess_rules,role,category_id,[raw_path],{'group_index':group_index,'position':position,'service_role':service_role,'structure_version':structure_version,'generation_mode':generation_mode,'overlay_profile':overlay_profile,**({'signboard_phone_required':signboard_phone_required if signboard_phone_required is not None else False} if category_id=='diving_salvage' else {})})
+    actual_services = []
     width, height = image.size
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
@@ -3685,7 +3706,7 @@ def apply_overlays(
             cover_style = {**cover_style, "service_layout": "four_by_two"}
             signboard_quad = None
             signboard_detection = None
-        elif category_id in MODEL_GENERATED_SIGNBOARD_CATEGORIES:
+        elif category_id in MODEL_GENERATED_SIGNBOARD_CATEGORIES or preserve_signboard:
             sign_phone = f"联系电话：{phone}"
             signboard_quad = None
             signboard_detection = None
@@ -3705,18 +3726,20 @@ def apply_overlays(
             [0.025, 0.43, 0.975, 0.535]
             if interior_profile else cover_center_phone_region(category_id, group_index)
         )
+        phone_region = text_rules.get("phone_region", phone_region)
+        cover_style = {**cover_style, "phone":tuple(text_rules.get("phone_color", cover_style["phone"])), "phone_fill":text_rules.get("phone_background", cover_style["phone_fill"])}
         phone_box = (
-            int(width * 0.025),
+            int(width * phone_region[0]),
             int(height * phone_region[1]),
-            int(width * 0.975),
+            int(width * phone_region[2]),
             int(height * phone_region[3]),
         )
         if cover_style["phone_fill"] is not None:
-            draw.rectangle(phone_box, fill=cover_style["phone_fill"])
+            draw.rectangle(phone_box, fill=tuple(cover_style["phone_fill"]))
         phone_text = f"电话：{phone}"
-        phone_stroke = max(4, width // 165) if cover_style["phone_fill"] is None else 0
+        phone_stroke = text_rules.get("phone_stroke", max(4, width // 165) if cover_style["phone_fill"] is None else 0)
         phone_font = _fit_font(
-            draw, phone_text, int(width * 0.90), int(width * 0.082), stroke=phone_stroke,
+            draw, phone_text, int(width * 0.90), int(width * text_rules.get("phone_font_ratio", 0.082)), stroke=phone_stroke, family=text_rules.get("font_family"),
             max_height=int((phone_box[3] - phone_box[1]) * 0.90) if interior_profile or truck_plan is not None else None,
         )
         _centered_text(draw, phone_box, phone_text, phone_font, cover_style["phone"], phone_stroke, (0, 0, 0, 255))
@@ -3816,6 +3839,7 @@ def apply_overlays(
                 for line_index, line in enumerate(lines):
                     line_box = (box[0], title_top + line_index * line_height, box[2], title_top + (line_index + 1) * line_height)
                     _centered_text(draw, line_box, line, title_font, title_ink)
+                actual_services.append({"text":item,"box":list(box),"font_size":title_font.size,"color":list(title_ink)})
                 continue
             font_scale = (
                 float(bottom_service_style["font_scale"])
@@ -3846,6 +3870,7 @@ def apply_overlays(
                 if bottom_service_style is not None
                 else (0, 0, 0, 235)
             )
+            actual_services.append({"text":item,"box":list(box),"font_size":item_font.size,"color":list(text_colors[index % len(text_colors)])})
             _centered_text(
                 draw,
                 box,
@@ -3856,17 +3881,21 @@ def apply_overlays(
                 stroke_fill,
             )
     else:
-        label = str(service_role or role)
-        label_box = (int(width * 0.12), int(height * 0.035), int(width * 0.88), int(height * 0.105))
-        draw.rounded_rectangle(label_box, radius=max(10, width // 55), fill=(band[0], band[1], band[2], 200), outline=accent, width=max(2, width // 320))
-        label_font = _fit_font(draw, label, int(width * 0.67), int(width * 0.054), stroke=max(1, width // 400))
-        _centered_text(draw, label_box, label, label_font, (255, 255, 255, 255), max(1, width // 400), (0, 0, 0, 210))
-        expected.append(label)
-        phone_box = (0, int(height * 0.49), width, int(height * 0.585))
-        draw.rectangle(phone_box, fill=(0, 0, 0, 184))
+        if category_id != "business_ktv" and (service_role or role):
+            label = str(service_role or role)
+            label_box = (int(width * 0.12), int(height * 0.035), int(width * 0.88), int(height * 0.105))
+            draw.rounded_rectangle(label_box, radius=max(10, width // 55), fill=(band[0], band[1], band[2], 200), outline=accent, width=max(2, width // 320))
+            label_font = _fit_font(draw, label, int(width * 0.67), int(width * 0.054), stroke=max(1, width // 400))
+            _centered_text(draw, label_box, label, label_font, (255, 255, 255, 255), max(1, width // 400), (0, 0, 0, 210))
+            expected.append(label)
+        phone_region = text_rules.get("phone_region", [0, .49, 1, .585])
+        phone_box = tuple(int(v * (width if i % 2 == 0 else height)) for i,v in enumerate(phone_region))
+        if text_rules.get("phone_background", [0,0,0,184]) is not None:
+            draw.rectangle(phone_box, fill=tuple(text_rules.get("phone_background", [0,0,0,184])))
         phone_text = f"电话：{phone}"
-        phone_font = _fit_font(draw, phone_text, int(width * 0.9), int(width * 0.078), stroke=max(3, width // 210))
-        _centered_text(draw, phone_box, phone_text, phone_font, accent, max(3, width // 210), (0, 0, 0, 255))
+        phone_stroke = text_rules.get("phone_stroke", max(3, width // 210))
+        phone_font = _fit_font(draw, phone_text, int(width * 0.9), int(width * text_rules.get("phone_font_ratio", .078)), stroke=phone_stroke, family=text_rules.get("font_family"))
+        _centered_text(draw, phone_box, phone_text, phone_font, tuple(text_rules.get("phone_color", accent)), phone_stroke, (0, 0, 0, 255))
 
         grid_box = (int(width * 0.025), int(height * 0.835), int(width * 0.975), int(height * 0.975))
         draw.rounded_rectangle(grid_box, radius=max(10, width // 45), fill=(band[0], band[1], band[2], 220), outline=accent, width=max(2, width // 300))
@@ -3885,13 +3914,40 @@ def apply_overlays(
                 int(grid_box[0] + cell_w * (col + 1)), int(grid_box[1] + cell_h * (row + 1)),
             )
             item_font = _fit_font(draw, item, int(cell_w * 0.86), int(width * 0.032), min_size=14, stroke=max(1, width // 600))
+            actual_services.append({"text":item,"box":list(box),"font_size":item_font.size,"color":[255,255,255,255]})
             _centered_text(draw, box, item, item_font, (255, 255, 255, 255), max(1, width // 600), (0, 0, 0, 220))
 
+    if any(key.startswith("service_") for key in text_rules) or "font_family" in text_rules:
+        if role == "cover":
+            original_box = (min(b[0] for b in service_boxes), min(b[1] for b in service_boxes), max(b[2] for b in service_boxes), max(b[3] for b in service_boxes))
+        else: original_box = grid_box
+        overlay.paste((0,0,0,0), original_box)
+        region = text_rules.get("service_region", [original_box[0]/width, original_box[1]/height, original_box[2]/width, original_box[3]/height])
+        custom_box = tuple(int(v * (width if i%2==0 else height)) for i,v in enumerate(region))
+        draw = ImageDraw.Draw(overlay)
+        draw.rectangle(custom_box, fill=tuple(text_rules.get("service_background", [12,18,24,230])))
+        columns = text_rules.get("service_columns", 5 if len(service_items)==10 else 4)
+        count_rows = max(1,(len(service_items)+columns-1)//columns)
+        actual_services = []
+        for i,item in enumerate(service_items):
+            r,c=divmod(i,columns)
+            box=(custom_box[0]+(custom_box[2]-custom_box[0])*c//columns, custom_box[1]+(custom_box[3]-custom_box[1])*r//count_rows, custom_box[0]+(custom_box[2]-custom_box[0])*(c+1)//columns, custom_box[1]+(custom_box[3]-custom_box[1])*(r+1)//count_rows)
+            font=_fit_font(draw,item,int((box[2]-box[0])*.9),int(width*text_rules.get("service_font_ratio",.032)),min_size=14,family=text_rules.get("font_family"))
+            color=tuple(text_rules.get("service_color",[255,255,255,255]))
+            _centered_text(draw,box,item,font,color)
+            actual_services.append({"text":item,"box":list(box),"font_size":font.size,"color":list(color)})
+    actual_phone_color = cover_style["phone"] if role=="cover" else text_rules.get("phone_color", accent)
+    postprocess_record = {"rules":postprocess_rules,"crop":{"mode":"unchanged" if interior_profile else "lanczos_cover_crop","anchor_y":anchor_y},"sources":[str(raw_path.resolve())],"phone":{"text":phone_text,"box":list(phone_box),"font_size":phone_font.size,"font_family":list(phone_font.getname()),"color":list(actual_phone_color),"stroke":phone_stroke,"background":text_rules.get("phone_background", cover_style["phone_fill"] if role=="cover" else [0,0,0,184])},"services":{"items":service_items,"boxes":[list(b) for b in service_boxes] if role=="cover" else [list(grid_box)],"rendered_items":actual_services,"font_sizes":[i["font_size"] for i in actual_services],"colors":[i["color"] for i in actual_services],"background":text_rules.get("service_background",list(bottom_service_style["background"]) if bottom_service_style else bottom_service_backing),"layout":cover_style["service_layout"] if role=="cover" else "detail_panel_grid","overrides":{k:v for k,v in text_rules.items() if k.startswith("service_")}}}
+    if any(key.startswith("service_") for key in text_rules) or "font_family" in text_rules:
+        postprocess_record["services"]["layout"] = str(text_rules.get("service_columns",5 if len(service_items)==10 else 4)) + " columns"
+        postprocess_record["services"]["boxes"] = [i["box"] for i in actual_services]
+    elif role == "detail":
+        postprocess_record["services"]["background"] = [band[0],band[1],band[2],220]
     image = Image.alpha_composite(image, overlay).convert("RGB")
-    target.parent.mkdir(parents=True, exist_ok=True)
-    temporary = target.with_suffix(target.suffix + ".part")
+    _io_path(target.parent).mkdir(parents=True, exist_ok=True)
+    temporary = _io_path(target.with_suffix(target.suffix + ".part"))
     image.save(temporary, format="PNG", optimize=True)
-    temporary.replace(target)
+    temporary.replace(_io_path(target))
     validation = {
         "schema_version": PRODUCTION_SCHEMA_VERSION,
         "structure_version": structure_version or GROUP_STRUCTURE_VERSION,
@@ -3918,6 +3974,7 @@ def apply_overlays(
         "image_sha256": _file_sha256(target),
         "expected_text": expected,
         "postprocessed_locally": True,
+        "postprocess_record": postprocess_record,
         "overlay_style": (
             {
                 "version": 1 if interior_profile else cover_style_version(category_id, group_index),
@@ -3970,6 +4027,9 @@ def apply_overlays(
             center_phone_region=truck_plan["center_phone_region"],
             bottom_service_region=truck_plan["bottom_service_region"],
         )
+    if role == "cover":
+        validation["overlay_style"]["center_phone_region"] = list(phone_region)
+        if preserve_signboard and not interior_profile and category_id != "ktv":validation["overlay_style"]["signboard_style"] = "preserved_source_signboard"
     atomic_json(target.with_suffix(".validation.json"), validation)
     return validation
 
@@ -3990,13 +4050,14 @@ def _triptych_boxes(
     content_height: int,
     gutter: int,
     category_id: str = DEFAULT_CATEGORY_ID,
+    panels: list | None = None,
 ) -> list[tuple[int, int, int, int]]:
     layout = _layout_config_map(category_id=category_id).get(layout_id)
     if layout is None:
         raise CategoryPromptError(f"不支持的三拼布局：{layout_id}")
     boxes: list[tuple[int, int, int, int]] = []
     inset = max(1, gutter // 2)
-    for panel in layout["panels"]:
+    for panel in panels if panels is not None else layout["panels"]:
         left = round(float(panel["x"]) * width) + inset
         top = round(float(panel["y"]) * content_height) + inset
         right = round((float(panel["x"]) + float(panel["width"])) * width) - inset
@@ -4014,8 +4075,12 @@ def compose_triptych(
     target: Path,
     phone: str,
     service_items: list[str],
+    *, postprocess_rules: dict | None = None,
 ) -> dict[str, Any]:
     from PIL import Image, ImageDraw
+    from tools.postprocess_rules import parameters
+    pp = parameters(postprocess_rules)
+    tr = pp.get("triptych", {})
     from tools import project_inventory
 
     records = sorted(panel_records, key=lambda item: int(item["panel_index"]))
@@ -4058,23 +4123,35 @@ def compose_triptych(
         "records": records,
     }
     recipe = _triptych_recipe(delivery)
+    for key in ("content_height_ratio", "gutter_px"):
+        if key in tr: recipe[key] = tr[key]
+    if "panels" in tr: recipe["layout_panels"] = tr["panels"]
+    structural = bool(postprocess_rules and postprocess_rules.get('template'))
+    if structural:
+        # Structural templates place all text over the photograph. The old
+        # 18% footer is only for the legacy labels/phone/services renderer.
+        recipe['content_height_ratio'] = 1.0
+        recipe['overlay'] = 'triptych_structural_full_canvas_v1'
     target_lock = _triptych_lock(target)
     with target_lock:
         width, height = final_size
         content_height = int(height * float(recipe["content_height_ratio"]))
         gutter = int(recipe["gutter_px"])
-        boxes = _triptych_boxes(layout_id, width, content_height, gutter, category_id)
+        boxes = _triptych_boxes(layout_id, width, content_height, gutter, category_id, tr.get("panels"))
         canvas = Image.new("RGB", final_size, (25, 25, 25))
         for record, raw_path, box in zip(records, raw_paths, boxes):
-            with Image.open(raw_path) as source:
+            with Image.open(_io_path(raw_path)) as source:
                 source.load()
                 panel = _fit_image(
                     source.convert("RGB"),
                     (box[2] - box[0], box[3] - box[1]),
-                    anchor_y=TRIPTYCH_PANEL_ANCHOR_Y,
+                    anchor_y=pp.get("crop",{}).get("panel_anchor_y", TRIPTYCH_PANEL_ANCHOR_Y),
                 )
             canvas.paste(panel, (box[0], box[1]))
 
+        if structural:
+            from tools.graphic_templates import render_delivery
+            return render_delivery(canvas,target,phone,service_items,postprocess_rules,'triptych',category_id,raw_paths,{'group_index':int(records[0]['group_index']),'position':2,'triptych_recipe':recipe,'sources':[str(p) for p in raw_paths],'panels':[list(b) for b in boxes],'panel_service_roles':[r['service_role'] for r in records],'structure_version':records[0].get('structure_version'),'generation_mode':records[0].get('generation_mode')})
         overlay = Image.new("RGBA", final_size, (0, 0, 0, 0))
         draw = ImageDraw.Draw(overlay)
         palettes = [
@@ -4113,23 +4190,24 @@ def compose_triptych(
             )
 
         footer_top = content_height
-        draw.rectangle((0, footer_top, width, height), fill=(8, 25, 35, 238))
+        if tr.get("phone_background", [8,25,35,238]) is not None:
+            draw.rectangle((0, footer_top, width, height), fill=tuple(tr.get("phone_background", [8,25,35,238])))
         phone_box = (0, footer_top, width, footer_top + int((height - footer_top) * 0.46))
         phone_text = f"{TRIPTYCH_PHONE_PREFIX}{phone}"
         phone_font = _fit_font(
             draw,
             phone_text,
             int(width * 0.92),
-            int(width * 0.068),
-            stroke=max(3, width // 230),
+            int(width * tr.get("phone_font_ratio", .068)),
+            stroke=tr.get("phone_stroke",max(3, width // 230)), family=tr.get("font_family"),
         )
         _centered_text(
             draw,
             phone_box,
             phone_text,
             phone_font,
-            (43, 234, 239, 255),
-            max(3, width // 230),
+            tuple(tr.get("phone_color", [43,234,239,255])),
+            tr.get("phone_stroke", max(3, width // 230)),
             (0, 0, 0, 255),
         )
         split_at = 5 if len(service_items) == 10 else 4
@@ -4143,9 +4221,9 @@ def compose_triptych(
             draw,
             " · ".join(service_items[:4]),
             service_box[2] - service_box[0],
-            int(width * 0.027),
+            int(width * tr.get("service_font_ratio", .027)),
             min_size=13,
-            stroke=max(1, width // 650),
+            stroke=max(1, width // 650), family=tr.get("font_family"),
         )
         line_height = (service_box[3] - service_box[1]) // 2
         for row, line in enumerate(services.splitlines()):
@@ -4160,16 +4238,16 @@ def compose_triptych(
                 row_box,
                 line,
                 service_font,
-                (245, 245, 245, 255),
+                tuple(tr.get("service_color", [245,245,245,255])),
                 max(1, width // 650),
                 (0, 0, 0, 220),
             )
         expected.extend(service_items)
         image = Image.alpha_composite(canvas.convert("RGBA"), overlay).convert("RGB")
-        target.parent.mkdir(parents=True, exist_ok=True)
-        temporary = target.with_suffix(target.suffix + ".part")
+        _io_path(target.parent).mkdir(parents=True, exist_ok=True)
+        temporary = _io_path(target.with_suffix(target.suffix + ".part"))
         image.save(temporary, format="PNG", optimize=True)
-        temporary.replace(target)
+        temporary.replace(_io_path(target))
         if not valid_png(target, final_size):
             raise RuntimeError("本地三拼成品未通过 PNG 完整性与尺寸检查")
         validation = {
@@ -4198,6 +4276,7 @@ def compose_triptych(
             "raw_api_size": f"{RAW_API_SIZE[0]}x{RAW_API_SIZE[1]}",
             "image_sha256": _file_sha256(target),
             "triptych_recipe": recipe,
+            "postprocess_record": {"rules":postprocess_rules,"sources":[str(p.resolve()) for p in raw_paths],"crop":{"mode":"center_fill_per_cell","anchor_y":pp.get("crop",{}).get("panel_anchor_y", TRIPTYCH_PANEL_ANCHOR_Y)},"panels":[list(b) for b in boxes],"phone":{"text":phone_text,"box":list(phone_box),"font_size":phone_font.size,"font_family":list(phone_font.getname()),"color":tr.get("phone_color",[43,234,239,255]),"stroke":tr.get("phone_stroke",max(3,width//230)),"background":tr.get("phone_background",[8,25,35,238])},"services":{"items":service_items,"font_size":service_font.size,"box":list(service_box),"color":tr.get("service_color",[245,245,245,255])}},
             "expected_text": expected,
             "postprocessed_locally": True,
             "overlay_style": {
@@ -4246,17 +4325,17 @@ def _archive_provider_payload(
     }.get(str(source_format or "").upper(), ".bin")
     source_sha256 = hashlib.sha256(payload).hexdigest()
     group_dir = archive_root / raw_target.parent.name
-    group_dir.mkdir(parents=True, exist_ok=True)
+    _io_path(group_dir).mkdir(parents=True, exist_ok=True)
     archive_path = group_dir / (
         f"{raw_target.stem}__source_{source_size[0]}x{source_size[1]}__{source_sha256[:12]}{suffix}"
     )
-    if archive_path.is_file():
+    if _io_path(archive_path).is_file():
         if _file_sha256(archive_path) != source_sha256:
             raise RuntimeError(f"provider response archive collision: {archive_path}")
         return archive_path
-    temporary = archive_path.with_suffix(archive_path.suffix + ".part")
+    temporary = _io_path(archive_path.with_suffix(archive_path.suffix + ".part"))
     temporary.write_bytes(payload)
-    temporary.replace(archive_path)
+    temporary.replace(_io_path(archive_path))
     return archive_path
 
 
@@ -4321,10 +4400,10 @@ def save_raw_png(
             "normalization_mode": "lanczos_cover_crop",
             "archive_status": "normalized",
         })
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".part")
+    _io_path(path.parent).mkdir(parents=True, exist_ok=True)
+    temporary = _io_path(path.with_suffix(path.suffix + ".part"))
     image.save(temporary, format="PNG", optimize=True)
-    temporary.replace(path)
+    temporary.replace(_io_path(path))
     if not valid_png(path, expected_size):
         raise RuntimeError("API 返回图片无法通过 PNG 完整性检查")
     result["saved_raw_sha256"] = _file_sha256(path)
@@ -4365,9 +4444,12 @@ def classify_request_error(error: Exception) -> str | None:
     """Classify only failures that are safe for one bounded paid retry."""
 
     metadata = image_generate.safe_stage_metadata(error)
-    if (isinstance(error, getattr(image_generate, "ReturnedImageDownloadError", ()))
-            or (metadata.get("response_kind") == "url" and metadata.get("error_stage")
-                in {"image_download_open", "image_download_read"})):
+    if isinstance(error, getattr(image_generate, "ReturnedImageDownloadError", ())):
+        if getattr(error, "error_stage", None) == "preflight":
+            return "transient"
+        return "image_download_failed"
+    if (metadata.get("response_kind") == "url" and metadata.get("error_stage")
+            in {"image_download_open", "image_download_read"}):
         return "image_download_failed"
     message = str(error).lower()
     code = str(getattr(error, "code", "") or "").lower()

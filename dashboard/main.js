@@ -1,6 +1,7 @@
 const { app, BrowserWindow, dialog, ipcMain, Notification, shell, screen } = require('electron');
 const fs = require('fs');
 const path = require('path');
+const applicationIcon = path.join(__dirname,'branding','logo.png');
 const { inspectJob, summarizeJob } = require('./monitor');
 const { runVariables } = require('./variables');
 const { runTasks, readLibraryJobs } = require('./tasks');
@@ -217,13 +218,16 @@ function createWindow() {
   const win = new BrowserWindow({
     width: compactMode ? 440 : 1040, height: compactMode ? 38 : 720,
     minWidth: compactMode ? 440 : 820, minHeight: compactMode ? 38 : 560,
-    backgroundColor: '#0c0d0e', title: '',
+    backgroundColor: '#0c0d0e', title: '', icon: applicationIcon,
     autoHideMenuBar: true, frame: false,
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
   mainWindow = win;
   win.setResizable(!compactMode);
   win.setAlwaysOnTop(compactMode, compactMode ? 'floating' : 'normal');
+  const notifyMaximized=()=>win.webContents.send('window:maximized-changed',win.isMaximized());
+  win.on('maximize',notifyMaximized);win.on('unmaximize',notifyMaximized);
+  win.webContents.on('did-finish-load',notifyMaximized);
   win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', (event) => event.preventDefault());
@@ -244,7 +248,8 @@ function applyCompact(target, desired) {
 
 function viewerPayload() {
   const image = viewerImages[viewerIndex];
-  return image ? { ...image, index: viewerIndex, count: viewerImages.length } : null;
+  if(image&&fs.existsSync(image.path)){const stat=fs.statSync(image.path);image.url=require('url').pathToFileURL(image.path).href+'?v='+stat.mtimeMs+'-'+stat.size;}
+  return image ? { ...image, historyRequest:{category:image.projectId,batch:(image.path.match(/[\\/]library[\\/](batch_[a-zA-Z0-9_-]+)/)||[])[1]||'legacy',group:image.groupIndex,position:image.position}, index: viewerIndex, count: viewerImages.length } : null;
 }
 
 function openViewer(parent, index) {
@@ -266,7 +271,7 @@ function openViewer(parent, index) {
   const y = area.y + Math.round((area.height - height) / 2);
   viewerWindow = new BrowserWindow({
     parent, x, y, width, height, minWidth: 420, minHeight: 320,
-    frame: false, backgroundColor: '#050605', show: false,
+    frame: false, backgroundColor: '#050605', show: false, icon: applicationIcon,
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
   viewerWindow.loadFile(path.join(__dirname, 'renderer', 'viewer.html'));
@@ -305,8 +310,19 @@ app.whenReady().then(() => {
   });
   ipcMain.handle('dashboard:read', () => readDashboardAndNotify());
   ipcMain.handle('tasks:request', (_, operation, request) => {
+    if(request?.image_path||request?.destination)throw Error('请使用对应的文件选择操作');
     if(['assets-save','package','open-folder'].includes(operation))throw Error('请使用对应的目录选择操作');
     return runTasks(projectRoot, operation, request);
+  });
+  ipcMain.handle('postprocess:import',async(event,request)=>{
+    const result=await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender),{title:'选择后处理原图',properties:['openFile'],filters:[{name:'图片',extensions:['png','jpg','jpeg','webp']}]});
+    if(result.canceled)return null;
+    return runTasks(projectRoot,'postprocess-session',{category:request.category,batch:request.batch,kind:request.kind,image_path:result.filePaths[0]});
+  });
+  ipcMain.handle('postprocess:export',async(event,request)=>{
+    const result=await dialog.showSaveDialog(BrowserWindow.fromWebContents(event.sender),{title:'保存后处理成品',defaultPath:'后处理成品.png',filters:[{name:'PNG 图片',extensions:['png']}]});
+    if(result.canceled)return null;
+    return runTasks(projectRoot,'postprocess-preview-apply',{category:request.category,session:request.session,preview:request.preview,destination:result.filePath});
   });
   ipcMain.handle('assets:choose', async () => {
     const current=await runTasks(projectRoot,'assets-view');
@@ -316,6 +332,10 @@ app.whenReady().then(() => {
   });
   ipcMain.handle('assets:open', async (_,request) => {
     const result=await runTasks(projectRoot,'open-folder',request);
+    const error=await shell.openPath(result.path);if(error)throw Error(error);return result;
+  });
+  ipcMain.handle('raw-library:open',async(_,request)=>{
+    const result=await runTasks(projectRoot,'raw-library-folder',{category:request.category,root_id:request.root_id});
     const error=await shell.openPath(result.path);if(error)throw Error(error);return result;
   });
   ipcMain.handle('assets:package', async (_,request) => {

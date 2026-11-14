@@ -75,7 +75,7 @@ def main():
     check_home=dest/'smoke-workspace';check_home.mkdir();(check_home/'output').mkdir()
     result=subprocess.run([str(runtime/'python.exe'),'-X','utf8',str(dest/'engine/factory.py'),'tasks','projects'],input='{}',text=True,encoding='utf-8',capture_output=True,
                           env={**os.environ,'FACTORY_DATA_HOME':str(check_home),'PATH':str(runtime),'PYTHONIOENCODING':'utf-8'},cwd=check_home)
-    if result.returncode or len(json.loads(result.stdout)['data'])!=8:raise ValueError('独立运行环境检查失败')
+    if result.returncode or len(json.loads(result.stdout)['data'])!=len(rule_updates.PROJECTS):raise ValueError('独立运行环境检查失败')
     print(json.dumps({'engine':str(dest/'engine'),'python':str(runtime),'verified':True}))
 
 if __name__=='__main__':main()

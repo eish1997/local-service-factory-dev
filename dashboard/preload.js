@@ -2,9 +2,12 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('roadRescue', {
   updates: operation => ipcRenderer.invoke('updates:request',operation),
+  importPostprocess: request => ipcRenderer.invoke('postprocess:import',request),
+  exportPostprocess: request => ipcRenderer.invoke('postprocess:export',request),
   tasks: (operation, request) => ipcRenderer.invoke('tasks:request', operation, request),
   chooseAssets: () => ipcRenderer.invoke('assets:choose'),
   openTaskFolder: request => ipcRenderer.invoke('assets:open',request),
+  openRawLibrary: request => ipcRenderer.invoke('raw-library:open',request),
   packageGroups: request => ipcRenderer.invoke('assets:package',request),
   read: () => ipcRenderer.invoke('dashboard:read'),
   variables: (request) => ipcRenderer.invoke('variables:request', request),
@@ -14,6 +17,7 @@ contextBridge.exposeInMainWorld('roadRescue', {
   isCompact: () => ipcRenderer.invoke('window:is-compact'),
   onCompactChanged: (callback) => ipcRenderer.on('window:compact-changed', (_, value) => callback(value)),
   minimize: () => ipcRenderer.invoke('window:minimize'),
+  onMaximizedChanged: callback => ipcRenderer.on('window:maximized-changed', (_, value) => callback(value)),
   maximize: () => ipcRenderer.invoke('window:maximize'),
   close: () => ipcRenderer.invoke('window:close'),
   openViewer: (index) => ipcRenderer.invoke('viewer:open', index),

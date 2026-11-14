@@ -42,7 +42,10 @@ class RuleUpdates(unittest.TestCase):
 
     def install(self,envelope,archive):
         response={'sha':'head-test','content':base64.b64encode(protocol.canonical(envelope)).decode()}
-        def fetch(url,*args):return protocol.canonical(response) if '/contents/' in url else archive
+        def fetch(url,*args,**kwargs):
+            if '/contents/' in url:return protocol.canonical(response)
+            if '/HEAD/release-index.json' in url:return protocol.canonical(envelope)
+            return archive
         with patch.object(protocol,'download',side_effect=fetch):return rules.sync()
 
     def test_signed_install_atomic_failures_and_new_prompt_version(self):
@@ -124,10 +127,74 @@ class RuleUpdates(unittest.TestCase):
         user=self.home/'fresh-user';user.mkdir()
         environment={**os.environ,'FACTORY_DATA_HOME':str(user),'PYTHONPATH':''}
         result=subprocess.run([sys.executable,str(engine/'factory.py'),'tasks','projects'],cwd=user,input='{}',text=True,encoding='utf-8',capture_output=True,env=environment)
-        self.assertEqual(result.returncode,0,result.stderr[-1200:]);self.assertEqual(len(json.loads(result.stdout)['data']),8)
+        self.assertEqual(result.returncode,0,result.stderr[-1200:]);self.assertEqual(len(json.loads(result.stdout)['data']),len(rules.PROJECTS))
         request={'category':'road_rescue','count':1,'phone':'13800138000','seed':1401}
         result=subprocess.run([sys.executable,str(engine/'factory.py'),'tasks','assemble'],cwd=user,input=json.dumps(request),text=True,encoding='utf-8',capture_output=True,env=environment)
         self.assertEqual(result.returncode,0,result.stdout[-1200:]+result.stderr[-1200:])
         self.assertTrue((user/'prompts/library/road_rescue').exists());self.assertFalse((engine/'prompts').exists())
+
+    def test_official_raw_avoids_api_quota_and_api_fallback_keeps_signatures(self):
+        from urllib.error import HTTPError
+        env,data=self.bundle('9000000000000000001');response={'sha':'api-head','content':base64.b64encode(protocol.canonical(env)).decode()}
+        calls=[]
+        def raw_only(url,*args,**kwargs):
+            calls.append(url)
+            if '/contents/' in url:raise HTTPError(url,403,'quota',{},None)
+            return protocol.canonical(env)
+        with patch.object(protocol,'download',side_effect=raw_only):
+            sha,envelope,payload=rules.remote_index(self.cfg)
+        self.assertEqual(calls,[rules.raw_index(self.cfg)])
+        raw=protocol.canonical(env)
+        self.assertEqual(sha,__import__('hashlib').sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest())
+        def fallback(url,*args,**kwargs):
+            if '/HEAD/' in url:raise HTTPError(url,503,'temporary',{},None)
+            return protocol.canonical(response)
+        with patch.object(protocol,'download',side_effect=fallback):self.assertEqual(rules.remote_index(self.cfg)[0],'api-head')
+        bad=copy.deepcopy(env);bad['payload']['version']='9000000000000000002'
+        with patch.object(protocol,'download',return_value=protocol.canonical(bad)) as fetch:
+            with self.assertRaisesRegex(ValueError,'签名'):rules.remote_index(self.cfg)
+        self.assertEqual(fetch.call_count,1)
+        with patch.dict(os.environ,clear=True),patch.object(protocol,'download',side_effect=raw_only):
+            self.assertEqual(rules.remote_index(self.cfg)[0],sha)
+
+    def test_offline_upgrade_preserves_old_and_compatible_signed_rules(self):
+        from tools.stage_distribution import stage_engine
+        from tools import variable_catalog as vc,task_library as lib
+        engine=stage_engine(self.home/'bootstrap-engine')
+        old=self.home/'.runtime/rules/1';old.mkdir(parents=True)
+        baseline=json.loads((engine/'distribution/baseline-rules.json').read_text(encoding='utf-8'))
+        for name in baseline['files']:
+            destination=old/name;destination.parent.mkdir(parents=True,exist_ok=True);destination.write_bytes((engine/name).read_bytes())
+        name='projects/truck_rescue/variable_catalog.json';catalog=json.loads((old/name).read_text(encoding='utf-8'))
+        dimension=next(d for d in catalog['dimensions'] if d['binding'].get('module')=='tools.truck_scene_diversity_v3' and d['binding'].get('name')=='LOCATIONS')
+        dimension['roles']=['cover','detail'];(old/name).write_bytes(protocol.canonical(catalog))
+        previous_bytes=(old/name).read_bytes();rules.write(old/'manifest.json',{'version':'1','bundled':True,'app_version':'1.3.1'})
+        rules.write(rules.local()/'active_rules.json',{'version':'1','bundled':True})
+        with patch.object(paths,'CODE_ROOT',engine),patch.object(vc,'ROOT',engine),patch.object(lib,'ROOT',self.home):
+            with patch.object(protocol,'download',side_effect=AssertionError('bootstrap must be offline')):
+                result=rules.bootstrap()
+            self.assertEqual(result['state'],'refreshed');self.assertNotEqual(result['version'],'1')
+            self.assertEqual((old/name).read_bytes(),previous_bytes)
+            self.assertEqual(rules.status()['active_rules']['previous'],'1')
+            vc.validate(vc.load('truck_rescue'))
+            batch=lib.assemble({'category':'truck_rescue','count':1,'phone':'13800138000','seed':1401})
+            snap=lib.read(lib.batch_dir('truck_rescue',batch['id'])/'snapshot.json')
+            self.assertEqual(snap['rules_version'],result['version'])
+            self.assertEqual(rules.bootstrap()['state'],'compatible')
+            envelope,archive=self.bundle('9000000000000000001')
+            self.assertEqual(self.install(envelope,archive)['state'],'updated')
+            paths.installed_rules.cache_clear();active=(rules.local()/'active_rules.json').read_bytes()
+            self.assertEqual(rules.bootstrap()['bundled'],False)
+            self.assertEqual((rules.local()/'active_rules.json').read_bytes(),active)
+            # Compatible signed data stay active even though the current
+            # software also has its own built-in snapshot.
+            self.assertEqual(rules.status()['rules_version'],'9000000000000000001')
+            bad=json.loads((paths.installed_rules()/name).read_text(encoding='utf-8'));bad['dimensions'][0]['roles']=['detail']
+            (paths.installed_rules()/name).write_bytes(protocol.canonical(bad))
+            self.assertEqual(rules.bootstrap()['state'],'refreshed')
+            self.assertTrue((self.home/'.runtime/rules/9000000000000000001'/name).exists())
+            pointer=(rules.local()/'active_rules.json').read_bytes()
+            with self.assertRaisesRegex(ValueError,'缓存损坏'):self.install(envelope,archive)
+            self.assertEqual((rules.local()/'active_rules.json').read_bytes(),pointer)
 
 if __name__=='__main__':unittest.main()

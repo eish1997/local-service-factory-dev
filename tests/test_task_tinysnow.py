@@ -21,6 +21,70 @@ class TinySnowTasks(unittest.TestCase):
         with patch('factory.effective_api_config',return_value={**cfg,'base_url':'https://other.example/v1'}):
             with self.assertRaises(ValueError):lib.api_config()
 
+    def test_probe_keeps_the_only_listed_model(self):
+        self.assertEqual(lib.choose_listed_model(['gpt-image-2','gpt-image-2.5-flare','gpt-image-2.5-sunburst']),'gpt-image-2.5-flare')
+        self.assertEqual(lib.choose_listed_model(['gpt-image-2-4k']),'gpt-image-2-4k')
+        with self.assertRaisesRegex(ValueError,'唯一可用模型'):lib.choose_listed_model(['gpt-image-2-4k','gpt-image-2.5-flare'])
+        with self.assertRaisesRegex(ValueError,'唯一可用模型'):lib.choose_listed_model(['gpt-image-2'])
+        class Models:
+            def __init__(self,name):self.name=name
+            def list(self):return type('Page',(),{'data':[type('Model',(),{'id':self.name})()]})()
+        class Client:
+            def __init__(self,**kwargs):self.kwargs=kwargs;self.models=Models(Client.names.pop(0))
+        saved={'provider':'relay','base_url':'https://tinysnow.one/v1','model':'gpt-image-2-4k','quality':'medium','api_size':'1024x1536','output_format':'png'}
+        with patch('factory.effective_api_config',return_value=dict(saved)),patch('image_generate.configured_api_keys',return_value=['key-a','key-b']),patch('openai.OpenAI',Client):
+            Client.names=['gpt-image-2.5-flare','gpt-image-2-4k']
+            slots=lib.probe_slot_models()
+            Client.names=['gpt-image-2.5-flare']
+            flare=lib.active_model_config()
+            Client.names=['gpt-image-2-4k']
+            fourk=lib.active_model_config()
+        self.assertEqual(slots['1']['model'],'gpt-image-2.5-flare')
+        self.assertEqual(slots['1']['api_size'],'1024x1536')
+        self.assertEqual(slots['2']['model'],'gpt-image-2-4k')
+        self.assertEqual(slots['2']['api_size'],'2560x3840')
+        self.assertEqual(lib.model_label(slots,slots['1']),'密钥1 gpt-image-2.5-flare、密钥2 gpt-image-2-4k')
+        self.assertEqual(flare['model'],'gpt-image-2.5-flare')
+        self.assertEqual(flare['api_size'],'1024x1536')
+        self.assertNotIn('raw_contract',flare)
+        self.assertEqual(fourk['model'],'gpt-image-2-4k')
+        self.assertEqual(fourk['api_size'],'2560x3840')
+        self.assertEqual(fourk['raw_contract'],'tinysnow_2336_2352x3520_to_legacy_v1')
+        with patch.object(lib,'api_config',return_value={'model':'offline'}):
+            self.assertEqual(lib.active_model_config(),{'model':'offline'})
+
+    def test_detected_model_replaces_frozen_task_without_resetting_counts(self):
+        root=Path('.runtime')/('test-model-adopt-'+uuid4().hex)
+        previous=lib.ROOT;lib.ROOT=root
+        try:
+            root.mkdir(parents=True)
+            (root/'.env').write_text('OPENAI_PROVIDER=relay\nOPENAI_IMAGE_MODEL=gpt-image-2-4k\n',encoding='utf-8')
+            private=root/'.runtime'/'private';private.mkdir(parents=True)
+            (private/'api_channels.json').write_text('{"channels":[{"id":"relay","provider":"relay","model":"gpt-image-2-4k","keys":["kept"]}]}',encoding='utf-8')
+            flare={'provider':'relay','model':'gpt-image-2.5-flare','quality':'medium','api_size':'1024x1536','base_url':'https://tinysnow.one/v1'}
+            file=root/'tasks'/'t'/'task.json'
+            state={'slots':[1],'config':{'model':'gpt-image-2-4k','quality':'medium','api_size':'2560x3840'},'requests_used':7,'attempts':{'u':1}}
+            lib.write(file.parent/'license.json',{'terms':{'id':'t','config':dict(state['config'])},'requests_used':7,'attempts':{'u':1}})
+            with patch.object(lib,'probe_slot_models',return_value={'1':flare}):
+                self.assertTrue(lib.apply_detected_models(file,state))
+            self.assertEqual(state['requests_used'],7)
+            self.assertEqual(state['config']['model'],'gpt-image-2.5-flare')
+            self.assertEqual(state['config']['api_size'],'1024x1536')
+            saved=lib.read(file.parent/'license.json')
+            self.assertEqual((saved['requests_used'],saved['attempts']), (7,{'u':1}))
+            self.assertEqual(saved['terms']['slot_models']['1']['model'],'gpt-image-2.5-flare')
+            self.assertEqual(state['license_sha256'],lib.digest(saved['terms']))
+            self.assertEqual(lib.read(file)['requests_used'],7)
+            self.assertIn('OPENAI_IMAGE_MODEL=gpt-image-2.5-flare',(root/'.env').read_text(encoding='utf-8'))
+            self.assertNotIn('gpt-image-2-4k',(root/'.env').read_text(encoding='utf-8'))
+            self.assertEqual(lib.read(private/'api_channels.json')['channels'][0]['keys'],['kept'])
+            self.assertEqual(lib.read(private/'api_channels.json')['channels'][0]['model'],'gpt-image-2.5-flare')
+            with patch.object(lib,'probe_slot_models',return_value=None):
+                self.assertIsNone(lib.apply_detected_models(file,state))
+            self.assertEqual(lib.read(file)['requests_used'],7)
+        finally:
+            lib.ROOT=previous
+
     def test_actual_source_contract_archives_and_normalizes(self):
         root=Path('.runtime')/('test-shared-4k-'+uuid4().hex)
         root.mkdir(parents=True)

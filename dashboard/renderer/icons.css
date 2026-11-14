@@ -33,3 +33,5 @@
 .icon-key-round { --icon:url("vendor/lucide/key-round.svg"); }
 
 .icon-archive { --icon:url("vendor/lucide/archive.svg"); }
+.icon-kanban { --icon:url("vendor/lucide/kanban.svg"); }
+.icon-restore { --icon:url("vendor/lucide/window-restore.svg"); }

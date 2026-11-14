@@ -36,7 +36,8 @@ def build_group(category, seed, phone, catalog, config):
             if not all(isinstance(text,str) for text in fragments):raise ValueError('模板段落必须为文字列表')
             if fragments:
                 import re
-                values={'phone':phone,'category':category,'services':'、'.join(config.get('service_items') or config.get('service_buttons') or [])}
+                from tools.task_library import overlay_services
+                values={'phone':phone,'category':category,'services':'、'.join(overlay_services(config))}
                 rendered=[]
                 for text in fragments:
                     if set(re.findall(r'\{([^{}]+)\}',text))-set(values):raise ValueError('模板包含不支持的变量，仅支持 phone/category/services')
@@ -51,12 +52,16 @@ def build_group(category, seed, phone, catalog, config):
                 'triptych_layout_id':row.get('triptych_layout_id'),
                 'structure_version':row.get('structure_version',config.get('image_group_structure',{}).get('structure_version','library_v1')),
                 'generation_mode':row.get('generation_mode','independent_delivery_images'),
-                'variables':final.get('variable_catalog',{}), 'source_group':seed})
+                'variables':final.get('variable_catalog',{}), 'source_group':seed,
+                **({'salvage_context':row['salvage_context']} if 'salvage_context' in row else {})})
         return result
     finally: vc.CURRENT.reset(token)
 
 
 def _rows(category,g,phone,config):
+    if category=='diving_salvage':
+        from tools.task_diving_salvage import rows
+        return rows(g,phone,config)
     if category=='home_appliance_repair':
         import generate_home_appliance_groups as m
         covers,details,_,_=m.build_records(g,1,phone)
@@ -80,14 +85,22 @@ def _rows(category,g,phone,config):
         return rows+[m._record('library',g,i+2,'detail',pool[(start+i)%len(pool)],'') for i in range(5)]
     if category=='truck_rescue':
         import generate_truck_rescue_groups as m
-        return m._build_rows(g,1,1,config)[0]
+        from tools.truck_shared_variants import enhance_rows
+        return enhance_rows(m._build_rows(g,1,1,config)[0], int(vc.CURRENT.get()['seed']))
     if category=='ktv':
         from tools.ktv_project import make_group
         return make_group(g,config)[0]
     if category=='business_ktv':
-        from tools.business_ktv.scene import sample,prompt,initial_strategy
-        strategy=initial_strategy(config);scene=sample(config,strategy,g)
-        return [{'role':'detail','prompt':prompt(scene,config,strategy),'scene':scene}]
+        from tools.business_ktv.group_prompt import select_group
+        packed=select_group(g, phone)
+        return [{
+            'role': 'cover' if shot['id']=='01_storefront' else 'detail',
+            'generation_kind': 'cover' if shot['id']=='01_storefront' else 'detail',
+            'service_role': shot['role'],
+            'prompt': shot['prompt'],
+            'structure_version': 'business_ktv_v2_seven',
+            'generation_mode': 'seven_role_sequence',
+        } for shot in packed['shots']]
     if category=='pipe_unclogging':
         import generate_pipe_unclogging_groups as m
         structure=m._v2_validate_config(config)

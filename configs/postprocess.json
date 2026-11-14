@@ -1,0 +1,2978 @@
+{
+  "schema_version": 1,
+  "engine_version": 1,
+  "defaults": {
+    "crop": {
+      "mode": "lanczos_cover_crop",
+      "cover_anchor_y": 0.0,
+      "panel_anchor_y": 0.4
+    },
+    "cover": {},
+    "detail": {},
+    "triptych": {},
+    "theme": {
+      "enabled": true,
+      "font_ratio": 0.048,
+      "panel_font_ratio": 0.038,
+      "boards": [
+        "none",
+        "soft",
+        "paper"
+      ],
+      "alignments": [
+        "left",
+        "right",
+        "center"
+      ]
+    }
+  },
+  "projects": {},
+  "presets": [
+    {
+      "id": "plain_dark",
+      "name": "素底白字",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {
+        "cover": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            245,
+            245,
+            245,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.065,
+          "service_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "service_background": [
+            20,
+            23,
+            26,
+            238
+          ],
+          "service_font_ratio": 0.032,
+          "service_region": [
+            0.025,
+            0.82,
+            0.975,
+            0.98
+          ]
+        },
+        "detail": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            245,
+            245,
+            245,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.065,
+          "service_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "service_background": [
+            20,
+            23,
+            26,
+            238
+          ],
+          "service_font_ratio": 0.032,
+          "service_region": [
+            0.025,
+            0.82,
+            0.975,
+            0.98
+          ]
+        },
+        "triptych": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            245,
+            245,
+            245,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.062,
+          "service_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "service_font_ratio": 0.027
+        }
+      },
+      "variations": {
+        "cover": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.44,
+              0.975,
+              0.535
+            ],
+            "service_region": [
+              0.025,
+              0.8,
+              0.975,
+              0.98
+            ],
+            "service_columns": 3,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.475,
+              0.975,
+              0.5700000000000001
+            ],
+            "service_region": [
+              0.025,
+              0.81,
+              0.975,
+              0.98
+            ],
+            "service_columns": 4,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.51,
+              0.975,
+              0.605
+            ],
+            "service_region": [
+              0.025,
+              0.8200000000000001,
+              0.975,
+              0.98
+            ],
+            "service_columns": 5,
+            "phone_stroke": 4
+          }
+        ],
+        "detail": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.44,
+              0.975,
+              0.535
+            ],
+            "service_region": [
+              0.025,
+              0.8,
+              0.975,
+              0.98
+            ],
+            "service_columns": 3,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.475,
+              0.975,
+              0.5700000000000001
+            ],
+            "service_region": [
+              0.025,
+              0.81,
+              0.975,
+              0.98
+            ],
+            "service_columns": 4,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.51,
+              0.975,
+              0.605
+            ],
+            "service_region": [
+              0.025,
+              0.8200000000000001,
+              0.975,
+              0.98
+            ],
+            "service_columns": 5,
+            "phone_stroke": 4
+          }
+        ],
+        "triptych": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_stroke": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "paper_light",
+      "name": "浅纸黑字",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {
+        "cover": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            25,
+            28,
+            30,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.065,
+          "service_color": [
+            25,
+            28,
+            30,
+            255
+          ],
+          "service_background": [
+            237,
+            232,
+            215,
+            245
+          ],
+          "service_font_ratio": 0.032,
+          "service_region": [
+            0.025,
+            0.82,
+            0.975,
+            0.98
+          ]
+        },
+        "detail": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            25,
+            28,
+            30,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.065,
+          "service_color": [
+            25,
+            28,
+            30,
+            255
+          ],
+          "service_background": [
+            237,
+            232,
+            215,
+            245
+          ],
+          "service_font_ratio": 0.032,
+          "service_region": [
+            0.025,
+            0.82,
+            0.975,
+            0.98
+          ]
+        },
+        "triptych": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            25,
+            28,
+            30,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.062,
+          "service_color": [
+            25,
+            28,
+            30,
+            255
+          ],
+          "service_font_ratio": 0.027
+        }
+      },
+      "variations": {
+        "cover": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.44,
+              0.975,
+              0.535
+            ],
+            "service_region": [
+              0.025,
+              0.8,
+              0.975,
+              0.98
+            ],
+            "service_columns": 3,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.475,
+              0.975,
+              0.5700000000000001
+            ],
+            "service_region": [
+              0.025,
+              0.81,
+              0.975,
+              0.98
+            ],
+            "service_columns": 4,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.51,
+              0.975,
+              0.605
+            ],
+            "service_region": [
+              0.025,
+              0.8200000000000001,
+              0.975,
+              0.98
+            ],
+            "service_columns": 5,
+            "phone_stroke": 4
+          }
+        ],
+        "detail": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.44,
+              0.975,
+              0.535
+            ],
+            "service_region": [
+              0.025,
+              0.8,
+              0.975,
+              0.98
+            ],
+            "service_columns": 3,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.475,
+              0.975,
+              0.5700000000000001
+            ],
+            "service_region": [
+              0.025,
+              0.81,
+              0.975,
+              0.98
+            ],
+            "service_columns": 4,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.51,
+              0.975,
+              0.605
+            ],
+            "service_region": [
+              0.025,
+              0.8200000000000001,
+              0.975,
+              0.98
+            ],
+            "service_columns": 5,
+            "phone_stroke": 4
+          }
+        ],
+        "triptych": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_stroke": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "blue_white",
+      "name": "蓝底白字",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {
+        "cover": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.065,
+          "service_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "service_background": [
+            25,
+            62,
+            96,
+            240
+          ],
+          "service_font_ratio": 0.032,
+          "service_region": [
+            0.025,
+            0.82,
+            0.975,
+            0.98
+          ]
+        },
+        "detail": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.065,
+          "service_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "service_background": [
+            25,
+            62,
+            96,
+            240
+          ],
+          "service_font_ratio": 0.032,
+          "service_region": [
+            0.025,
+            0.82,
+            0.975,
+            0.98
+          ]
+        },
+        "triptych": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.062,
+          "service_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "service_font_ratio": 0.027
+        }
+      },
+      "variations": {
+        "cover": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.44,
+              0.975,
+              0.535
+            ],
+            "service_region": [
+              0.025,
+              0.8,
+              0.975,
+              0.98
+            ],
+            "service_columns": 3,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.475,
+              0.975,
+              0.5700000000000001
+            ],
+            "service_region": [
+              0.025,
+              0.81,
+              0.975,
+              0.98
+            ],
+            "service_columns": 4,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.51,
+              0.975,
+              0.605
+            ],
+            "service_region": [
+              0.025,
+              0.8200000000000001,
+              0.975,
+              0.98
+            ],
+            "service_columns": 5,
+            "phone_stroke": 4
+          }
+        ],
+        "detail": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.44,
+              0.975,
+              0.535
+            ],
+            "service_region": [
+              0.025,
+              0.8,
+              0.975,
+              0.98
+            ],
+            "service_columns": 3,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.475,
+              0.975,
+              0.5700000000000001
+            ],
+            "service_region": [
+              0.025,
+              0.81,
+              0.975,
+              0.98
+            ],
+            "service_columns": 4,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.51,
+              0.975,
+              0.605
+            ],
+            "service_region": [
+              0.025,
+              0.8200000000000001,
+              0.975,
+              0.98
+            ],
+            "service_columns": 5,
+            "phone_stroke": 4
+          }
+        ],
+        "triptych": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_stroke": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "red_white",
+      "name": "红底白字",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {
+        "cover": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.065,
+          "service_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "service_background": [
+            132,
+            38,
+            32,
+            240
+          ],
+          "service_font_ratio": 0.032,
+          "service_region": [
+            0.025,
+            0.82,
+            0.975,
+            0.98
+          ]
+        },
+        "detail": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.065,
+          "service_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "service_background": [
+            132,
+            38,
+            32,
+            240
+          ],
+          "service_font_ratio": 0.032,
+          "service_region": [
+            0.025,
+            0.82,
+            0.975,
+            0.98
+          ]
+        },
+        "triptych": {
+          "font_family": "msyh_bold",
+          "phone_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "phone_background": null,
+          "phone_stroke": 4,
+          "phone_font_ratio": 0.062,
+          "service_color": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "service_font_ratio": 0.027
+        }
+      },
+      "variations": {
+        "cover": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.44,
+              0.975,
+              0.535
+            ],
+            "service_region": [
+              0.025,
+              0.8,
+              0.975,
+              0.98
+            ],
+            "service_columns": 3,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.475,
+              0.975,
+              0.5700000000000001
+            ],
+            "service_region": [
+              0.025,
+              0.81,
+              0.975,
+              0.98
+            ],
+            "service_columns": 4,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.51,
+              0.975,
+              0.605
+            ],
+            "service_region": [
+              0.025,
+              0.8200000000000001,
+              0.975,
+              0.98
+            ],
+            "service_columns": 5,
+            "phone_stroke": 4
+          }
+        ],
+        "detail": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.44,
+              0.975,
+              0.535
+            ],
+            "service_region": [
+              0.025,
+              0.8,
+              0.975,
+              0.98
+            ],
+            "service_columns": 3,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.475,
+              0.975,
+              0.5700000000000001
+            ],
+            "service_region": [
+              0.025,
+              0.81,
+              0.975,
+              0.98
+            ],
+            "service_columns": 4,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_region": [
+              0.025,
+              0.51,
+              0.975,
+              0.605
+            ],
+            "service_region": [
+              0.025,
+              0.8200000000000001,
+              0.975,
+              0.98
+            ],
+            "service_columns": 5,
+            "phone_stroke": 4
+          }
+        ],
+        "triptych": [
+          {
+            "font_family": "msyh_bold",
+            "phone_font_ratio": 0.061,
+            "service_font_ratio": 0.027,
+            "phone_background": null,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "simhei",
+            "phone_font_ratio": 0.067,
+            "service_font_ratio": 0.028999999999999998,
+            "phone_background": null,
+            "phone_stroke": 4
+          },
+          {
+            "font_family": "msyh",
+            "phone_font_ratio": 0.064,
+            "service_font_ratio": 0.031,
+            "phone_background": null,
+            "phone_stroke": 4
+          }
+        ]
+      }
+    },
+    {
+      "id": "a_sky",
+      "name": "居中电话·底部自然词",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "photo",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "sky_left",
+              "sky_right"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "all",
+            "zones": [
+              "bottom_full"
+            ],
+            "align": "left",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#26312a",
+              "accent": "#b72e24",
+              "paper": "#fff4df"
+            },
+            {
+              "ink": "#233542",
+              "accent": "#164c73",
+              "paper": "#edf5f6"
+            }
+          ],
+          "effect": "outline",
+          "board_gradient": false,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "a_edge",
+      "name": "居中电话·侧下词组",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "photo",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "side_left",
+              "lower_phone_left",
+              "sky_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "all",
+            "zones": [
+              "bottom_right"
+            ],
+            "align": "right",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#233542",
+              "accent": "#164c73",
+              "paper": "#edf5f6"
+            },
+            {
+              "ink": "#263b31",
+              "accent": "#226044",
+              "paper": "#f2f2df"
+            }
+          ],
+          "effect": "shadow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "a_ground",
+      "name": "居中电话·侧边长词组",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "photo",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "lower_phone_right"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "all",
+            "zones": [
+              "side_left",
+              "bottom_left",
+              "top_left"
+            ],
+            "align": "left",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#263b31",
+              "accent": "#226044",
+              "paper": "#f2f2df"
+            },
+            {
+              "ink": "#332c28",
+              "accent": "#a74618",
+              "paper": "#fff1d5"
+            }
+          ],
+          "effect": "glow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "b_upper",
+      "name": "居中电话·顶部紧凑词",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "swap",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "lower_phone_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "all",
+            "zones": [
+              "sky_left",
+              "sky_right"
+            ],
+            "align": "left",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#233542",
+              "accent": "#164c73",
+              "paper": "#edf5f6"
+            },
+            {
+              "ink": "#263b31",
+              "accent": "#226044",
+              "paper": "#f2f2df"
+            }
+          ],
+          "effect": "outline",
+          "board_gradient": false,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "b_corner",
+      "name": "居中电话·右上词组",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "swap",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "lower_phone_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "all",
+            "zones": [
+              "top_right"
+            ],
+            "align": "right",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#263b31",
+              "accent": "#226044",
+              "paper": "#f2f2df"
+            },
+            {
+              "ink": "#332c28",
+              "accent": "#a74618",
+              "paper": "#fff1d5"
+            }
+          ],
+          "effect": "shadow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "b_split",
+      "name": "居中电话·顶部双词组",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "swap",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "lower_phone_right"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "a",
+            "zones": [
+              "top_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "b",
+            "zones": [
+              "top_right"
+            ],
+            "align": "right",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#332c28",
+              "accent": "#a74618",
+              "paper": "#fff1d5"
+            },
+            {
+              "ink": "#26312a",
+              "accent": "#b72e24",
+              "paper": "#fff4df"
+            }
+          ],
+          "effect": "glow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "c_lead",
+      "name": "居中电话·单主服务",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "primary",
+        "main_count": 1,
+        "groups": [
+          {
+            "kind": "main",
+            "part": "main",
+            "zones": [
+              "top_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "lower_phone_right"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "rest",
+            "zones": [
+              "bottom_full"
+            ],
+            "align": "left",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#263b31",
+              "accent": "#226044",
+              "paper": "#f2f2df"
+            },
+            {
+              "ink": "#332c28",
+              "accent": "#a74618",
+              "paper": "#fff1d5"
+            }
+          ],
+          "effect": "outline",
+          "board_gradient": false,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "c_dual",
+      "name": "居中电话·双主服务",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "primary",
+        "main_count": 2,
+        "groups": [
+          {
+            "kind": "main",
+            "part": "main",
+            "zones": [
+              "bottom_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "sky_right"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "rest",
+            "zones": [
+              "side_right",
+              "bottom_right",
+              "top_right"
+            ],
+            "align": "right",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#332c28",
+              "accent": "#a74618",
+              "paper": "#fff1d5"
+            },
+            {
+              "ink": "#26312a",
+              "accent": "#b72e24",
+              "paper": "#fff4df"
+            }
+          ],
+          "effect": "shadow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "c_right",
+      "name": "居中电话·右侧主服务",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "primary",
+        "main_count": 1,
+        "groups": [
+          {
+            "kind": "main",
+            "part": "main",
+            "zones": [
+              "top_right"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "lower_phone_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "rest",
+            "zones": [
+              "bottom_full"
+            ],
+            "align": "left",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#26312a",
+              "accent": "#b72e24",
+              "paper": "#fff4df"
+            },
+            {
+              "ink": "#233542",
+              "accent": "#164c73",
+              "paper": "#edf5f6"
+            }
+          ],
+          "effect": "glow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "d_left",
+      "name": "居中电话·右侧两组",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "split",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "sky_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "a",
+            "zones": [
+              "top_right"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "b",
+            "zones": [
+              "bottom_right"
+            ],
+            "align": "right",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            2
+          ],
+          "separators": [
+            "\n"
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#332c28",
+              "accent": "#a74618",
+              "paper": "#fff1d5"
+            },
+            {
+              "ink": "#26312a",
+              "accent": "#b72e24",
+              "paper": "#fff4df"
+            }
+          ],
+          "effect": "outline",
+          "board_gradient": false,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "d_right",
+      "name": "居中电话·下方双列",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "split",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "sky_right"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "a",
+            "zones": [
+              "bottom_a"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "b",
+            "zones": [
+              "bottom_b"
+            ],
+            "align": "right",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            "\n"
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#26312a",
+              "accent": "#b72e24",
+              "paper": "#fff4df"
+            },
+            {
+              "ink": "#233542",
+              "accent": "#164c73",
+              "paper": "#edf5f6"
+            }
+          ],
+          "effect": "shadow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "d_offset",
+      "name": "居中电话·非对称双组",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "split",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "side_right",
+              "lower_phone_right",
+              "sky_right"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "a",
+            "zones": [
+              "top_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "b",
+            "zones": [
+              "bottom_left"
+            ],
+            "align": "left",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            2
+          ],
+          "separators": [
+            "\n"
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#233542",
+              "accent": "#164c73",
+              "paper": "#edf5f6"
+            },
+            {
+              "ink": "#263b31",
+              "accent": "#226044",
+              "paper": "#f2f2df"
+            }
+          ],
+          "effect": "glow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "e_phone",
+      "name": "无底电话·底部纸条",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "paper",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "lower_phone_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "all",
+            "zones": [
+              "bottom_full"
+            ],
+            "align": "left",
+            "board": "paper"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#26312a",
+              "accent": "#b72e24",
+              "paper": "#fff4df"
+            },
+            {
+              "ink": "#233542",
+              "accent": "#164c73",
+              "paper": "#edf5f6"
+            }
+          ],
+          "effect": "outline",
+          "board_gradient": false,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "e_words",
+      "name": "居中电话·服务纸条",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "paper",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "lower_phone_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "all",
+            "zones": [
+              "top_right"
+            ],
+            "align": "right",
+            "board": "paper"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#233542",
+              "accent": "#164c73",
+              "paper": "#edf5f6"
+            },
+            {
+              "ink": "#263b31",
+              "accent": "#226044",
+              "paper": "#f2f2df"
+            }
+          ],
+          "effect": "shadow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "e_lead",
+      "name": "居中电话·主服务纸条",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "paper",
+        "main_count": 1,
+        "groups": [
+          {
+            "kind": "main",
+            "part": "main",
+            "zones": [
+              "bottom_left"
+            ],
+            "align": "left",
+            "board": "paper"
+          },
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "sky_right"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "rest",
+            "zones": [
+              "side_right",
+              "bottom_right",
+              "top_right"
+            ],
+            "align": "right",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            " · ",
+            " ",
+            " | "
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#263b31",
+              "accent": "#226044",
+              "paper": "#f2f2df"
+            },
+            {
+              "ink": "#332c28",
+              "accent": "#a74618",
+              "paper": "#fff1d5"
+            }
+          ],
+          "effect": "glow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "f_tri",
+      "name": "自由三组·上下错位",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "free",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "sky_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "a",
+            "zones": [
+              "top_right"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "b",
+            "zones": [
+              "bottom_a"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "c",
+            "zones": [
+              "bottom_b"
+            ],
+            "align": "right",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            "\n"
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#233542",
+              "accent": "#164c73",
+              "paper": "#edf5f6"
+            },
+            {
+              "ink": "#263b31",
+              "accent": "#226044",
+              "paper": "#f2f2df"
+            }
+          ],
+          "effect": "outline",
+          "board_gradient": false,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "f_diagonal",
+      "name": "居中电话·自由对角词",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "free",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "lower_phone_right"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "a",
+            "zones": [
+              "upper_full"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "b",
+            "zones": [
+              "side_left",
+              "bottom_left",
+              "top_left"
+            ],
+            "align": "left",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            1,
+            2
+          ],
+          "separators": [
+            "\n"
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#263b31",
+              "accent": "#226044",
+              "paper": "#f2f2df"
+            },
+            {
+              "ink": "#332c28",
+              "accent": "#a74618",
+              "paper": "#fff1d5"
+            }
+          ],
+          "effect": "shadow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    },
+    {
+      "id": "f_side",
+      "name": "居中电话·上下词组",
+      "roles": [
+        "cover",
+        "detail",
+        "triptych"
+      ],
+      "parameters": {},
+      "structure": {
+        "family": "free",
+        "main_count": 0,
+        "groups": [
+          {
+            "kind": "phone",
+            "part": "phone",
+            "zones": [
+              "side_left",
+              "lower_phone_left",
+              "sky_left"
+            ],
+            "align": "left",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "a",
+            "zones": [
+              "top_left"
+            ],
+            "align": "right",
+            "board": "none"
+          },
+          {
+            "kind": "services",
+            "part": "b",
+            "zones": [
+              "lower_full"
+            ],
+            "align": "right",
+            "board": "none"
+          }
+        ],
+        "variables": {
+          "fonts": [
+            "msyh_bold"
+          ],
+          "phone_lines": [
+            2
+          ],
+          "separators": [
+            "\n"
+          ],
+          "spacing": [
+            1.15,
+            1.2,
+            1.28
+          ],
+          "offset": 0.009
+        },
+        "design": {
+          "palettes": [
+            {
+              "ink": "#332c28",
+              "accent": "#a74618",
+              "paper": "#fff1d5"
+            },
+            {
+              "ink": "#26312a",
+              "accent": "#b72e24",
+              "paper": "#fff4df"
+            }
+          ],
+          "effect": "glow",
+          "board_gradient": true,
+          "phone_scale": 0.12,
+          "main_scale": 0.073,
+          "service_scale": 0.041,
+          "phone_center": true,
+          "random_boards": true,
+          "rotations": [
+            0,
+            -3,
+            3,
+            -5,
+            5
+          ],
+          "group_modes": [
+            "template",
+            "flow",
+            "split",
+            "words"
+          ],
+          "stroke_scales": {
+            "main": [
+              0.005,
+              0.009
+            ],
+            "services": [
+              0.0035,
+              0.007
+            ],
+            "headline": [
+              0.006,
+              0.01
+            ]
+          },
+          "headline_board": "none"
+        }
+      }
+    }
+  ],
+  "layout_categories": [
+    "road_rescue",
+    "lock_service",
+    "home_appliance_repair",
+    "pipe_unclogging",
+    "pet_transport",
+    "truck_rescue",
+    "ktv",
+    "business_ktv",
+    "diving_salvage"
+  ],
+  "auto_layout_categories": [
+    "road_rescue",
+    "lock_service",
+    "home_appliance_repair",
+    "pipe_unclogging",
+    "pet_transport",
+    "truck_rescue",
+    "ktv",
+    "business_ktv",
+    "diving_salvage"
+  ]
+}

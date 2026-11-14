@@ -35,11 +35,14 @@ def rule_file(path):
     if root is None:return path
     try:relative=path.resolve().relative_to(CODE_ROOT)
     except ValueError:return path
-    candidate=root/relative
+    from tools.task_library import io_path
+    candidate=io_path(root/relative)
     if candidate.suffix not in {'.json','.md'}:return path
     return candidate if candidate.is_file() else path
 
-def read_json(path):return json.loads(rule_file(path).read_text(encoding='utf-8-sig'))
+def read_json(path):
+    from tools.task_library import io_path
+    return json.loads(io_path(rule_file(path)).read_text(encoding='utf-8-sig'))
 
 def version():
     root=rule_root()

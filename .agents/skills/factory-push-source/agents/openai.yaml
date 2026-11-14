@@ -1,0 +1,4 @@
+interface:
+  display_name: "推送开发 Agent 到 GitHub"
+  short_description: "整理开发源码与项目技能，审阅脱敏差异并同步到私有 GitHub 仓库"
+  default_prompt: "使用 $factory-push-source，把已完成的开发源码和 Agent 指引整理并推送到私有开发仓库。"

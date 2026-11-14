@@ -1,0 +1,18 @@
+/* Chromium's customizable picker keeps native selection and keyboard behavior. */
+@supports (appearance: base-select) {
+  select:not([multiple]), select:not([multiple])::picker(select) { appearance: base-select; }
+  select:not([multiple])::picker(select) {
+    color: #e6e8eb; background: #1d2024; border: 1px solid #44494f;
+    border-radius: 8px; box-shadow: 0 8px 24px #0008; padding: 4px;
+    max-height: min(280px, 42vh); overflow-y: auto; scrollbar-width: thin;
+    scrollbar-color: #565c63 #202327;
+  }
+  select:not([multiple]) option {
+    background: transparent; color: inherit; border-radius: 4px; padding: 6px 9px;
+    white-space: normal; overflow-wrap: anywhere;
+  }
+  select:not([multiple]) option:checked { background: #343b41; color: #fff; }
+  select:not([multiple]) option:hover, select:not([multiple]) option:focus-visible { background: #41494f; color: #fff; }
+  select:not([multiple]) option:disabled { color: #85898e; }
+  .select-wrap select::picker-icon { display: none; }
+}

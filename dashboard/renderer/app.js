@@ -8,9 +8,10 @@ const statusText = {
   queued: '排队中',
   starting: '启动中',
   running: '运行中',
+  recovering: '自动补齐中',
   waiting_for_api: '生成中',
   completed: '已完成',
-  completed_with_errors: '部分完成',
+  completed_with_errors: '执行已停止 · 原图待完成',
   awaiting_review: '待人工验收',
   failed: '失败',
   stopped_unexpectedly: '生成已停止',
@@ -25,6 +26,9 @@ const healthText = {
   failed: '任务失败',
   idle: '空闲',
 };
+
+const partialTask = job => (job?.rawStatus || job?.status) === 'completed_with_errors';
+const taskStateText = job => (job?.rawStatus || job?.status)==='recovering' ? '自动补齐中' : partialTask(job) ? statusText.completed_with_errors : (healthText[job.health] || statusText[job.status] || job.status);
 
 const formatTime = (iso) => (
   iso ? new Date(iso).toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' }) : '--'
@@ -76,7 +80,6 @@ function renderSummary(data) {
   const groups = (data.groups || []).filter((group) => group.projectId === selectedProject);
   const complete = groups.filter((group) => group.imageComplete).length;
   const pending = groups.filter((group) => group.imageComplete && !group.textApproved).length;
-  $('group-summary').textContent = `${projectName(data.projects || [], selectedProject)} · 待打包 ${groups.length} 组 · 已完整 ${complete} · 待验收 ${pending}`;
 }
 
 function renderKeyPool(data) {
@@ -97,10 +100,11 @@ function renderMonitor(job) {
   monitor.className = `job-monitor monitor-${health}`;
 
   if (!job) {
-    monitor.innerHTML = '<div class="monitor-empty"><strong>当前没有生成任务</strong><span>看板每 2 秒检查一次本地任务与图片。</span></div>';
+    $('monitor-body').innerHTML = '<div class="monitor-empty"><strong>暂无任务</strong></div>';
     return;
   }
 
+  job=job||{};
   const done = Number(job.completed || 0);
   const total = Number(job.requested_count || 0);
   const remaining = Number.isFinite(Number(job.remaining)) ? Number(job.remaining) : Math.max(0, total - done);
@@ -118,14 +122,14 @@ function renderMonitor(job) {
     stale: '生成进程仍存在，但已经超过 3 分钟没有进度更新。',
     dead: `生成进程已退出；付费生成当前没有继续。进度文件仍停留在“${escapeHtml(rawState)}”。`,
     failed: '任务已经失败，付费生成当前没有继续。',
-    finished: '任务已经结束。',
+    finished: partialTask(job) ? '其他图片已处理完毕，失败项已跳过；可在批次中展开待处理原因。' : '任务已经结束。',
     idle: `任务当前状态：${escapeHtml(rawState)}。`,
   };
 
-  monitor.innerHTML = `
+  $('monitor-body').innerHTML = `
     <div class="monitor-header">
       <div>
-        <strong>${escapeHtml(healthText[health] || statusText[job.status] || job.status)}</strong>
+        <strong>${escapeHtml(taskStateText(job))}</strong>
         <span>${escapeHtml(job.job_id || '')}</span>
       </div>
       <small>任务记录 · ${escapeHtml(model)}</small>
@@ -133,7 +137,7 @@ function renderMonitor(job) {
     <div class="monitor-progress"><i style="width:${percentage.toFixed(2)}%"></i></div>
     <div class="monitor-metrics">
       <span><small>完成</small><b>${done}/${total}</b></span>
-      <span><small>剩余</small><b>${remaining}</b></span>
+      <span><small>${partialTask(job) ? '待处理' : '剩余'}</small><b>${remaining}</b></span>
       <span><small>可复用</small><b>${reusable}</b></span>
       <span><small>新生成</small><b>${generated}</b></span>
       <span><small>失败</small><b>${failed}</b></span>
@@ -141,6 +145,12 @@ function renderMonitor(job) {
       <span class="monitor-updated"><small>最后更新</small><b>${escapeHtml(formatDateTime(job.updated_at))} · ${escapeHtml(formatAge(job.ageSeconds))}</b></span>
     </div>
     <div class="monitor-alert">${alerts[health] || ''}</div>`;
+  const header=monitor.querySelector('.monitor-header');
+  header.querySelector('span').hidden=true;
+  header.querySelector('small').hidden=true;
+  const visible=[0,1,4];
+  Array.from(monitor.querySelector('.monitor-metrics').children).forEach((item,index)=>{if(!visible.includes(index))item.remove();});
+  const alert=monitor.querySelector('.monitor-alert');if(!['stale','dead','failed'].includes(health))alert.textContent='';alert.hidden=!alert.textContent;
 }
 
 function groupedImages(data) {
@@ -203,7 +213,7 @@ function render(data) {
   }
   const job = data.jobSummary || data.jobs[0];
   const active = Number(job?.activeCount || 0);
-  const state = job ? (active > 1 ? `并行 ${active} 队列` : (healthText[job.health] || statusText[job.status] || job.status)) : '空闲';
+  const state = job ? (active > 1 ? `并行 ${active} 队列` : taskStateText(job)) : '空闲';
   const done = job ? Number(job.completed || 0) : 0;
   const total = job ? Number(job.requested_count || 0) : 0;
   const failed = job ? Number(job.failed || 0) : 0;
@@ -212,7 +222,7 @@ function render(data) {
   const requestsUsed = Number(job?.requestsUsed || 0);
 
   $('title-state').textContent = state;
-  $('title-progress').textContent = `${done}/${total} · 剩${remaining} · 失败${failed}${requestBudget === null ? '' : ` · 请求${requestsUsed}/${requestBudget}`}`;
+  $('title-progress').textContent = `${done}/${total}`;
   $('title-images').textContent = `待打包 ${data.images.length}`;
 
   renderMonitor(job);

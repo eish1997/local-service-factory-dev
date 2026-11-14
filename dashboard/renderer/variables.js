@@ -60,18 +60,22 @@
     }catch(error){if(ticket===generation)status(`读取失败：${error.message}；可点击刷新重试`,true);}
   }
   async function projects(){if(!projectsPromise)projectsPromise=call('projects','road_rescue').then(rows=>{for(const p of rows){const option=node('option',p.name);option.value=p.id;el('variable-project').append(option);}}).catch(e=>{projectsPromise=null;throw e;});return projectsPromise;}
-  function mode(variables){
+  function mode(value){
+    const page=typeof value==='boolean'?(value?'prompts':'batch'):value;window.dashboardPage=page;const variables=page==='prompts',postprocess=page==='postprocess';
+    document.body.classList.toggle('variables-mode',variables);document.body.classList.toggle('postprocess-mode',postprocess);
     el('gallery-panel').hidden=false;el('variables-panel').hidden=!variables;el('variable-types').hidden=!variables;
-    el('task-batch-list').hidden=variables;el('task-new').hidden=variables;
-    document.querySelector('.content-toolbar').hidden=variables;document.querySelector('.content-scroll').hidden=variables;
-    el('gallery-page').classList.toggle('selected',!variables);el('variables-page').classList.toggle('selected',variables);
+    el('task-batch-list').hidden=variables;el('task-new').hidden=page!=='batch';
+    document.querySelector('.content-toolbar').hidden=page!=='batch';document.querySelector('.content-scroll').hidden=page!=='batch';
+    el('gallery-page').classList.toggle('selected',page==='batch');el('variables-page').classList.toggle('selected',variables);el('postprocess-page').classList.toggle('selected',postprocess);
+    window.dashboardPostprocessMode?.(page);
   }
+  window.dashboardSetPage=mode;
   el('gallery-page').onclick=()=>{remember();mode(false);};
   el('variables-page').onclick=async()=>{
     mode(true);
     try{await projects();el('variable-project').value=activeProject;await refresh(activeProject,{switching:catalog?.category_id!==activeProject});}catch(e){status(e.message,true);}
   };
-  window.addEventListener('dashboard-project',e=>{remember();activeProject=e.detail;el('variable-project').value=activeProject;generation++;mode(false);});
+  window.addEventListener('dashboard-project',e=>{remember();activeProject=e.detail;el('variable-project').value=activeProject;generation++;mode(window.dashboardPage||'batch');});
   window.addEventListener('dashboard-refresh',e=>{activeProject=e.detail;});
   el('variable-project').onchange=()=>refresh(el('variable-project').value,{switching:true});
   for(const id of ['variable-search','variable-role','variable-filter'])el(id)[id==='variable-search'?'oninput':'onchange']=()=>{if(catalog){render();remember();}};

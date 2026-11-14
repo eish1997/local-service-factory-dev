@@ -45,6 +45,12 @@ def real_prompt(category,group,role):
         return build_prompt_record(config,key,group,random.Random(group),group)
     if category=='truck_rescue':
         import generate_truck_rescue_groups as truck
+        from tools.truck_shared_variants import enabled,enhance_rows
+        if enabled():
+            rows=enhance_rows(truck._build_rows(group,1,1,vc.read_json(root/'configs/categories/truck_rescue.json'))[0],group)
+            if role=='cover': return rows[0]
+            key=next((d['binding']['dictkey'] for d in forced_dimensions if d.get('binding',{}).get('name')=='EVENTS'),None)
+            return next(r for r in rows[1:] if key is None or r['service_role']==key)
         if role=='cover': return truck._cover_positive_prompt(truck._cover_variant(truck._cover_library(),group))
         key=next((d['binding']['dictkey'] for d in forced_dimensions if d.get('binding',{}).get('name')=='EVENTS'),next(iter(truck.ROLE_IDS)));variant=truck.truck_scene_diversity_v3.detail_variant(key,group)
         return truck._detail_positive_prompt(key,variant,group,1,'detail')
@@ -60,6 +66,10 @@ def real_prompt(category,group,role):
         rows,_=make_group(group,vc.read_json(root/'configs/categories/ktv.json'))
         return rows[0 if role=='cover' else -1]
     if category=='business_ktv':
+        if any(d.get('binding',{}).get('module')=='tools.business_ktv.group_prompt' for d in forced_dimensions):
+            from tools.business_ktv.group_prompt import select_group
+            packed=select_group(group,'00000000000')
+            return '\n'.join(row['prompt'] for row in packed['shots'])
         from tools.business_ktv.scene import sample,prompt,initial_strategy
         config=vc.overlay_document(category,vc.read_json(root/'configs/business_ktv/scene_library.json'))
         strategy=initial_strategy(config);scene=sample(config,strategy,group)

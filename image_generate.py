@@ -230,11 +230,15 @@ def _uses_extended_image_download_timeout(config: dict[str, Any]) -> bool:
 def generate_one(client: Any, config: dict[str, Any], prompt: str) -> bytes:
     receipt_context = config.get("_image_download_context")
     if receipt_context is not None:
-        image_download_receipts.preflight_context(receipt_context)
-        expected = {"model": config["model"], "quality": config["quality"], "api_size": config["api_size"],
-                    "effective_prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest()}
-        if any(receipt_context.get(key) != value for key, value in expected.items()):
-            raise ReturnedImageDownloadError() from None
+        try:
+            image_download_receipts.preflight_context(receipt_context)
+            expected = {"model": config["model"], "quality": config["quality"], "api_size": config["api_size"],
+                        "effective_prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest()}
+            if any(receipt_context.get(key) != value for key, value in expected.items()):
+                raise ReturnedImageDownloadError() from None
+        except ReturnedImageDownloadError as error:
+            error.error_stage = "preflight"
+            raise
     request: dict[str, Any] = {
         "model": config["model"],
         "prompt": prompt,

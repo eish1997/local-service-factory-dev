@@ -104,7 +104,7 @@ function imageEntry(projectRoot, fullPath, job) {
   return {
     name,
     path: fullPath,
-    url: pathToFileURL(fullPath).href,
+    url: pathToFileURL(fullPath).href+'?v='+encodeURIComponent(stat.mtimeMs+'-'+stat.size),
     size: stat.size,
     modified: stat.mtime.toISOString(),
     projectId: String(job?.project_id || job?.category_id || parts[0] || 'unassigned'),

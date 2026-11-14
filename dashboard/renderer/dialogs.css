@@ -1,0 +1,70 @@
+/* Shared dialog skin. Each view retains its own layout and image sizing. */
+dialog,
+dialog#task-create-dialog,
+dialog.action-dialog,
+dialog.production-dialog,
+dialog.postprocess-dialog,
+dialog.task-image-dialog {
+  color:var(--ink);
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:8px;
+  box-shadow:0 20px 80px #0008;
+  font-family:inherit;
+  font-size:13px;
+  max-width:calc(100vw - 32px);
+  max-height:calc(100dvh - 32px);
+}
+dialog::backdrop,
+dialog#task-create-dialog::backdrop,
+dialog.action-dialog::backdrop,
+dialog.production-dialog::backdrop { background:#0009; }
+dialog header { gap:16px; }
+dialog h2,dialog#task-create-dialog h2,dialog.production-dialog h2 {
+  color:var(--ink);font-size:18px;font-weight:500;line-height:1.5;
+}
+dialog p,dialog#task-create-dialog p,dialog.production-dialog p { color:var(--muted);line-height:1.7; }
+dialog button,
+dialog#task-create-dialog button,
+dialog.production-dialog button,
+dialog.action-dialog button,
+dialog.postprocess-dialog button {
+  font:inherit;color:var(--ink);background:none;border:0;border-radius:5px;
+  min-height:32px;padding:8px 12px;cursor:pointer;
+}
+dialog button:hover:not(:disabled) { background:var(--hover); }
+dialog button:disabled { opacity:.4;cursor:default; }
+dialog :is(input,select,textarea),dialog#task-create-dialog input,
+dialog.production-dialog :is(input,select) {
+  font:inherit;color:var(--ink);background:var(--raised);border:0;border-radius:5px;
+  min-height:34px;padding:8px 10px;
+}
+dialog input[type="checkbox"] { min-height:0;padding:0;accent-color:var(--accent); }
+dialog select option { background:var(--raised); }
+dialog .primary-action,dialog#task-create-dialog #task-assemble {
+  background:var(--line);color:var(--ink);
+}
+dialog .danger-action,dialog .action-error,dialog#task-create-dialog #task-create-error { color:var(--danger); }
+dialog .raw-error { color:var(--warning); }
+dialog.production-dialog { padding:24px; }
+dialog.production-dialog :is(header,.queue-toolbar) { gap:10px;margin-bottom:16px; }
+dialog.production-dialog .queue-toolbar label { color:var(--muted); }
+dialog.production-dialog .queue-column { background:var(--surface);border-color:var(--line); }
+dialog.production-dialog .raw-card { background:var(--raised);border:0; }
+dialog.production-dialog .raw-stock article { background:var(--raised);border:0; }
+dialog.production-dialog .raw-stock-toolbar { display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 0;position:sticky;top:0;background:var(--surface);z-index:1; }
+dialog.production-dialog .raw-stock-toolbar span { color:var(--muted);font-size:12px; }
+dialog.production-dialog .raw-stock article.selected { box-shadow:inset 0 0 0 1px var(--accent); }
+dialog.production-dialog .raw-stock-select { display:flex;align-items:center;gap:6px;margin-bottom:8px;color:var(--muted);font-size:12px;cursor:pointer; }
+dialog.production-dialog .raw-stock-select input { flex:none;width:14px;height:14px;min-height:0; }
+dialog.production-dialog :is(.raw-card small,.raw-card .raw-next-action) { color:var(--muted); }
+dialog.production-dialog .raw-card .raw-error { color:var(--warning); }
+dialog.production-dialog .raw-licence { border-color:var(--line); }
+dialog .image-history-sidebar { background:var(--surface);color:var(--ink); }
+dialog .image-history-item.selected { background:var(--selected); }
+dialog .version-viewer-controls { background:var(--raised); }
+dialog :is(button,input,select,textarea,summary):focus-visible { outline:2px solid var(--accent);outline-offset:2px; }
+@media(max-width:700px) {
+  dialog.production-dialog,dialog.action-dialog,dialog#task-create-dialog { padding:16px; }
+  dialog header { gap:10px; }
+}

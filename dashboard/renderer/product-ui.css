@@ -1,0 +1,32 @@
+/* Primary tasks stay visible; diagnostics and infrequent controls use one level. */
+[hidden] { display:none!important; }
+#job-monitor .monitor-metrics { grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:6px; }
+#job-monitor .monitor-details { color:var(--muted);font-size:12px;margin-top:8px; }
+#job-monitor .monitor-details summary { cursor:pointer;width:fit-content; }
+#job-monitor .monitor-details p { margin:10px 0;overflow-wrap:anywhere; }
+#job-monitor .monitor-secondary { display:flex;flex-wrap:wrap;gap:16px 32px;padding:8px 0; }
+#job-monitor .monitor-secondary span { display:flex;flex-direction:column;gap:4px; }
+#job-monitor>.global-concurrency { display:none; }
+.content-details,.task-budget-settings,#task-jobs-section { color:var(--muted);font-size:12px;margin:10px 0; }
+.content-details summary,.task-budget-settings summary,#task-jobs-section>summary { cursor:pointer;width:fit-content; }
+.content-details p,.task-budget-settings p { line-height:1.7;overflow-wrap:anywhere; }
+.content-details pre { white-space:pre-wrap;overflow-wrap:anywhere;max-height:40vh;overflow:auto; }
+#task-run-status { display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted); }
+#task-run-status button { border:0;background:none;color:var(--accent);cursor:pointer;padding:4px; }
+#task-plan-info p { margin:0 0 8px;line-height:1.6; }
+#task-plan-info small { color:var(--muted); }
+.content-toolbar #task-actions :is(#task-plan,#task-start,#task-pause,#task-resume,#task-package) { width:auto;display:inline-flex;gap:6px;padding:6px 10px; }
+.content-toolbar #task-actions #task-start:not(:disabled) { background:var(--line);border-radius:5px; }
+.task-budget-settings[open] .request-cap-label { display:flex;gap:12px;margin-top:12px; }
+.task-budget-settings input { min-width:0;max-width:180px; }
+.postprocess-toolbar { flex-wrap:wrap; }
+.postprocess-options { font-size:12px;color:var(--muted); }
+.postprocess-options summary { cursor:pointer; }
+.postprocess-options[open] { width:100%;display:flex;align-items:center;gap:16px;flex-wrap:wrap; }
+.postprocess-options input[type=number] { max-width:180px; }
+.raw-stock-toolbar details[open] { flex-basis:100%; }
+.raw-stock-toolbar details button { margin-top:8px; }
+dialog.production-dialog>.content-details select { max-width:100%;margin:10px 0; }
+.error-details { color:var(--danger); }
+dialog#task-create-dialog { height:fit-content;min-height:0; }
+@media(max-width:700px) { #job-monitor .monitor-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } }

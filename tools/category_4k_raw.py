@@ -81,15 +81,15 @@ def prepare_source_size_raw(payload: bytes, *, anchor_y: float = 0.5,
 
 def publish_immutable_bytes(path: Path, payload: bytes) -> None:
     """Atomic, no-overwrite publication on the same filesystem; identical is idempotent."""
-    path = Path(path)
+    path = production._io_path(Path(path))
     if path.is_symlink():
         raise production.RawImageContractError("不可写入符号链接")
-    if path.exists():
+    if production._io_path(path).exists():
         if not path.is_file() or path.read_bytes() != payload:
             raise production.RawImageContractError("已有文件不匹配，禁止覆盖")
         return
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
+    temporary = production._io_path(path.with_name(f".{path.name}.{uuid4().hex}.tmp"))
     try:
         with temporary.open("xb") as handle:
             handle.write(payload)
@@ -135,7 +135,7 @@ def save_4k_raw_png(
     )
     if not 0.0 <= anchor_y <= 1.0:
         raise ValueError("anchor_y must be between 0 and 1")
-    if path.exists():
+    if production._io_path(path).exists():
         raise production.RawImageContractError("4K响应适配不能覆盖已有原图")
     if source_size_policy is not None:
         if source_size_policy not in {DECODABLE_SOURCE_POLICY, HD_DELIVERY_SOURCE_POLICY}:
@@ -174,7 +174,7 @@ def save_4k_raw_png(
         sidecar = archive.with_name(archive.name + "." + source_size_policy + ".json")
         result.update(provider_original=str(archive), provider_original_metadata=str(sidecar),
                       model=generation["model"], quality=generation.get("quality"), api_size=generation.get("api_size"))
-        if original_metadata.exists():
+        if production._io_path(original_metadata).exists():
             result["prior_provider_original_metadata"] = str(original_metadata)
         if credential_epoch is not None:
             result["credential_epoch"] = credential_epoch
@@ -206,7 +206,7 @@ def save_4k_raw_png(
         archive_root, path, payload, source_format, source_size,
     )
     sidecar = archive.with_name(archive.name + ".json")
-    previous_sidecar = sidecar if sidecar.exists() else None
+    previous_sidecar = sidecar if production._io_path(sidecar).exists() else None
     if previous_sidecar is not None:
         # Recovery may accept a previously rejected source under a new bound
         # contract. Preserve its old rejection evidence instead of rewriting it.
@@ -251,10 +251,10 @@ def save_4k_raw_png(
             f"4K响应尺寸/解码不符合已绑定契约：{reason}", evidence=result,
         )
     image = production._fit_image(image, production.RAW_API_SIZE, anchor_y=anchor_y)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".part")
+    production._io_path(path.parent).mkdir(parents=True, exist_ok=True)
+    temporary = production._io_path(path.with_suffix(path.suffix + ".part"))
     image.save(temporary, format="PNG", optimize=True)
-    temporary.replace(path)
+    temporary.replace(production._io_path(path))
     if not production.valid_png(path, production.RAW_API_SIZE):
         raise production.RawImageContractError("4K工作原图未通过PNG完整性验证", evidence=result)
     result.update(

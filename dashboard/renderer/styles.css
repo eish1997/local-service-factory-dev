@@ -197,6 +197,7 @@ main {
 }
 
 .monitor-metrics > span:first-child { border-left: 0; padding-left: 0; }
+.monitor-metrics.production-metrics { grid-template-columns:repeat(5,minmax(0,1fr)); }
 
 .monitor-metrics small,
 .monitor-metrics b {
@@ -466,6 +467,7 @@ dialog > div {
   .monitor-metrics {
     grid-template-columns: repeat(3, minmax(76px, 1fr));
   }
+  .monitor-metrics.production-metrics { grid-template-columns:repeat(3,minmax(0,1fr)); }
 
   .monitor-updated { grid-column: 1 / -1; }
 
@@ -486,3 +488,5 @@ dialog > div {
     grid-template-columns: repeat(5, minmax(68px, 1fr));
   }
 }
+
+.application-logo { width:24px; height:24px; flex-shrink:0; border-radius:4px; background:#fff; }

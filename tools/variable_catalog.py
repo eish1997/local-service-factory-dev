@@ -30,9 +30,10 @@ MODULES = {
                  ('tools.road_snapshot_variants',['FLAWS','ROLL_ANGLES'])],
  'home_appliance_repair': [('generate_home_appliance_groups', None)],
  'pet_transport': [('generate_pet_transport_groups', ['DETAIL_ACTIONS','LOCATIONS','PET_CONTEXTS','CAMERAS','LIGHTING']),('tools.category_image_production',['PET_STORE_NAMES','PET_VEHICLES','PET_ACTIONS'])],
- 'truck_rescue': [('generate_truck_rescue_groups', ['CAMERAS','LIGHTING']),('tools.truck_scene_diversity_v3',['EVENTS','DETAIL_CAMERAS','LOCATIONS','LIGHTS','WORKWEAR','COVER_FRAMES','COVER_EVENTS','LEARNED_COMPOSITIONS','COVER_WORK_DETAILS'])],
+ 'truck_rescue': [('generate_truck_rescue_groups', ['CAMERAS','LIGHTING']),('tools.truck_scene_diversity_v3',['EVENTS','DETAIL_CAMERAS','LOCATIONS','LIGHTS','WORKWEAR','COVER_FRAMES','COVER_EVENTS','LEARNED_COMPOSITIONS','COVER_WORK_DETAILS']),('tools.truck_shared_variants',['CAPTURE_DEVICES','PHOTO_TREATMENTS','SNAPSHOT_FLAWS','HANDHELD_ROLL','BACKGROUND_ELEMENTS','HEAVY_VEHICLES','OTHER_VEHICLES','COVER_ENVIRONMENTS','SIGN_MATERIALS','SIGN_LAYOUTS','SIGN_WEAR'])],
  'lock_service': [('factory', ['LOCK_SERVICE_COVER_VARIANTS','LOCK_SERVICE_DETAIL_VARIANTS'])],
- 'pipe_unclogging': [('tools.prompt_engine',['PIPE_CAMERAS','PIPE_INDOOR_LIGHT','PIPE_OUTDOOR_LIGHT','PIPE_WEATHER'])], 'ktv': [], 'business_ktv': [],
+ 'pipe_unclogging': [('tools.prompt_engine',['PIPE_CAMERAS','PIPE_INDOOR_LIGHT','PIPE_OUTDOOR_LIGHT','PIPE_WEATHER'])], 'ktv': [],
+ 'business_ktv': [('tools.business_ktv.group_prompt', ['STORE_NAMES','BUILDINGS','EXTERIOR_LIGHTS','TYPEFACES','SIGN_LAYOUTS','STREETS','MATERIALS','EXTRA_SERVICES','GUEST_CLOTHES','STAFF_POSTS','SINGER_LOOKS','ROOM_SIDES'])],
 }
 FILES = {
  'road_rescue': [('projects/road_rescue/cover_visual_profile_v3.json', ['capture_devices','light_presets','worker_presentations']),
@@ -60,6 +61,7 @@ LABELS = {'SHOP_PREFIXES':'商号字号','OWNER_PREFIXES':'师傅称呼','SHOP_S
  'ROOM_TYPE':'空间类型','LAYOUT':'空间布局','SOFA':'沙发','TABLE':'桌型','ROOM_STYLE':'室内风格','LIGHTING':'光线',
  'CAMERA_POSITION':'拍摄位置','CAMERA_DISTANCE':'取景距离','COMPOSITION':'构图','TABLE_STATE':'桌面状态',
  'DRINKS':'饮品状态','FRUIT':'水果','DENSITY':'物品密度','imperfections':'自然使用痕迹','prompt_structures':'叙述方式',
+ 'STORE_NAME_HEADS':'店名首字','STORE_NAME_TAILS':'店名次字','LOBBY_NAMES':'大厅是否写店名','STORE_NAMES':'一组店名','VENUE_FAMILIES':'店型拍照与室内','BUILDINGS':'门头建筑','EXTERIOR_LIGHTS':'门头时间与光','TYPEFACES':'门头字体','SIGN_LAYOUTS':'门头文字排版','STREETS':'门头街道','MATERIALS':'一组装修材料','EXTRA_SERVICES':'门头附加用途','GUEST_CLOTHES':'进门客人衣着','STAFF_POSTS':'大厅服务人员','SINGER_LOOKS':'女歌手形象','ROOM_SIDES':'包厢机位',
  'brand_name_candidates':'店名字号','generic_store_titles':'通用店铺后缀','store_name_prefixes':'店名前缀',
  'store_name_suffixes':'店名后缀','sign_color_schemes':'招牌配色','business_lines':'服务行','sign_conditions':'招牌状态',
  'locations':'位置','facade_archetypes':'建筑原型','storefront_layouts':'门店布局','business_modes':'经营形态',
@@ -156,7 +158,7 @@ def defaults(category):
                         dimensions.append(d)
                 continue
             dimensions.append(dimension(name,value,{'module':module,'name':name,'tuple':isinstance(value,tuple)},
-                              ['detail'] if name.startswith('DETAIL_') or name=='LOCK_SERVICE_DETAIL_VARIANTS' else ['cover'] if name.startswith('COVER_') or category=='road_rescue' or name=='LOCK_SERVICE_COVER_VARIANTS' else None))
+                              ['detail'] if name.startswith('DETAIL_') or name=='LOCK_SERVICE_DETAIL_VARIANTS' else ['cover'] if name.startswith('COVER_') or (module=='tools.truck_shared_variants' and name.startswith('SIGN_')) or category=='road_rescue' or name=='LOCK_SERVICE_COVER_VARIANTS' else None))
     for path, allowed in FILES.get(category,[]):
         document=read_json(ROOT/path)
         def walk(v, keys):
@@ -216,6 +218,8 @@ def enrich_catalog(category, dimensions, readonly):
             d['status']='legacy';d['description']='历史场景或参考登记信息；当前门店生成不从此字段随机取值'
         if category=='truck_rescue' and b.get('name')=='COVER_WORK_DETAILS':
             dimensions.remove(d);continue
+        if category=='truck_rescue' and b.get('module')=='tools.truck_scene_diversity_v3' and b.get('name')=='LOCATIONS':
+            d['roles']=['detail']
         if category=='truck_rescue' and b.get('name')=='COVER_EVENTS':
             source=ast.parse((ROOT/'tools/truck_scene_diversity_v3.py').read_text(encoding='utf-8'))
             details=ast.literal_eval(next(n.value for n in source.body if isinstance(n,ast.Assign) and n.targets[0].id=='COVER_WORK_DETAILS'))
@@ -223,7 +227,7 @@ def enrich_catalog(category, dimensions, readonly):
             for o in d['options']:
                 event,action,state=o['value'];o['value']={'id':event,'action':action,'state':state,'placement':details[event]};o['schema']=schema(o['value'])
             d['schema']=d['options'][0]['schema']
-        if category=='truck_rescue' and b.get('file') and keys[-1] not in {'brand_name_candidates','locations','sign_color_schemes','sign_information_layouts','sign_accent_details','sign_installation_details'}:
+        if category=='truck_rescue' and b.get('file') and keys[-1] not in {'brand_name_candidates','sign_information_layouts','sign_accent_details','sign_installation_details'}:
             d['status']='legacy';d['description']='旧批次使用或历史备用池；当前采用成套事件、机位与光线'
         if category=='truck_rescue' and b.get('module')=='generate_truck_rescue_groups':
             d['status']='legacy';d['description']='旧批次使用；当前详情采用场景组合模块'

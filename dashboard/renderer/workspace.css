@@ -1,5 +1,5 @@
 /* Shared, quiet workspace surface. Color is reserved for selection and state. */
-:root { --surface:#151719; --raised:#1c1f22; --ink:#e4e6e8; --muted:#91969c; --accent:#b6c9ca; background:var(--surface); color:var(--ink); }
+:root { --surface:#151719; --raised:#1c1f22; --ink:#e4e6e8; --muted:#91969c; --accent:#b6c9ca; --line:#303438; --hover:#282d31; --selected:#252a2d; --danger:#d19a93; --warning:#baa278; background:var(--surface); color:var(--ink); }
 body,.titlebar { background:var(--surface); }
 .titlebar { border:0; }
 button,input,select { font:inherit; }
@@ -15,6 +15,8 @@ button { transition:background .12s,color .12s; }
 #job-monitor.monitor-failed .monitor-progress i,#job-monitor.monitor-dead .monitor-progress i { background:#bf8882; }
 #job-monitor.monitor-stale .monitor-progress i { background:#baa278; }
 #job-monitor .monitor-metrics { gap:16px; grid-template-columns:repeat(7,minmax(48px,1fr)) minmax(170px,1.7fr); }
+#job-monitor .monitor-metrics.production-metrics { grid-template-columns:repeat(5,minmax(0,1fr)); }
+#job-monitor .production-metrics .monitor-updated { grid-column:auto; }
 #job-monitor .monitor-metrics>span { border:0; padding:0; }
 #job-monitor .monitor-metrics small { color:var(--muted); }
 #job-monitor .monitor-metrics b { font-weight:500; }
@@ -95,3 +97,42 @@ button { transition:background .12s,color .12s; }
  .content-toolbar #task-actions { gap:4px; }
  .content-scroll,#variables-panel:not([hidden]) { padding-left:16px; padding-right:16px; }
 }
+.status-strip {
+  flex:0 0 auto;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:stretch;
+  background:var(--surface);
+}
+.status-tools {
+  display:grid;
+  grid-template-rows:repeat(2,40px);
+  grid-auto-columns:40px;
+  grid-auto-flow:column;
+  gap:4px;
+  align-content:center;
+  padding:8px 12px;
+  border-right:1px solid var(--line,#34383b);
+}
+.status-tools button {
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+}
+.status-tools button:hover,.status-tools button:focus-visible {
+  color:var(--ink);
+  background:#292e30;
+}
+.status-tools .ui-icon { width:24px; height:24px; }
+body:not(.compact) .title-status > :is(i,strong,span) { display:none; }
+#job-monitor #task-message { margin:0; font-size:13px; font-weight:500; line-height:1.5; color:var(--ink); }
+#job-monitor #task-message.error { color:#d19a93; }
+#job-monitor:has(#task-message:not([hidden])) :is(.monitor-header,.monitor-empty) { display:none; }
+.content-scroll:has(#task-library) { padding-top:3px; }
+#task-library { margin-top:0; }
+#task-cards>.task-card:first-child { margin-top:0; }

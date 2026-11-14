@@ -26,17 +26,21 @@ class Redirect(HTTPRedirectHandler):
         if request.has_header('Authorization'):raise ValueError('发布请求不允许转发凭证')
         return super().redirect_request(request,fp,code,msg,headers,newurl)
 
-def download(url,limit=16*1024*1024,accept='application/octet-stream'):
+def download(url,limit=16*1024*1024,accept='application/octet-stream',*,timeout=25,attempts=3):
     public_url(url)
-    for attempt in range(3):
+    for attempt in range(attempts):
         try:
-            with build_opener(Redirect()).open(Request(url,headers={'User-Agent':'LocalServiceFactory/1','Accept':accept}),timeout=25) as response:
+            with build_opener(Redirect()).open(Request(url,headers={'User-Agent':'LocalServiceFactory/1','Accept':accept}),timeout=timeout) as response:
                 if int(response.headers.get('Content-Length','0'))>limit:raise ValueError('更新文件过大')
                 data=response.read(limit+1)
             if len(data)>limit:raise ValueError('更新文件过大')
             return data
+        except HTTPError:
+            # HTTP failures need a different route or a later check, not an
+            # immediate repeat against the same exhausted anonymous quota.
+            raise
         except (URLError, TimeoutError, ConnectionError):
-            if attempt==2:raise
+            if attempt==attempts-1:raise
 
 def verify(envelope,keys):
     if not isinstance(envelope,dict) or envelope.get('key_id') not in keys:raise ValueError('发布签名公钥未配置或不受信任')
@@ -67,7 +71,7 @@ def github(method,path,body=None,raw=None):
     # Only reads are automatically retried; an interrupted mutation may have succeeded.
     for attempt in range(3 if method=='GET' else 1):
         try:
-            with build_opener(Redirect()).open(Request(url,data=raw if raw is not None else canonical(body) if body is not None else None,headers=headers,method=method),timeout=60) as response:
+            with build_opener(Redirect()).open(Request(url,data=raw if raw is not None else canonical(body) if body is not None else None,headers=headers,method=method),timeout=3600 if raw is not None else 60) as response:
                 data=response.read(2*1024*1024)
                 return json.loads(data) if data else {}
         except HTTPError as error:
